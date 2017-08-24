@@ -18,6 +18,7 @@ lazy val `cors-java-impl` = (project in file("cors-java-impl"))
   .enablePlugins(LagomJava)
   .settings(
     libraryDependencies ++= Seq(
+      filters
     )
   )
   .dependsOn(`cors-java-api`)
