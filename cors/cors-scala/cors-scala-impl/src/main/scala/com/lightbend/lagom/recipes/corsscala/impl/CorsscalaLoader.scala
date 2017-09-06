@@ -7,6 +7,8 @@ import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import play.api.libs.ws.ahc.AhcWSComponents
+import play.api.mvc.EssentialFilter
+import play.filters.cors.CORSComponents
 
 class CorsscalaLoader extends LagomApplicationLoader {
 
@@ -24,7 +26,13 @@ class CorsscalaLoader extends LagomApplicationLoader {
 
 abstract class CorsscalaApplication(context: LagomApplicationContext)
   extends LagomApplication(context)
-    with AhcWSComponents {
+    with AhcWSComponents
+    // This code example uses Play's thin-cake, compile-time Dependency Injection instead of using the runtime
+    // Dependency Injection based on Guice. You can find the complete list of available Play Components by searching for
+    // components in Play's API docs (https://www.playframework.com/documentation/2.5.x/api/scala/index.html).
+    with CORSComponents {
+
+  override lazy val httpFilters: Seq[EssentialFilter] = Seq(corsFilter)
 
   override lazy val lagomServer = serverFor[CorsscalaService](wire[CorsscalaServiceImpl])
 }

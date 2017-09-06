@@ -1,7 +1,8 @@
 package com.lightbend.lagom.recipes.corsscala.api
 
 import akka.NotUsed
-import com.lightbend.lagom.scaladsl.api.{ Service, ServiceCall }
+import com.lightbend.lagom.scaladsl.api.transport.Method
+import com.lightbend.lagom.scaladsl.api.{ Service, ServiceAcl, ServiceCall }
 
 
 trait CorsscalaService extends Service {
@@ -15,6 +16,9 @@ trait CorsscalaService extends Service {
         pathCall("/api/hello/:id", hello _)
       )
       .withAutoAcl(true)
+      .withAcls(
+        ServiceAcl.forMethodAndPathRegex(Method.OPTIONS, "/api/hello/.*")
+      )
   }
 }
 

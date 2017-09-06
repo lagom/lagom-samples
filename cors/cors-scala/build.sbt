@@ -17,7 +17,8 @@ lazy val `cors-scala-impl` = (project in file("cors-scala-impl"))
   .enablePlugins(LagomScala)
   .settings(
     libraryDependencies ++= Seq(
-      macwire
+      macwire,
+      filters
     )
   )
   .settings(lagomForkedTestSettings: _*)
