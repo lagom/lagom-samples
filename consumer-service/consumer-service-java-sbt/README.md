@@ -49,6 +49,13 @@ curl -H "Content-Type: application/json" -X POST -d '{"message": "Howdy"}' http:
 
 After a few seconds, `HelloStreamSubscriber` will output some log messages indicating that the events have been received:
 
+```
+16:30:22.919 [info] com.lightbend.lagom.recipes.consumer.hellostream.impl.HelloStreamSubscriber [] - Received event: [HelloEvent.GreetingMessageChanged(name=Alice, message=Hi)]
+16:30:25.915 [info] com.lightbend.lagom.recipes.consumer.hellostream.impl.HelloStreamSubscriber [] - Received event: [HelloEvent.GreetingMessageChanged(name=Bob, message=Good morning)]
+16:30:28.876 [info] com.lightbend.lagom.recipes.consumer.hellostream.impl.HelloStreamSubscriber [] - Received event: [HelloEvent.GreetingMessageChanged(name=Carol, message=Hi)]
+16:30:31.827 [info] com.lightbend.lagom.recipes.consumer.hellostream.impl.HelloStreamSubscriber [] - Received event: [HelloEvent.GreetingMessageChanged(name=David, message=Howdy)]
+```
+
 ## More resources
 
 This is described in more detail in the Lagom documentation:
