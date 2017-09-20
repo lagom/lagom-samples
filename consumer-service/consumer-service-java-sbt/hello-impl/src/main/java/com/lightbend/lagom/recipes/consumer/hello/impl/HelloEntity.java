@@ -1,12 +1,9 @@
 /*
  * 
  */
-package com.example.hello.impl;
+package com.lightbend.lagom.recipes.consumer.hello.impl;
 
 import akka.Done;
-import com.example.hello.impl.HelloCommand.Hello;
-import com.example.hello.impl.HelloCommand.UseGreetingMessage;
-import com.example.hello.impl.HelloEvent.GreetingMessageChanged;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import java.time.LocalDateTime;
@@ -17,8 +14,8 @@ import java.util.Optional;
  * stores what the greeting should be (eg, "Hello").
  * <p>
  * Event sourced entities are interacted with by sending them commands. This
- * entity supports two commands, a {@link UseGreetingMessage} command, which is
- * used to change the greeting, and a {@link Hello} command, which is a read
+ * entity supports two commands, a {@link HelloCommand.UseGreetingMessage} command, which is
+ * used to change the greeting, and a {@link HelloCommand.Hello} command, which is a read
  * only command which returns a greeting to the name specified by the command.
  * <p>
  * Commands get translated to events, and it's the events that get persisted by
@@ -28,8 +25,8 @@ import java.util.Optional;
  * loaded from the database - each event will be replayed to recreate the state
  * of the entity.
  * <p>
- * This entity defines one event, the {@link GreetingMessageChanged} event,
- * which is emitted when a {@link UseGreetingMessage} command is received.
+ * This entity defines one event, the {@link HelloEvent.GreetingMessageChanged} event,
+ * which is emitted when a {@link HelloCommand.UseGreetingMessage} command is received.
  */
 public class HelloEntity extends PersistentEntity<HelloCommand, HelloEvent, HelloState> {
 
@@ -55,17 +52,17 @@ public class HelloEntity extends PersistentEntity<HelloCommand, HelloEvent, Hell
     /*
      * Command handler for the UseGreetingMessage command.
      */
-        b.setCommandHandler(UseGreetingMessage.class, (cmd, ctx) ->
+        b.setCommandHandler(HelloCommand.UseGreetingMessage.class, (cmd, ctx) ->
                 // In response to this command, we want to first persist it as a
                 // GreetingMessageChanged event
-                ctx.thenPersist(new GreetingMessageChanged(entityId(), cmd.message),
+                ctx.thenPersist(new HelloEvent.GreetingMessageChanged(entityId(), cmd.message),
                         // Then once the event is successfully persisted, we respond with done.
                         evt -> ctx.reply(Done.getInstance())));
 
     /*
      * Event handler for the GreetingMessageChanged event.
      */
-        b.setEventHandler(GreetingMessageChanged.class,
+        b.setEventHandler(HelloEvent.GreetingMessageChanged.class,
                 // We simply update the current state to use the greeting message from
                 // the event.
                 evt -> new HelloState(evt.message, LocalDateTime.now().toString()));
@@ -73,7 +70,7 @@ public class HelloEntity extends PersistentEntity<HelloCommand, HelloEvent, Hell
     /*
      * Command handler for the Hello command.
      */
-        b.setReadOnlyCommandHandler(Hello.class,
+        b.setReadOnlyCommandHandler(HelloCommand.Hello.class,
                 // Get the greeting from the current state, and prepend it to the name
                 // that we're sending
                 // a greeting to, and reply with that message.

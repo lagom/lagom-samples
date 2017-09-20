@@ -1,7 +1,7 @@
 /*
  * 
  */
-package com.example.hello.api;
+package com.lightbend.lagom.recipes.consumer.hello.api;
 
 import akka.Done;
 import akka.NotUsed;

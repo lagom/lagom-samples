@@ -1,7 +1,7 @@
 /*
  * 
  */
-package com.example.hello.impl;
+package com.lightbend.lagom.recipes.consumer.hello.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

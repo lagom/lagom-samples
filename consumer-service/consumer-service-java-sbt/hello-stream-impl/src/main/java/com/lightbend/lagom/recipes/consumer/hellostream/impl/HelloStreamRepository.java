@@ -1,7 +1,7 @@
 /*
  * 
  */
-package com.example.hellostream.impl;
+package com.lightbend.lagom.recipes.consumer.hellostream.impl;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;

@@ -1,4 +1,4 @@
-package com.example.hello.api;
+package com.lightbend.lagom.recipes.consumer.hello.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

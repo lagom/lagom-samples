@@ -1,10 +1,10 @@
 /*
  * 
  */
-package com.example.hello.impl;
+package com.lightbend.lagom.recipes.consumer.hello.impl;
 
-import com.example.hello.api.GreetingMessage;
-import com.example.hello.api.HelloService;
+import com.lightbend.lagom.recipes.consumer.hello.api.GreetingMessage;
+import com.lightbend.lagom.recipes.consumer.hello.api.HelloService;
 import org.junit.Test;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;

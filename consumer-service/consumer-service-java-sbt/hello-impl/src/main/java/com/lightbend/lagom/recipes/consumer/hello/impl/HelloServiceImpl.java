@@ -1,15 +1,13 @@
 /*
  * 
  */
-package com.example.hello.impl;
+package com.lightbend.lagom.recipes.consumer.hello.impl;
 
 import akka.Done;
 import akka.NotUsed;
 import akka.japi.Pair;
-import com.example.hello.api.GreetingMessage;
-import com.example.hello.api.HelloService;
-import com.example.hello.impl.HelloCommand.Hello;
-import com.example.hello.impl.HelloCommand.UseGreetingMessage;
+import com.lightbend.lagom.recipes.consumer.hello.api.GreetingMessage;
+import com.lightbend.lagom.recipes.consumer.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.broker.TopicProducer;
@@ -37,7 +35,7 @@ public class HelloServiceImpl implements HelloService {
             // Look up the hello world entity for the given ID.
             PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
             // Ask the entity the Hello command.
-            return ref.ask(new Hello(id));
+            return ref.ask(new HelloCommand.Hello(id));
         };
     }
 
@@ -47,13 +45,13 @@ public class HelloServiceImpl implements HelloService {
             // Look up the hello world entity for the given ID.
             PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
             // Tell the entity to use the greeting message specified.
-            return ref.ask(new UseGreetingMessage(request.message));
+            return ref.ask(new HelloCommand.UseGreetingMessage(request.message));
         };
 
     }
 
     @Override
-    public Topic<com.example.hello.api.HelloEvent> helloEvents() {
+    public Topic<com.lightbend.lagom.recipes.consumer.hello.api.HelloEvent> helloEvents() {
         // We want to publish all the shards of the hello event
         return TopicProducer.taggedStreamWithOffset(HelloEvent.TAG.allTags(), (tag, offset) ->
 
@@ -64,11 +62,11 @@ public class HelloServiceImpl implements HelloService {
                     // Although these two events are currently identical, in future they may
                     // change and need to evolve separately, by separating them now we save
                     // a lot of potential trouble in future.
-                    com.example.hello.api.HelloEvent eventToPublish;
+                    com.lightbend.lagom.recipes.consumer.hello.api.HelloEvent eventToPublish;
 
                     if (eventAndOffset.first() instanceof HelloEvent.GreetingMessageChanged) {
                         HelloEvent.GreetingMessageChanged messageChanged = (HelloEvent.GreetingMessageChanged) eventAndOffset.first();
-                        eventToPublish = new com.example.hello.api.HelloEvent.GreetingMessageChanged(
+                        eventToPublish = new com.lightbend.lagom.recipes.consumer.hello.api.HelloEvent.GreetingMessageChanged(
                                 messageChanged.getName(), messageChanged.getMessage()
                         );
                     } else {

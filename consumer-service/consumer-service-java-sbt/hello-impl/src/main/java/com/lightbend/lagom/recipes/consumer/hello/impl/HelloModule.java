@@ -1,9 +1,9 @@
 /*
  * 
  */
-package com.example.hello.impl;
+package com.lightbend.lagom.recipes.consumer.hello.impl;
 
-import com.example.hello.api.HelloService;
+import com.lightbend.lagom.recipes.consumer.hello.api.HelloService;
 import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
 

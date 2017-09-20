@@ -1,12 +1,12 @@
 /*
  * 
  */
-package com.example.hellostream.impl;
+package com.lightbend.lagom.recipes.consumer.hellostream.impl;
 
 import akka.Done;
 import akka.stream.javadsl.Flow;
-import com.example.hello.api.HelloEvent;
-import com.example.hello.api.HelloService;
+import com.lightbend.lagom.recipes.consumer.hello.api.HelloEvent;
+import com.lightbend.lagom.recipes.consumer.hello.api.HelloService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
