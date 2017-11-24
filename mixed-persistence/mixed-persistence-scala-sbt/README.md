@@ -4,32 +4,41 @@ This recipe demonstrates how to create a service in Lagom for Scala that uses Ca
 
 ## Implementation details
 
-TODO
+This recipe introduce a key change on your Service Loader compared to a [regular JDBC persistence](https://www.lagomframework.com/documentation/1.3.x/scala/PersistentEntityRDBMS.html#Application-Loader). Instead of mixing in `JdbcPersistenceComponents` we mix in `ReadSideJdbcPersistenceComponents` and then we mix in `WriteSideCassandraPersistenceComponents`. Due to a [bug](https://github.com/lagom/lagom/issues/1099) in Lagom the ordering in which you mix in those two traits is relevant and only if you mix in `ReadSideJdbcPersistenceComponents` before `WriteSideCassandraPersistenceComponents` you will be able to use this combination.
+
+This recipe uses an in-mem H2 database to build a JDBC read-side that keeps the latest greeting each person set up. This requires using H2's ["MERGE"](http://www.h2database.com/html/grammar.html#merge) feature which is equivalent to "insert or update" in other RDBMSs.
+
+Other than those two details this recipe simply builds a read side.     
 
 ## Testing the recipe
 
 You can test this recipe using 2 separate terminals.
 
-On one terminal start the service:
+On first terminal start the service:
 
 ```
 sbt runAll
 ```
 
-On a separate terminal, use `curl` to trigger some events in `HelloService`:
+On a second terminal, use `watch curl` to query the read-side:
 
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}' http://localhost:9000/api/hello/Alice
-curl -H "Content-Type: application/json" -X POST -d '{"message": "Good day"}' http://localhost:9000/api/hello/Bob
-curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}' http://localhost:9000/api/hello/Carol
-curl -H "Content-Type: application/json" -X POST -d '{"message": "Howdy"}' http://localhost:9000/api/hello/David
+watch curl http://localhost:9000/api/greetings
 ```
 
-After a few seconds, use `curl` to retrieve a list of all of the stored greetings:
+Finally, on a third terminal, use `curl` to cause changes on the persistent entities. These changes will propagate cause events the read-side will materialize.
 
 ```
-curl http://localhost:9000/api/greetings
-[{"id":"Alice","message":"Hi"},{"id":"Bob","message":"Good day"},{"id":"Carol","message":"Hi"},{"id":"David","message":"Howdy"}]
+```
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}'                http://localhost:9000/api/hello/Alice
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Good day"}'          http://localhost:9000/api/hello/Bob
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}'                http://localhost:9000/api/hello/Carol
+sleep 5
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi again"}'          http://localhost:9000/api/hello/Alice
+sleep 2
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi yet once more"}'  http://localhost:9000/api/hello/Alice
+sleep 2
+curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi there"}'          http://localhost:9000/api/hello/Alice
 ```
 
-This is eventually consistent, so it might take a few tries before you see all of the results.
+Few seconds after running these requests you'll see the list of greetings on your second terminal (where a permanent request to list all greetings is running). The read side build in this recipe keeps only the last greeting for each name so as you keep changing the greeting to `Alice` the change propagates eventually into the list of greetings.
