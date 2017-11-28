@@ -27,6 +27,7 @@ Each sample includes specific instructions on it's `README.md` file on how to ru
 * How do I enable CORS? (using Lagom's [javadsl](./cors/cors-java/README.md) or [scaladsl](./cors/cors-scala/README.md))
 * How do I create a [Subscriber only service](https://www.lagomframework.com/documentation/1.3.x/java/KafkaClient.html#Subscriber-only-Services)? (also referred to as [consumer service](./consumer-service/consumer-service-java-sbt/README.md))
 * How do I use RDBMS read-sides with Cassandra write-sides? ([mixed persistence in java](mixed-persistence/mixed-persistence-java-sbt/README.md)) or [mixed persistence in scala](mixed-persistence/mixed-persistence-scala-sbt/README.md))
+* How to create a stateless service in Lagom for Java that uses [Play's Internationalization Support](i18n/hello-i18n-java-mvn/README.md).
 
 
-### 
+
