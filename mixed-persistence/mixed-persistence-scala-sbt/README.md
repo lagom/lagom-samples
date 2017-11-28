@@ -4,7 +4,7 @@ This recipe demonstrates how to create a service in Lagom for Scala that uses Ca
 
 ## Implementation details
 
-This recipe introduce a key change on your Service Loader compared to a [regular JDBC persistence](https://www.lagomframework.com/documentation/1.3.x/scala/PersistentEntityRDBMS.html#Application-Loader). Instead of mixing in `JdbcPersistenceComponents` we mix in `ReadSideJdbcPersistenceComponents` and then we mix in `WriteSideCassandraPersistenceComponents`. Due to a [bug](https://github.com/lagom/lagom/issues/1099) in Lagom the ordering in which you mix in those two traits is relevant and only if you mix in `ReadSideJdbcPersistenceComponents` before `WriteSideCassandraPersistenceComponents` you will be able to use this combination.
+This recipe introduces a key change to your Service Loader compared to a [regular JDBC persistence](https://www.lagomframework.com/documentation/1.3.x/scala/PersistentEntityRDBMS.html#Application-Loader). Instead of mixing in `JdbcPersistenceComponents` we mix in `ReadSideJdbcPersistenceComponents` and then we mix in `WriteSideCassandraPersistenceComponents`. Due to a [bug](https://github.com/lagom/lagom/issues/1099) in Lagom the ordering in which you mix in those two traits is relevant and only if you mix in `ReadSideJdbcPersistenceComponents` before `WriteSideCassandraPersistenceComponents` you will be able to use this combination.
 
 This recipe uses an in-mem H2 database to build a JDBC read-side that keeps the latest greeting each person set up. This requires using H2's ["MERGE"](http://www.h2database.com/html/grammar.html#merge) feature which is equivalent to "insert or update" in other RDBMSs.
 
@@ -12,21 +12,21 @@ Other than those two details this recipe simply builds a read side.
 
 ## Testing the recipe
 
-You can test this recipe using 2 separate terminals.
+You can test this recipe using three separate terminals.
 
-On first terminal start the service:
+In the first terminal start the service:
 
 ```
 sbt runAll
 ```
 
-On a second terminal, use `watch curl` to query the read-side:
+In the second terminal, use `watch curl` to query the read-side:
 
 ```
 watch curl http://localhost:9000/api/greetings
 ```
 
-Finally, on a third terminal, use `curl` to cause changes on the persistent entities. These changes will propagate cause events the read-side will materialize.
+Finally, in a third terminal, use `curl` to cause changes on the persistent entities. These changes will propagate cause events the read-side will materialize.
 
 ```
 ```
@@ -41,4 +41,4 @@ sleep 2
 curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi there"}'          http://localhost:9000/api/hello/Alice
 ```
 
-Few seconds after running these requests you'll see the list of greetings on your second terminal (where a permanent request to list all greetings is running). The read side build in this recipe keeps only the last greeting for each name so as you keep changing the greeting to `Alice` the change propagates eventually into the list of greetings.
+A few seconds after running these requests you'll see the list of greetings on your second terminal (where a permanent request to list all greetings is running). The read side build in this recipe keeps only the last greeting for each name so as you keep changing the greeting to `Alice` the change propagates eventually into the list of greetings.
