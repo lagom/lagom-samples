@@ -29,7 +29,6 @@ watch curl http://localhost:9000/api/greetings
 Finally, in a third terminal, use `curl` to cause changes on the persistent entities. These changes will propagate cause events the read-side will materialize.
 
 ```
-```
 curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}'                http://localhost:9000/api/hello/Alice
 curl -H "Content-Type: application/json" -X POST -d '{"message": "Good day"}'          http://localhost:9000/api/hello/Bob
 curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}'                http://localhost:9000/api/hello/Carol
