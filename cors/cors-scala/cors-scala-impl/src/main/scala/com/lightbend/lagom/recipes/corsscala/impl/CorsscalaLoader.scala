@@ -32,7 +32,7 @@ abstract class CorsscalaApplication(context: LagomApplicationContext)
     // components in Play's API docs (https://www.playframework.com/documentation/2.5.x/api/scala/index.html).
     with CORSComponents {
 
-  override lazy val httpFilters: Seq[EssentialFilter] = Seq(corsFilter)
+  override val httpFilters: Seq[EssentialFilter] = Seq(corsFilter)
 
   override lazy val lagomServer = serverFor[CorsscalaService](wire[CorsscalaServiceImpl])
 }

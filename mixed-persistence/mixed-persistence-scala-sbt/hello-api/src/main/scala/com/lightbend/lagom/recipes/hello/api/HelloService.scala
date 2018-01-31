@@ -18,7 +18,7 @@ trait HelloService extends Service {
       .withCalls(
         pathCall("/api/hello/:id", hello _),
         pathCall("/api/hello/:id", useGreeting _),
-        pathCall("/api/greetings", allGreetings _)
+        pathCall("/api/greetings", allGreetings)
       )
       .withAutoAcl(true)
   }

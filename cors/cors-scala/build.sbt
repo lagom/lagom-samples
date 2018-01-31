@@ -1,9 +1,9 @@
 organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.12.4"
 
-val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
+val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 
 lazy val `cors-scala` = (project in file("."))
   .aggregate(`cors-scala-api`, `cors-scala-impl`)

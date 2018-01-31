@@ -29,12 +29,14 @@ public class HelloServiceImpl implements HelloService {
         return (reqHeaders, request) -> {
             Optional<String> ifNoneMatch = reqHeaders.getHeader("If-None-Match");
 
-            // The value of ETag is a versioning or a timestamp that your codebase will have to
+            // The value of ETag is a version or a timestamp that your codebase will have to
             // store and maintain. In a Lagom service it would make sense to make the ETag a field
             // in the persistent entity or the read-side.
             // You could also keep an in-mem variable with the latest ETag but you would have to
             // grant the value is kept up to date across the cluster which is not trivial.
-            String currentETag = "some-value-stored-in-db-or-persistent-entity";
+            // Note that the spec requires ETag values to be enclosed in double quotes
+            // https://tools.ietf.org/html/rfc7232
+            String currentETag = "\"some-value-stored-in-db-or-persistent-entity\"";
 
             // This builds a default response Header Map which all possible responses will base
             // their headers on.

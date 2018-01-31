@@ -19,8 +19,8 @@ Then, in a second terminal use:
 
 ```
 curl http://localhost:9000/api/hello/Alice -v 
-curl http://localhost:9000/api/hello/Alice -v  -H "If-None-Match: some-value-stored-in-db-or-persistent-entity" 
-curl http://localhost:9000/api/hello/Alice -v  -H "If-None-Match: invalid-etag" 
+curl http://localhost:9000/api/hello/Alice -v  -H 'If-None-Match: "some-value-stored-in-db-or-persistent-entity"'
+curl http://localhost:9000/api/hello/Alice -v  -H 'If-None-Match: "invalid-etag"'
 ```
 
 To stop the service, kill the `sbt runAll` process using `Ctrl-C`. 

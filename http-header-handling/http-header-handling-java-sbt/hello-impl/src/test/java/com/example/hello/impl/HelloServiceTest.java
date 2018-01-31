@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 public class HelloServiceTest {
 
-    public static final String DEFAULT_ETAG = "some-value-stored-in-db-or-persistent-entity";
+    public static final String DEFAULT_ETAG = "\"some-value-stored-in-db-or-persistent-entity\"";
     private static TestServer server;
 
     @BeforeClass

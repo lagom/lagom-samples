@@ -2,7 +2,7 @@ package com.lightbend.lagom.recipes.mixedpersistence.hello.impl;
 
 import akka.Done;
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.javadsl.TestKit;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver.Outcome;
 import com.lightbend.lagom.recipes.mixedpersistence.hello.impl.entity.HelloCommand;
@@ -31,7 +31,7 @@ public class HelloEntityTest {
 
     @AfterClass
     public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
+        TestKit.shutdownActorSystem(system);
         system = null;
     }
 
