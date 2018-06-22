@@ -15,6 +15,53 @@
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <executions>
+                        <execution>
+                            <id>copy</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>com.lightbend.cinnamon</groupId>
+                                        <artifactId>cinnamon-agent</artifactId>
+                                        <version>${cinnamon.version}</version>
+                                        <overWrite>true</overWrite>
+                                        <destFileName>cinnamon-agent.jar</destFileName>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                    <configuration>
+                        <executable>java</executable>
+                        <arguments>
+                            <argument>-classpath</argument>
+                            <classpath/>
+                            <argument>-javaagent:${project.build.directory}/dependency/cinnamon-agent.jar</argument>
+                            <!-- Play requires the play.http.secret.key property to be set to run in production mode,
+                               - but this isn't used in Lagom, so the specific value doesn't matter.
+                              -->
+                            <argument>-Dplay.http.secret.key=x</argument>
+                            <argument>play.core.server.ProdServerStart</argument>
+                        </arguments>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.lightbend.lagom</groupId>
@@ -66,6 +113,18 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <!-- Use Coda Hale Metrics -->
+            <dependency>
+                <groupId>com.lightbend.cinnamon</groupId>
+                <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
+                <version>${cinnamon.version}</version>
+            </dependency>
+            <!-- Use Lagom instrumentation -->
+            <dependency>
+                <groupId>com.lightbend.cinnamon</groupId>
+                <artifactId>cinnamon-lagom_${scala.binary.version}</artifactId>
+                <version>${cinnamon.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -75,5 +134,14 @@
         <scala.binary.version>2.12</scala.binary.version>
 
         <lagom.version>1.4.6</lagom.version>
+        <cinnamon.version>2.8.7</cinnamon.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>lightbend-commercial</id>
+            <name>Lightbend Commercial</name>
+            <url>https://lightbend.bintray.com/commercial-releases</url>
+        </repository>
+    </repositories>
 </project>

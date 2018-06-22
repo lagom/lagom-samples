@@ -31,6 +31,16 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-akka-http-server_${scala.binary.version}</artifactId>
         </dependency>
+        <!-- Use Coda Hale Metrics -->
+        <dependency>
+            <groupId>com.lightbend.cinnamon</groupId>
+            <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
+        </dependency>
+        <!-- Use Lagom instrumentation -->
+        <dependency>
+            <groupId>com.lightbend.cinnamon</groupId>
+            <artifactId>cinnamon-lagom_${scala.binary.version}</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -41,6 +51,14 @@
                 <configuration>
                     <lagomService>true</lagomService>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
