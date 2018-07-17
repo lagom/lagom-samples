@@ -6,7 +6,7 @@ jdk:
   - oraclejdk8
 env:
   matrix:
-    - SCRIPT="runJob consumer-service/consumer-service-java-sbt 'test' "
+    - SCRIPT="runJob consumer-service/consumer-service-java-sbt test"
 script: bin/$SCRIPT
 before_install:
     # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
