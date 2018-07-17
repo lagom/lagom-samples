@@ -31,7 +31,5 @@ before_cache:
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
 notifications:
   webhooks:
-    urls:
-        - https://webhooks.gitter.im/e/773aba95141768c32dae
     on_success: always
     on_failure: always
