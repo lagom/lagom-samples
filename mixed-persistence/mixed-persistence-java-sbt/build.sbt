@@ -27,7 +27,6 @@ lazy val `hello-impl` = (project in file("hello-impl"))
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
       lagomJavadslPersistenceJpa,
-      lagomJavadslKafkaBroker,
       lagomJavadslTestKit,
       lombok,
       h2,
@@ -42,3 +41,4 @@ def common = Seq(
   javacOptions in compile += "-parameters"
 )
 
+lagomKafkaEnabled in ThisBuild := false
