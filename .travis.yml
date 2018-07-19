@@ -1,0 +1,35 @@
+language: scala
+dist: trusty
+sudo: required
+group: edge
+jdk:
+  - oraclejdk8
+env:
+  matrix:
+    - SCRIPT="runJob consumer-service/consumer-service-java-sbt test"
+    - SCRIPT="runJob cors/cors-java test"
+    - SCRIPT="runJob cors/cors-scala test"
+    - SCRIPT="runJob file-upload/file-upload-scala-sbt test"
+    - SCRIPT="runJob http-header-handling/http-header-handling-java-sbt test"
+    - SCRIPT="runJob mixed-persistence/mixed-persistence-java-sbt test"
+    - SCRIPT="runJob mixed-persistence/mixed-persistence-scala-sbt test"
+script: bin/$SCRIPT
+before_install:
+    # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
+    - rm ~/.m2/settings.xml
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/scala*
+    - $HOME/.m2/repository
+before_cache:
+  # Ensure changes to the cache aren't persisted
+  - rm -rf $HOME/.ivy2/cache/com.lightbend.lagom/*
+  - rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.lightbend.lagom/*
+  - rm -r $HOME/.m2/repository/com/lightbend/lagom/*
+  # Delete all ivydata files since ivy touches them on each build
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
+notifications:
+  webhooks:
+    on_success: always
+    on_failure: always
