@@ -35,4 +35,5 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 * How to create a stateless service in Lagom for Java that uses [Play's Internationalization Support](i18n/hello-i18n-java-mvn/README.md).
 * How do I manipulate Headers and Status Codes and test those cases?([HTTP header handling](./http-header-handling/http-header-handling-java-sbt/README.md))
 * How do I handle `multipart/form-data` file uploads? ([Scala example](./file-upload/file-upload-scala-sbt/README.md))
+* How do I use a custom message serializer and response header to implement file downloads? ([Scala example](./file-download/file-download-scala-sbt/README.md))
 * How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](./lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
