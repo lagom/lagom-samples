@@ -1,0 +1,157 @@
+apiVersion: "apps/v1beta2"
+kind: Deployment
+metadata:
+  name: "hello-v1-0-snapshot"
+  labels:
+    appName: hello
+    appNameVersion: "hello-v1-0-snapshot"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      appNameVersion: "hello-v1-0-snapshot"
+  template:
+    metadata:
+      labels:
+        appName: hello
+        appNameVersion: "hello-v1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hello
+          image: "hello-impl:1.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "RP_APP_NAME"
+              value: hello
+            - name: "RP_APP_TYPE"
+              value: lagom
+            - name: "RP_APP_VERSION"
+              value: "1.0-SNAPSHOT"
+            - name: "RP_ENDPOINTS"
+              value: "HTTP,AKKA_REMOTE,AKKA_MGMT_HTTP"
+            - name: "RP_ENDPOINTS_COUNT"
+              value: "3"
+            - name: "RP_ENDPOINT_0_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_0_BIND_PORT"
+              value: "10000"
+            - name: "RP_ENDPOINT_0_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_0_PORT"
+              value: "10000"
+            - name: "RP_ENDPOINT_1_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_1_BIND_PORT"
+              value: "10001"
+            - name: "RP_ENDPOINT_1_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_1_PORT"
+              value: "10001"
+            - name: "RP_ENDPOINT_2_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_2_BIND_PORT"
+              value: "10002"
+            - name: "RP_ENDPOINT_2_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_2_PORT"
+              value: "10002"
+            - name: "RP_ENDPOINT_AKKA_MGMT_HTTP_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_AKKA_MGMT_HTTP_BIND_PORT"
+              value: "10002"
+            - name: "RP_ENDPOINT_AKKA_MGMT_HTTP_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_AKKA_MGMT_HTTP_PORT"
+              value: "10002"
+            - name: "RP_ENDPOINT_AKKA_REMOTE_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_AKKA_REMOTE_BIND_PORT"
+              value: "10001"
+            - name: "RP_ENDPOINT_AKKA_REMOTE_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_AKKA_REMOTE_PORT"
+              value: "10001"
+            - name: "RP_ENDPOINT_HTTP_BIND_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_HTTP_BIND_PORT"
+              value: "10000"
+            - name: "RP_ENDPOINT_HTTP_HOST"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_ENDPOINT_HTTP_PORT"
+              value: "10000"
+            - name: "RP_KUBERNETES_POD_IP"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "status.podIP"
+            - name: "RP_KUBERNETES_POD_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.name"
+            - name: "RP_MODULES"
+              value: "akka-cluster-bootstrapping,akka-management,common,play-http-binding,service-discovery,status"
+            - name: "RP_NAMESPACE"
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.namespace"
+            - name: "RP_PLATFORM"
+              value: kubernetes
+            - name: "RP_APPLICATION_SECRET"
+              value: "-Dplay.http.secret.key=change-this"
+            - name: "RP_CAS_NATIVE"
+              value: "-Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.cas_native.0=_cql._tcp.reactive-sandbox-cassandra.default.svc.cluster.local"
+            - name: "RP_KAFKA_NATIVE"
+              value: "-Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.kafka_native.0=_broker._tcp.reactive-sandbox-kafka.default.svc.cluster.local"
+            - name: "JAVA_OPTS"
+              value: "-Dconfig.resource=rp-application.conf $(RP_APPLICATION_SECRET) $(RP_KAFKA_NATIVE) $(RP_CAS_NATIVE)"
+          ports:
+            - containerPort: 10000
+              name: http
+            - containerPort: 10001
+              name: "akka-remote"
+            - containerPort: 10002
+              name: "akka-mgmt-http"
+          volumeMounts: []
+          readinessProbe:
+            httpGet:
+              path: "/platform-tooling/ready"
+              port: "akka-mgmt-http"
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: "/platform-tooling/healthy"
+              port: "akka-mgmt-http"
+            periodSeconds: 10
+            initialDelaySeconds: 60
+          resources:
+            limits:
+              cpu: 0.250000
+              memory: 536870912
+            requests:
+              cpu: 0.250000
+              memory: 536870912
+      volumes: []
