@@ -15,11 +15,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.lightbend.lagom.logcorrelation</groupId>
-            <artifactId>log-correlation</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>hello-api</artifactId>
             <version>${project.version}</version>
