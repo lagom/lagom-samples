@@ -2,9 +2,18 @@
 
 How it work:
 
-`hello-impl` includes `log-correlation` as a dependency that defines LogCorrelationFilter Play Filter that adds random 
-Correlation ID to SLF4J MDC context, only if it's not defined yet and Cinnamon takes care of automatically propagating 
-MDC context between Lagom micro-services.
+Cinnamon starting 2.10.2 support auto log correlation generation.
+
+In order to enable it use next configuration:
+
+```
+cinnamon.slf4j.mdc {
+  correlation-id {
+    automatic = on
+    name = "X_CORRELATION_ID"
+  }
+}
+``` 
 
 How to run:
 
