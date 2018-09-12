@@ -8,7 +8,7 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
 lazy val `akka-grpc-lagom-quickstart-scala` = (project in file("."))
-  .aggregate(`hello-api`, `hello-impl`, `hello-stream-api`, `hello-stream-impl`)
+  .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(
@@ -21,8 +21,6 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomScala)
   .settings(
     libraryDependencies ++= Seq(
-      lagomScaladslPersistenceCassandra,
-      lagomScaladslKafkaBroker,
       lagomScaladslTestKit,
       macwire,
       scalaTest
@@ -31,14 +29,14 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(`hello-api`)
 
-lazy val `hello-stream-api` = (project in file("hello-stream-api"))
+lazy val `hello-proxy-api` = (project in file("hello-proxy-api"))
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslApi
     )
   )
 
-lazy val `hello-stream-impl` = (project in file("hello-stream-impl"))
+lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(LagomScala)
   .settings(
     libraryDependencies ++= Seq(
@@ -47,4 +45,7 @@ lazy val `hello-stream-impl` = (project in file("hello-stream-impl"))
       scalaTest
     )
   )
-  .dependsOn(`hello-stream-api`, `hello-api`)
+  .dependsOn(`hello-proxy-api`, `hello-api`)
+
+lagomCassandraEnabled in ThisBuild := false
+lagomKafkaEnabled in ThisBuild := false
