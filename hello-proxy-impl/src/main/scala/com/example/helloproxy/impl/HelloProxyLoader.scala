@@ -1,6 +1,7 @@
 package com.example.helloproxy.impl
 
-import akka.actor.CoordinatedShutdown
+import akka.actor.{ ActorSystem, CoordinatedShutdown }
+import akka.discovery.SimpleServiceDiscovery
 import akka.grpc.GrpcClientSettings
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
@@ -18,6 +19,7 @@ class HelloProxyLoader extends LagomApplicationLoader {
   override def load(context: LagomApplicationContext): LagomApplication =
     new HelloProxyApplication(context) {
       override def serviceLocator = NoServiceLocator
+      override def serviceDiscovery: SimpleServiceDiscovery = ???
     }
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
@@ -31,8 +33,12 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
     with AhcWSComponents {
 
   private implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
+  private implicit val sys: ActorSystem = actorSystem
 
-  lazy val settings = GrpcClientSettings.fromConfig("my-fancy-client-name")(actorSystem)
+  def serviceDiscovery: SimpleServiceDiscovery
+
+  lazy val settings = GrpcClientSettings
+    .usingServiceDiscovery(GreeterService.name)
   lazy val greeterServiceClient: GreeterServiceClient = new GreeterServiceClient(settings)(materializer, dispatcher)
   // Bind the service that this server provides
   coordinatedShutdown
@@ -42,7 +48,6 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
     ) { () => greeterServiceClient.close() }
 
   override lazy val lagomServer = serverFor[HelloProxyService](wire[HelloProxyServiceImpl])
-
 
   // Bind the HelloService client
   lazy val helloService = serviceClient.implement[HelloService]
