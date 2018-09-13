@@ -26,6 +26,8 @@ abstract class HelloApplication(context: LagomApplicationContext)
     with AhcWSComponents {
 
   // Bind the service that this server provides
-  override lazy val lagomServer = serverFor[HelloService](wire[HelloServiceImpl])
+  override lazy val lagomServer =
+    serverFor[HelloService](wire[HelloServiceImpl])
+    .additionalRouter(wire[HelloGrpcServiceImpl])
 
 }
