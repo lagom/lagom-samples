@@ -4,8 +4,6 @@
 ## All JVM_XXX options are removed because Lagom does a different handling of SSL
 ## than Play. Only the ALPN Agent setup is relevant for Lagom.
 
-JVM_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/target/dev-mode/generated.keystore
-
 # ssl-play requires an ALPN Agent. This is downdloaded and stored in the target
 # folder of each subproject that needs ALPN enabled.
 # This snippet detects when the ALPN agent hasn't been downloaded yet and runs
