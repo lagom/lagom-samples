@@ -9,8 +9,6 @@ trait HelloProxyService extends Service {
   def proxyViaHttp(id:String): ServiceCall[NotUsed, String]
   def proxyViaGrpc(id:String): ServiceCall[NotUsed, String]
 
-
-
   override final def descriptor = {
     import Service._
 
