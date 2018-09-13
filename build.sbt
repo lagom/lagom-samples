@@ -1,4 +1,5 @@
 import akka.grpc.gen.scaladsl.play.{ PlayScalaClientCodeGenerator, PlayScalaServerCodeGenerator }
+import sbt.Def
 import sbt.Keys.dependencyOverrides
 
 organization in ThisBuild := "com.example"
@@ -21,7 +22,7 @@ lazy val `hello-api` = (project in file("hello-api"))
   )
 
 // ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
-private val workaroundSettings = Seq(
+def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
   // This quickstart still doesn't use service discovery for the gRPC client
   // so we hardcode the HTTPS port for the gRPC server to 11000
   lagomServiceHttpsPort := 11000,
@@ -40,7 +41,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
     akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
     akkaGrpcExtraGenerators += PlayScalaServerCodeGenerator,
   ).settings(
-   workaroundSettings
+  workaroundSettings:_*
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
