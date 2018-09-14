@@ -1,8 +1,8 @@
 # This is an example how to use Lightbend Telemetry (Cinnamon) for Log Correlation
 
-How it work:
+### How it works
 
-Cinnamon starting 2.10.3 support [log correlation](https://downloads.lightbend.com/cinnamon/docs/2.10.3/extensions/mdc.html#log-correlation).
+Cinnamon starting 2.10.3 supports [log correlation](https://downloads.lightbend.com/cinnamon/docs/2.10.3/extensions/mdc.html#log-correlation).
 
 
 In order to enable it use next configuration:
@@ -24,25 +24,42 @@ mvn install                  # builds the service and downloads the Cinnamon age
 mvn -pl hello-impl exec:exec # runs the hello service
 ```
 
-Test:
-
-```
-curl http://localhost:9000/api/hello-proxy/World
-
-2018-08-23T19:17:09.843Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=35cef929-e84c-4b32-8ab7-b9869831aa5a] - helloProxy: World.
-2018-08-23T19:17:09.982Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=35cef929-e84c-4b32-8ab7-b9869831aa5a] - hello: World.
-2018-08-23T19:17:14.568Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=fd12c9d3-5912-45e8-a7d7-f8eb4ecd38ba] - helloProxy: World.
-2018-08-23T19:17:14.574Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=fd12c9d3-5912-45e8-a7d7-f8eb4ecd38ba] - hello: World.
-2018-08-23T19:17:26.047Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=b21dd34c-e75c-48e5-a88a-efa1a693b25b] - helloProxy: There.
-2018-08-23T19:17:26.051Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=b21dd34c-e75c-48e5-a88a-efa1a693b25b] - hello: There.
-```
+Then, on a separate terminal you can generate traffic using the following `curl` command a few times:
 
 
-```
+```bash
 curl http://localhost:9000/api/hello/World
-
-2018-08-23T19:17:58.221Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=e6fde3e0-ab14-400e-8806-c432b66be6af] - hello: World.
-2018-08-23T19:18:01.328Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=b8744c4a-79ae-4bcb-aed0-d196fc82ecb1] - hello: World.
-2018-08-23T19:18:01.814Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=0168b93b-4fe6-4372-b9af-8b094891a9c5] - hello: World.
-2018-08-23T19:18:04.887Z [info] com.lightbend.lagom.recipes.cinnamon.hello.impl.HelloServiceImpl [X_CORRELATION_ID=c1352c06-0521-4b61-bab4-7ab7917017be] - hello: There.
 ```
+
+Which produces an output similar to:
+
+```
+2018-09-14T08:42:07.437Z [info] com.li... [X_CORRELATION_ID=61c40d60-6323-489e-9a51-c4e8a029961c] - [hello-service] Handling request: World.
+2018-09-14T08:42:09.561Z [info] com.li... [X_CORRELATION_ID=f913cce3-f61d-449b-ba81-810e3da87ba8] - [hello-service] Handling request: World.
+2018-09-14T08:42:11.608Z [info] com.li... [X_CORRELATION_ID=fc2a0fa5-4fd5-4c59-a399-4f1a27f7cfe1] - [hello-service] Handling request: World.
+```
+
+You can see how the `hello-service` includes a correlation id on the logs it produces.
+
+### Testing across boundaries
+
+Next we can generate traffic to the `hello-proxy` endpoint. That receives requests and forwards the traffic to a downstream service  
+
+```bash
+curl http://localhost:9000/api/hello-proxy/World
+```
+
+Back on the terminal where the Lagom process is running you will see:
+```
+2018-09-14T08:37:24.324Z [info] com.li... [X_CORRELATION_ID=3bc61118-b754-4220-bba6-f5e8ba2d79f1] - [PROXY] Forwarding request: World
+2018-09-14T08:37:24.570Z [info] com.li... [X_CORRELATION_ID=3bc61118-b754-4220-bba6-f5e8ba2d79f1] - [hello-service] Handling request: World.
+2018-09-14T08:37:26.717Z [info] com.li... [X_CORRELATION_ID=027241f5-6b18-410d-919e-e17ba13b9657] - [PROXY] Forwarding request: World
+2018-09-14T08:37:26.728Z [info] com.li... [X_CORRELATION_ID=027241f5-6b18-410d-919e-e17ba13b9657] - [hello-service] Handling request: World.
+```
+
+Each pair of traces above corresponds to one of your `curl` requests. The requests arrives on the `proxy` which 
+traces `[PROXY]` and then (using HTTP) creates a downstream call to the actual `hello-service`. Note how the 
+correlation id propagates across boundaries.
+
+
+

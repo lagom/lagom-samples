@@ -26,7 +26,7 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public ServiceCall<NotUsed, String> hello(String id) {
         return msg -> {
-            log.info("hello: {}.", id);
+            log.info("[hello-service] Handling request: {}.", id);
             return completedFuture("Hello " + id);
         };
     }
@@ -34,7 +34,7 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public ServiceCall<NotUsed, String> helloProxy(String id) {
         return msg -> {
-            log.info("helloProxy: {}.", id);
+            log.info("[PROXY] Forwarding request: {}", id);
             CompletionStage<String> response = helloService.hello(id).invoke(NotUsed.getInstance());
             return response.thenApply(answer -> "Hello service said: " + answer);
         };
