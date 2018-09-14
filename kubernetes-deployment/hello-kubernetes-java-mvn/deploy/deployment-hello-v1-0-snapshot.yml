@@ -127,7 +127,7 @@ spec:
             - name: "RP_KAFKA_NATIVE"
               value: "-Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.kafka_native.0=_broker._tcp.reactive-sandbox-kafka.default.svc.cluster.local"
             - name: "JAVA_OPTS"
-              value: "-Dconfig.resource=prod-application.conf $(RP_APPLICATION_SECRET) $(RP_KAFKA_NATIVE) $(RP_CAS_NATIVE)"
+              value: "-Dconfig.resource=rp-application.conf $(RP_APPLICATION_SECRET) $(RP_KAFKA_NATIVE) $(RP_CAS_NATIVE)"
           ports:
             - containerPort: 10000
               name: http
