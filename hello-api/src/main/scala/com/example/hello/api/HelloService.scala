@@ -18,7 +18,7 @@ trait HelloService extends Service {
 
   override final def descriptor = {
     import Service._
-    named("hello")
+    named("helloworld.GreeterService")
       .withCalls(
         pathCall("/api/hello/:id", hello _)
       )

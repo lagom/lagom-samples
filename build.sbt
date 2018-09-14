@@ -12,6 +12,7 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
+
 // ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
 def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
   // Lagom still can't register a service under the gRPC name so we hard-code t
