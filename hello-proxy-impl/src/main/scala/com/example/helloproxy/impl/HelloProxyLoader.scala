@@ -43,7 +43,7 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
   // See https://developer.lightbend.com/docs/akka-grpc/current/client/details.html#client-lifecycle
     .withConnectionAttempts(5) // use a small reconnectionAttempts value to cause a client reload in case of failure
   lazy val clientConstructor = () => new GreeterServiceClient(settings)(materializer, dispatcher)
-  lazy val greeterServiceClient = new RestartingClient[GreeterServiceClient](clientConstructor)
+  lazy val greeterServiceClient: RestartingClient[GreeterServiceClient] = new RestartingClient[GreeterServiceClient](clientConstructor)
 
   // Bind the service that this server provides
   coordinatedShutdown
