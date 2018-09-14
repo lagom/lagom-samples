@@ -1,0 +1,152 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.lightbend.lagom.logcorrelation</groupId>
+    <artifactId>lagom-log-correlation</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>hello-api</module>
+        <module>hello-impl</module>
+    </modules>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <executions>
+                        <execution>
+                            <id>copy</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy</goal>
+                            </goals>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>
+                                        <groupId>com.lightbend.cinnamon</groupId>
+                                        <artifactId>cinnamon-agent</artifactId>
+                                        <version>${cinnamon.version}</version>
+                                        <overWrite>true</overWrite>
+                                        <destFileName>cinnamon-agent.jar</destFileName>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                    <configuration>
+                        <executable>java</executable>
+                        <arguments>
+                            <argument>-classpath</argument>
+                            <classpath/>
+                            <argument>-javaagent:${project.build.directory}/dependency/cinnamon-agent.jar</argument>
+                            <!-- Play requires the play.http.secret.key property to be set to run in production mode,
+                               - but this isn't used in Lagom, so the specific value doesn't matter.
+                              -->
+                            <argument>-Dplay.http.secret.key=x</argument>
+                            <argument>play.core.server.ProdServerStart</argument>
+                        </arguments>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.lightbend.lagom</groupId>
+                <artifactId>lagom-maven-plugin</artifactId>
+                <version>${lagom.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven-version</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <!-- Lagom requires at least Maven version 3.2.1 -->
+                                <requireMavenVersion>
+                                    <version>[3.2.1,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.lightbend.lagom</groupId>
+                <artifactId>lagom-maven-dependencies</artifactId>
+                <version>${lagom.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <!-- Use Coda Hale Metrics -->
+            <dependency>
+                <groupId>com.lightbend.cinnamon</groupId>
+                <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
+                <version>${cinnamon.version}</version>
+            </dependency>
+            <!-- Use Lagom instrumentation -->
+            <dependency>
+                <groupId>com.lightbend.cinnamon</groupId>
+                <artifactId>cinnamon-lagom_${scala.binary.version}</artifactId>
+                <version>${cinnamon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.cinnamon</groupId>
+                <artifactId>cinnamon-slf4j-mdc_${scala.binary.version}</artifactId>
+                <version>${cinnamon.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <scala.binary.version>2.12</scala.binary.version>
+
+        <lagom.version>1.4.6</lagom.version>
+        <cinnamon.version>2.10.3</cinnamon.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>lightbend-commercial</id>
+            <name>Lightbend Commercial</name>
+            <url>https://lightbend.bintray.com/commercial-releases</url>
+        </repository>
+    </repositories>
+</project>
