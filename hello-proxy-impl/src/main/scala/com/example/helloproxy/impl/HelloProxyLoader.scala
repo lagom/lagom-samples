@@ -3,6 +3,7 @@ package com.example.helloproxy.impl
 import akka.actor.{ ActorSystem, CoordinatedShutdown }
 import akka.discovery.SimpleServiceDiscovery
 import akka.grpc.GrpcClientSettings
+import akka.grpc.scaladsl.RestartingClient
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
@@ -39,7 +40,11 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
 
   lazy val settings = GrpcClientSettings
     .usingServiceDiscovery(GreeterService.name)
-  lazy val greeterServiceClient: GreeterServiceClient = new GreeterServiceClient(settings)(materializer, dispatcher)
+  // See https://developer.lightbend.com/docs/akka-grpc/current/client/details.html#client-lifecycle
+    .withConnectionAttempts(5) // use a small reconnectionAttempts value to cause a client reload in case of failure
+  lazy val clientConstructor = () => new GreeterServiceClient(settings)(materializer, dispatcher)
+  lazy val greeterServiceClient = new RestartingClient[GreeterServiceClient](clientConstructor)
+
   // Bind the service that this server provides
   coordinatedShutdown
     .addTask(
