@@ -1,29 +1,29 @@
 apiVersion: "apps/v1beta2"
 kind: Deployment
 metadata:
-  name: "hello-stream-v1-0-snapshot"
+  name: "hello-v1-0-snapshot"
   labels:
-    appName: "hello-stream"
-    appNameVersion: "hello-stream-v1-0-snapshot"
+    appName: hello
+    appNameVersion: "hello-v1-0-snapshot"
 spec:
   replicas: 3
   selector:
     matchLabels:
-      appNameVersion: "hello-stream-v1-0-snapshot"
+      appNameVersion: "hello-v1-0-snapshot"
   template:
     metadata:
       labels:
-        appName: "hello-stream"
-        appNameVersion: "hello-stream-v1-0-snapshot"
+        appName: hello
+        appNameVersion: "hello-v1-0-snapshot"
     spec:
       restartPolicy: Always
       containers:
-        - name: "hello-stream"
-          image: "stream-impl:1.0-SNAPSHOT"
+        - name: hello
+          image: "hello-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           env:
             - name: "RP_APP_NAME"
-              value: "hello-stream"
+              value: hello
             - name: "RP_APP_TYPE"
               value: lagom
             - name: "RP_APP_VERSION"
@@ -155,3 +155,28 @@ spec:
               cpu: 0.250000
               memory: 536870912
       volumes: []
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: hello
+  name: hello
+spec:
+  ports:
+    - name: http
+      port: 10000
+      protocol: TCP
+      targetPort: 10000
+    - name: "akka-remote"
+      port: 10001
+      protocol: TCP
+      targetPort: 10001
+    - name: "akka-mgmt-http"
+      port: 10002
+      protocol: TCP
+      targetPort: 10002
+  selector:
+    appName: hello
