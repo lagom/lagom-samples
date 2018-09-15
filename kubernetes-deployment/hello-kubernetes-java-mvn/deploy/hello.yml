@@ -149,11 +149,11 @@ spec:
             initialDelaySeconds: 60
           resources:
             limits:
-              cpu: 0.250000
-              memory: 536870912
+              cpu: 0.10
+              memory: 200000000
             requests:
-              cpu: 0.250000
-              memory: 536870912
+              cpu: 0.10
+              memory: 200000000
       volumes: []
 
 ---
