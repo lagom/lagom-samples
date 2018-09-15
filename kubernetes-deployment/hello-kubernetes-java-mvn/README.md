@@ -135,5 +135,12 @@ hello-v1-0-snapshot-86cdd499c4-v5mhm          1/1       Running            0    
 reactive-sandbox-85bf697cc9-wt7zm             1/1       Running            0          1h
 ```
 
-Once everyhing is running, you can access the servcices through the external Minikube address. The Minikube external address can be found by calling the command `minikube ip`. The service API are exposed on port 80
+Once everyhing is running, you can access the servcices through the external Minikube address.  The service API are exposed on port 80.
+In your browser, open the url: [http://192.168.99.100/api/hello/Joe](http://192.168.99.100/api/hello/Joe).
 
+
+## Production Setup
+
+The provided yml files are preconfigure to run in Minikube and to point to the Cassandra and Kafka servers running inside the Reactive Sandbox. To adapt it for production, you will need to redefine the respective variables, i.e.: `RP_CASSANDRA_URL` and `RP_KAFKA_URL`, to point to your production servers. 
+
+Moreover, the application secret (`RP_APPLICATION_SECRET`) is set to dummy value in both files. You must change this value for production. It's recommended to use distinct secrets per service. For more information, consult [Play's documentation](https://www.playframework.com/documentation/2.6.x/ApplicationSecret).
