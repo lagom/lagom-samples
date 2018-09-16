@@ -1,4 +1,7 @@
 .idea
 target/
+bin/
+logs
 *.iml
-RUNNING_PID
+*.ipr
+*.iws
