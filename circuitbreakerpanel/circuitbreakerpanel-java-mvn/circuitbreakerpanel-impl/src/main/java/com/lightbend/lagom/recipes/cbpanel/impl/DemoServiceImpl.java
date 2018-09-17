@@ -23,8 +23,8 @@ public class DemoServiceImpl implements DemoService {
     
     
     /**
-     * The CircuitBreakerPanel#withCircuitBreaker method accepts as string as the
-     * circuitBreaker name ( configuration for which it picks from the application.conf)
+     * The CircuitBreakerPanel#withCircuitBreaker method accepts a string as the
+     * circuitBreaker name (configuration for which it picks from the application.conf)
      * As a second parameter it accepts a supplier in which you can make your call to the
      * external service
      */

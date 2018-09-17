@@ -37,3 +37,4 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 * How do I handle `multipart/form-data` file uploads? ([Scala example](./file-upload/file-upload-scala-sbt/README.md))
 * How do I use a custom message serializer and response header to implement file downloads? ([Scala example](./file-download/file-download-scala-sbt/README.md))
 * How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](./lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
+* How do I configure the Circuit Breaker Panel for a Lagom Java application? ([Java/Maven example](./circuitbreakerpanel/circuitbreakerpanel-java-mvn/README.md))

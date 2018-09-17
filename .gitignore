@@ -5,3 +5,6 @@ logs
 *.iml
 *.ipr
 *.iws
+.project
+.settings
+.classpath
