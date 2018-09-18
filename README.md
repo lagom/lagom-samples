@@ -1,112 +1,20 @@
-# Akka-gRPC Lagom Quickstart (scala)
+# Lagom Akka gRPC Quickstart with Scala
 
-This project demonstrates the usage of [akka-grpc](https://github.com/akka/akka-grpc) into Lagom.
+## Quickstart Guide
 
-## Running
+This example is described in the [Lagom Akka gRPC Quickstart with Scala guide](https://developer.lightbend.com/guides/lagom-akka-grpc-quickstart-scala/)
 
-Using gRPC in Lagom requires adding a Java Agent to the runtime. In order to handle this setting you can start the `sbt` console
-using the `ssl-lagom` script provided that takes care of downloading and setting the agent:
+This Hello World example illustrates using Akka gRPC as the communication mechanism between two Lagom services.  
+Within 30 minutes, you should be able to download and run the example and use this guide to understand how the example is constructed.
 
-```
-./ssl-lagom
-```
-
-The first time you run that command it'll have to download dependencies so it may take longer. Once ready you'll be 
-at the `sbt` console. Use the `runAll` command to start the application: 
-
-```
-sbt:akka-grpc-lagom-quickstart-scala> runAll
-```
-
-Once started you should see Lagom's start message:
-
-```
-...
-[info] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-[info] Service hello-proxy-impl listening for HTTPS on 127.0.0.1:65108
-[info] Service hello-impl listening for HTTP on 127.0.0.1:65499
-[info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
-[info] (Services started, press enter to stop and go back to the console...)
-```  
-
-On a separate terminal, try the application:
-
-```bash
-$ curl http://localhost:9000/proxy/rest-hello/Alice
-Hi Alice!
-$ curl http://localhost:9000/proxy/grpc-hello/Steve
-Hi Steve! (gRPC)
-```
-
-(more details on what just happened in following sections)
-
-## Testing the gRPC endpoints 
-
-You can also test the gRPC endpoint directly using [grpcc](https://github.com/njpatel/grpcc). First you will have to prepare the SSL certificates:
-
-```bash
-keytool -export -alias playgeneratedCAtrusted -keystore target/dev-mode/generated.keystore  -storepass "" -file trustedCA.crt
-openssl x509 -in  trustedCA.crt -out trustedCA.pem -inform DER -outform PEM
-``` 
-
-The code above extracts the CA Lagom uses internally when using Lagom's Dev Mode (`sbt runAll`) like we did in previous 
-steps. Once the CA certificate is extracted we can use `grpcc` to test the application:
-
-```bash
-$   grpcc --proto hello-impl/src/main/protobuf/helloworld.proto \
-          --address localhost:11000 \
-          --eval 'client.sayHello({name:"Katherine"}, printReply)' \
-          --root_cert ./trustedCA.pem
- {
-   "message": "Hi Katherine! (gRPC)"
- }
-```
+You don't need to know anything about Akka-gRPC or Lagom but feel free to refer to the 
+[Akka-gRPC reference guide](https://developer.lightbend.com/docs/akka-grpc/current/) or the [Lagom documentation](https://www.lagomframework.com/documentation/current/scala/Home.html) for extra details.
 
 
+## Sample license
 
+Written in 2018 by Lightbend, Inc.
 
-## Structure
-
-There are two Lagom services (`hello` and `hello-proxy`) exposing the following HTTP API's:
-
-```
-GET /api/hello/:id           # served by hello-service
-GET /proxy/rest-hello/:id    # served by hello-proxy-service
-GET /proxy/grpc-hello/:id    # served by hello-proxy-service
-```  
-
-While the `hello-service` is always returning hard-coded values the `hello-proxy` will always forward the request downstream to `hello-service`.
-
-So when you invoke:
-
-```
-$ curl http://localhost:9000/proxy/rest-hello/Alice
-```
-
-The following happens
-
-```
- curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(http)->  hello-service
-```
-
-Alternatively:
-
-```
-$ curl http://localhost:9000/proxy/grpc-hello/Alice
-```
-
-The following happens
-
-```
- curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(gRPC/https)->  hello-service
-```
-
-
-
-### Testing gRPC
-
-You can test the gRPC endpoint on `hello-impl` using [grpcc](https://github.com/njpatel/grpcc)
-
-```bash
-$ grpcc --proto hello-impl/src/main/protobuf/helloworld.proto --insecure --address 127.0.0.1:11000 --eval 'client.sayHello({name:"Alice"}, printReply)'
-```
+To the extent possible under law, the author(s) have dedicated all copyright and related
+and neighboring rights to this template to the public domain worldwide.
+This template is distributed without any warranty. See <http://creativecommons.org/publicdomain/zero/1.0/>.
