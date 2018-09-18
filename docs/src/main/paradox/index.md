@@ -1,9 +1,9 @@
 # Lagom Akka gRPC Quickstart with Scala
 
-Lagom is an open source framework (built on Akka and Play) for developing reactive microservice systems in Java or Scala.
-Akka gRPC is a toolkit for building streaming gRPC servers and clients on top of Akka Streams.
+[Lagom](https://www.lagomframework.com/) is an open source framework (built on [Akka](https://akka.io/) and [Play](https://www.playframework.com/)) for developing reactive microservice systems in Java or Scala.
+[Akka gRPC](https://developer.lightbend.com/docs/akka-grpc/current/overview.html) is a toolkit for building streaming gRPC servers and clients on top of Akka Streams.
 
-This Guide will show you ho to use Akka gRPC as an alternate RPC library to communicate two microservices developed using Lagom. 
+This Guide will show you how to use Akka gRPC as an alternate RPC library to communicate two microservices developed using Lagom. 
 
 ## Downloading the example.
 
@@ -68,9 +68,9 @@ And also
   /helloworld.GreetingsService/sayHello   # served by hello-service (gRPC)
 ```  
 
-None of the service include any logic to keep this quickstart as simple as possible. While the 
-`hello-service` always returns hard-coded values the `hello-proxy` always forwards the request 
-downstream to `hello-service`.
+We want to show how to use gRPC for service communication, so in this guide the services are 
+as simple as possible, with no other features. While the `hello-service` always returns hard-coded 
+values the `hello-proxy` always forwards the request downstream to `hello-service`.
 
 ![Application Structure](./application-structure.png)
 

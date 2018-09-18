@@ -7,8 +7,10 @@ This example is described in the [Lagom Akka gRPC Quickstart with Scala guide](h
 This Hello World example illustrates using Akka gRPC as the communication mechanism between two Lagom services.  
 Within 30 minutes, you should be able to download and run the example and use this guide to understand how the example is constructed.
 
-You don't need to know anything about Akka-gRPC or Lagom but feel free to refer to the 
-[Akka-gRPC reference guide](https://developer.lightbend.com/docs/akka-grpc/current/) or the [Lagom documentation](https://www.lagomframework.com/documentation/current/scala/Home.html) for extra details.
+This guide assumes basic knowledge about Akka-gRPC and Lagom but it also tries to make the amount of previous 
+knowledge as small as possible. Feel free to refer to the 
+[Akka-gRPC reference guide](https://developer.lightbend.com/docs/akka-grpc/current/) or the 
+[Lagom documentation](https://www.lagomframework.com/documentation/current/scala/Home.html) for extra details.
 
 
 ## Sample license
