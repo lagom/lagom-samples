@@ -30,7 +30,7 @@ ready you'll be at the `sbt` console. Use the `runAll` command to start the Lago
 sbt:akka-grpc-lagom-quickstart-scala> runAll
 ```
 
-Once started you should see Lagom's start message:
+The `runAll` command starts Lagom in development mode. Once all the services are started you will see Lagom's start message:
 
 ```
 ...
@@ -40,10 +40,9 @@ Once started you should see Lagom's start message:
 [info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
 [info] (Services started, press enter to stop and go back to the console...)
 ```  
-The above is a snippet of a longer output that will display on your terminal. As soon as you 
-see the message `[info] (Services started, press enter to stop and go back to the console...)` you can proceed. 
 
-On a separate terminal, try the application:
+As soon as you see the message `[info] (Services started, press enter to stop and go back to the console...)` you 
+can proceed. On a separate terminal, try the application:
 
 ```bash
 $ curl http://localhost:9000/proxy/rest-hello/Alice
@@ -55,17 +54,26 @@ Hi Steve! (gRPC)
 
 ## Application Structure
 
-This application is built with two Lagom services (`hello` and `hello-proxy`) exposing the following HTTP-JSON endpoints:
+This application is built with two Lagom services (`hello` and `hello-proxy`) exposing the following endpoints:
 
 ```
-GET /api/hello/:id           # served by hello-service
-GET /proxy/rest-hello/:id    # served by hello-proxy-service
-GET /proxy/grpc-hello/:id    # served by hello-proxy-service
+GET /proxy/rest-hello/:id    # served by hello-proxy-service (HTTP-JSON)
+GET /proxy/grpc-hello/:id    # served by hello-proxy-service (HTTP-JSON)
+GET /api/hello/:id           # served by hello-service (HTTP-JSON)
+```
+
+And also 
+
+```
+  /helloworld.GreetingsService/sayHello   # served by hello-service (gRPC)
 ```  
 
-None of the service include ay logic to keep this quickstart as simple as possible. While the 
+None of the service include any logic to keep this quickstart as simple as possible. While the 
 `hello-service` always returns hard-coded values the `hello-proxy` always forwards the request 
 downstream to `hello-service`.
+
+![Application Structure](./application-structure.png)
+
 
 So when you invoke:
 
@@ -93,29 +101,9 @@ The following happens
 
 ## Testing the gRPC endpoints
 
-In the previous section we said that the services expose the endpoints:
-
-```
-GET /api/hello/:id           # served by hello-service
-GET /proxy/rest-hello/:id    # served by hello-proxy-service
-GET /proxy/grpc-hello/:id    # served by hello-proxy-service
-```  
- 
-But that is not entirely accurate. The above list of endpoints are the publicly available endpoints you can use 
-via the LagomServiceGateway. All the above HTTP endpoints are accessible via 
-the [Lagom Service Gateway](https://www.lagomframework.com/documentation/current/scala/ServiceLocator.html#Service-Gateway) or directly on the service:
-
-```bash
-# Lagom Service Gateway listens on port 9000 
-curl http://localhost:9000/proxy/rest-hello/Alice     
-
-# Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-curl http://localhost:54328/proxy/rest-hello/Alice    
-```
-
-Next to the HTTP endpoints there is also a gRPC service. The gRPC endpoints are not accessible via the Lagom Service 
-Gateway so it's only possible to consume them from another Lagom service or pointing a client directly to the 
-`https - HTTP/2` port of the Lagom Service. Earlier we saw that Lagom informs of the following bindings:
+The gRPC endpoints are not accessible via the Lagom Service Gateway so it's only possible to consume them from 
+another Lagom service or pointing a client directly to the `https - HTTP/2` port of the Lagom Service. Earlier we 
+saw that Lagom informs of the following bindings:
 
 ```
 ...
