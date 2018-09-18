@@ -106,17 +106,17 @@
             <dependency>
                 <groupId>com.lightbend.rp</groupId>
                 <artifactId>reactive-lib-akka-cluster-bootstrap_${scala.binary.version}</artifactId>
-                <version>0.9.0</version>
+                <version>${reactive.lib.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.lightbend.rp</groupId>
                 <artifactId>reactive-lib-akka-management_${scala.binary.version}</artifactId>
-                <version>0.9.0</version>
+                <version>${reactive.lib.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.lightbend.rp</groupId>
                 <artifactId>reactive-lib-service-discovery-lagom14-java_${scala.binary.version}</artifactId>
-                <version>0.9.0</version>
+                <version>${reactive.lib.version}</version>
             </dependency>
 
         </dependencies>
@@ -125,5 +125,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lagom.version>1.4.7</lagom.version>
         <scala.binary.version>2.12</scala.binary.version>
+        <reactive.lib.version>0.9.2</reactive.lib.version>
     </properties>
 </project>
