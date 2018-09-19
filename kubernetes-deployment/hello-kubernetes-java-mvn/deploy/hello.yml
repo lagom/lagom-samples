@@ -141,13 +141,13 @@ spec:
               path: "/platform-tooling/ready"
               port: "akka-mgmt-http"
             periodSeconds: 10
-            initialDelaySeconds: 120
+            initialDelaySeconds: 180
           livenessProbe:
             httpGet:
               path: "/platform-tooling/healthy"
               port: "akka-mgmt-http"
             periodSeconds: 10
-            initialDelaySeconds: 180
+            initialDelaySeconds: 120
           resources:
             limits:
               cpu: 0.15
