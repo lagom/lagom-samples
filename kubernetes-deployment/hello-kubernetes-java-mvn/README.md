@@ -2,7 +2,7 @@
 
 This recipe demonstrates how to deploy a Lagom application in Kubernetes. It's based on the [reactive-lib](https://github.com/lightbend/reactive-lib) library for Akka Cluster bootstrapping and use a Lagom ServiceLocator based on `reactive-lib` service discovery mechanism. 
 
-The application needs Cassandra and Kafka servers. For demo purposes, we will install a Helm chart with Cassandra and Kafka and let the deployed application connect to it. The provided k8s deployment descriptors are pre-configured to expose Cassandra and Kafka to the application. You may use it as a basis to write descriptors suited for your production environment. 
+The application needs Cassandra and Kafka servers. For demo purposes, we will install a Helm chart with Cassandra and Kafka and let the deployed application connect to it. The provided Kubernetes deployment descriptors are pre-configured to expose Cassandra and Kafka to the application. You may use it as a basis to write descriptors suited for your production environment. 
 
 ## Setup
 
