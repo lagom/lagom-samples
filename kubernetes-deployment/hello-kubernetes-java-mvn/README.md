@@ -136,7 +136,15 @@ reactive-sandbox-85bf697cc9-wt7zm             1/1       Running            0    
 ```
 
 Once everyhing is running, you can access the servcices through the external Minikube address.  The service API are exposed on port 80.
-In your browser, open the url: [http://192.168.99.100/api/hello/Joe](http://192.168.99.100/api/hello/Joe).
+You can obtain the external Minikube address, type `minikube ip` in your console.
+
+```shell
+$ ~ minikube ip
+192.168.99.100
+```
+
+In your browser, open the url: [http://192.168.99.100/api/hello/Joe](http://192.168.99.100/api/hello/Joe)  
+(replace 192.168.99.100 by the output of `minikube ip` if different).
 
 
 ## Production Setup
