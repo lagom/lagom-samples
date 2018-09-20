@@ -127,7 +127,7 @@ spec:
             - name: "RP_KAFKA_URL"
               value: "_broker._tcp.reactive-sandbox-kafka.default.svc.cluster.local"
             - name: "JAVA_OPTS"
-              value: "-Dconfig.resource=prod-application.conf -Dplay.http.secret.key=$(RP_APPLICATION_SECRET) -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.cas_native.0=$(RP_CASSANDRA_URL) -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.kafka_native.0=$(RP_KAFKA_URL)"
+              value: "-Xms128m -Xmx256m -Dconfig.resource=prod-application.conf -Dplay.http.secret.key=$(RP_APPLICATION_SECRET) -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.cas_native.0=$(RP_CASSANDRA_URL) -Dcom.lightbend.platform-tooling.service-discovery.external-service-addresses.kafka_native.0=$(RP_KAFKA_URL)"
           ports:
             - containerPort: 10000
               name: http

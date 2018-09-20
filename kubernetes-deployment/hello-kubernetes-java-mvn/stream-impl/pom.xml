@@ -82,7 +82,7 @@
                         <image>
                             <build>
                                 <entryPoint>
-                                    java $JAVA_OPTS -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=3 -cp '/maven/*' play.core.server.ProdServerStart
+                                    java $JAVA_OPTS -cp '/maven/*' play.core.server.ProdServerStart
                                 </entryPoint>
                             </build>
                         </image>

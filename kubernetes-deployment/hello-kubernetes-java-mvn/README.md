@@ -20,7 +20,7 @@ You'll need to ensure that the following software is installed:
 > Want a fresh Minikube? Run `minikube delete` before the steps below.
 
 ```bash
-minikube start --memory 6000
+minikube start --memory 6000 # see memory configuration section below
 minikube addons enable ingress
 eval $(minikube docker-env)
 ```
@@ -145,6 +145,15 @@ $ ~ minikube ip
 
 In your browser, open the url: [http://192.168.99.100/api/hello/Joe](http://192.168.99.100/api/hello/Joe)  
 (replace 192.168.99.100 by the output of `minikube ip` if different).
+
+## Memory usage
+
+This recipe is just an example to illustrate the necessary bits to deploy a Lagom service in Kubernetes. 
+This demo is using Minikube as example and therefore it has its limitations. 
+
+We recommended to start Minikube with 6Gb of memory using the command `minikube start --memory 6000`. You can increase this value if your development machine has enough memory. 
+
+The docker containers are limited to 512Mb (see yml file `resources` section) and the jvm running the services are limited to 256Mb (see JAVA_OPTS definition inside the yml file). You can increate those values according to your needs and development environment. 
 
 
 ## Production Setup
