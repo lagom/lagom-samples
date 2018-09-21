@@ -11,6 +11,7 @@ env:
     - SCRIPT="runJob cors/cors-scala test"
     - SCRIPT="runJob file-download/file-download-scala-sbt test"
     - SCRIPT="runJob file-upload/file-upload-scala-sbt test"
+    - SCRIPT="runJob file-upload/file-upload-java-sbt test"
     - SCRIPT="runJob http-header-handling/http-header-handling-java-sbt test"
     - SCRIPT="runJob mixed-persistence/mixed-persistence-java-sbt test"
     - SCRIPT="runJob mixed-persistence/mixed-persistence-scala-sbt test"

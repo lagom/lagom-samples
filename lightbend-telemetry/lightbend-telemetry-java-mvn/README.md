@@ -26,7 +26,7 @@ You can test this recipe using 2 separate terminals.
 
 On one terminal build and execute the service:
 
-```
+```bash
 mvn install                  # builds the service and downloads the Cinnamon agent
 mvn -pl hello-impl exec:exec # runs the hello service
 ```
@@ -60,7 +60,11 @@ metrics.akka.systems.application.dispatchers.akka_io_pinned-dispatcher.running-t
              value = 0
 ```
 
-To try out the `hello-proxy` service call and see metrics for the HTTP endpoints, as well as the `hello` circuit breaker you can either point your browser to `http://localhost:9000/api/hello-proxy/World` or simply run `curl` from the command line like this `curl http://localhost:9000/api/hello-proxy/World`
+To try out the `hello-proxy` service call and see metrics for the HTTP endpoints, as well as the `hello` circuit breaker you can either point your browser to <http://localhost:9000/api/hello-proxy/World> or simply run `curl` from the command line:
+
+```bash
+curl -i http://localhost:9000/api/hello-proxy/World
+```
 
 The output from the server should now also contain metrics like this:
 
@@ -97,4 +101,12 @@ metrics.lagom.circuit-breakers.hello.latency
               99% <= 235385490.00
             99.9% <= 235385490.00
 ...
+```
+
+## Configuring service port
+
+If you want to customize the port where the service is running, you need to directly configure it using Play settings instead of Lagom `servicePort` inside your `pom.xml`. This is because when using `mvn exec:exec`, the command will *not* use Lagom maven plugin, so the `servicePort` configuration is not read at all. The application is started as an regular Play application, and then the default port for Play (`9000`) is used unless other one is configured in `application.conf` like:
+
+```conf
+play.server.http.port=9001
 ```

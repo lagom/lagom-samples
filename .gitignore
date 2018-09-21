@@ -1,6 +1,10 @@
 .idea
 target/
-.settings
-.project
-.classpath
+bin/
+logs
 *.iml
+*.ipr
+*.iws
+.project
+.settings
+.classpath
