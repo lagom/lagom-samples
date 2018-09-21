@@ -27,7 +27,10 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
 
   implicit val mat: Materializer = server.materializer
 
-  override protected def afterAll(): Unit = server.stop()
+  override protected def afterAll(): Unit = {
+    grpcClient.map(_.close())
+    server.stop()
+  }
 
   "Hello service" should {
 
