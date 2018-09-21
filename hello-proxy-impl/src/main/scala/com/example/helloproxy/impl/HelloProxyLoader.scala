@@ -1,5 +1,6 @@
 package com.example.helloproxy.impl
 
+import akka.actor.CoordinatedShutdown
 import akka.grpc.GrpcClientSettings
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
@@ -32,8 +33,14 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
   private implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
 
   lazy val settings = GrpcClientSettings.fromConfig("my-fancy-client-name")(actorSystem)
-  lazy val greeterServiceClient:GreeterServiceClient= new GreeterServiceClient(settings)(materializer, dispatcher)
+  lazy val greeterServiceClient: GreeterServiceClient = new GreeterServiceClient(settings)(materializer, dispatcher)
   // Bind the service that this server provides
+  coordinatedShutdown
+    .addTask(
+      CoordinatedShutdown.PhaseServiceUnbind,
+      "shutdown-greeter-service-grpc-client"
+    ) { () => greeterServiceClient.close() }
+
   override lazy val lagomServer = serverFor[HelloProxyService](wire[HelloProxyServiceImpl])
 
 
