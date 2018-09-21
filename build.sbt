@@ -75,3 +75,12 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
 
 lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
+
+
+//----------------------------------
+
+// Documentation for this project:
+//    sbt "project docs" "~ paradox"
+//    open docs/target/paradox/site/main/index.html
+lazy val docs = (project in file("docs"))
+  .enablePlugins(ParadoxPlugin)
