@@ -1,5 +1,6 @@
 package com.example.fileupload.impl
 
+import java.io.File
 import java.nio.file.{ Files, Path, Paths }
 
 import akka.stream.scaladsl.{ FileIO, Source }
@@ -43,7 +44,7 @@ class FileUploadServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAf
     "handle file uploads " in {
 
       // Create a java.nio.file.Path to the file we want to upload
-      val originalPath: Path = Paths.get("fileupload-impl", "src", "test", "resources", "sampleFile.txt")
+      val originalPath: Path = new File(getClass.getResource("/sampleFile.txt").getPath).toPath
       assert(originalPath.toFile.exists())
 
       // pack the Path into a Play's FilePart. A FilePart represents a blob inside a MultipartForm.
