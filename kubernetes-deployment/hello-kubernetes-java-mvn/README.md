@@ -60,8 +60,11 @@ kubectl --namespace kube-system get -w deploy/tiller-deploy
 
 ```
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+tiller-deploy   1         1         1            0           8s
 tiller-deploy   1         1         1            1           3m
 ```
+
+Note how we immediately see the `tiller-deploy` pod as being used but it may take 2 or 3 minutes to become available (`3m` in the example above). This delay will depend on your hardware and other running processes. Do not proceed with the steps on this guide until you see the `tiller-deploy` as `AVAILABLE == 1`. Once the pod is listed as available, your can kill this command using `Ctrl+C` to return to your prompt.
 
 Install the sandbox.
 
@@ -80,8 +83,11 @@ kubectl get -w deploy/reactive-sandbox
 
 ```
 NAME               DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+reactive-sandbox   1         1         1            0           11s
 reactive-sandbox   1         1         1            1           1m
 ```
+
+Note how we immediately (`11s`) see the `reactive-sandbox ` pod as being used but it could take up to 1 minute (`1m`) to become available. Do not proceed until you see the `reactive-sandbox` as `AVAILABLE == 1`. Kill this command using `Ctrl+C`.
 
 ## Deployment
 
