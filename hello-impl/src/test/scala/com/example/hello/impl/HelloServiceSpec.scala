@@ -20,7 +20,7 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
   val grpcClient: Option[GreeterServiceClient] = server.playServer.httpsPort.map{ httpsPort =>
     val settings = GrpcClientSettings
       .connectToServiceAt("localhost", httpsPort)(server.actorSystem)
-        .withSSLContext(server.sslContext.get)
+        .withSSLContext(server.clientSslContext.get)
 
     GreeterServiceClient(settings)(server.materializer, server.executionContext)
   }
