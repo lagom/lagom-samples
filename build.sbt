@@ -45,6 +45,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   ).settings(
     workaroundSettings:_*
   ).settings(
+    dependencyOverrides += "com.typesafe" %% "ssl-config-core" % "0.3.6-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
@@ -63,12 +64,12 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
   .settings(
   akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
-//  akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
-).settings(
-  libraryDependencies ++= Seq(
-    lagomScaladslTestKit,
-    macwire,
-    scalaTest
+    akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
+  ).settings(
+    libraryDependencies ++= Seq(
+      lagomScaladslTestKit,
+      macwire,
+      scalaTest
   )
 )
   .dependsOn(`hello-proxy-api`, `hello-api`)
