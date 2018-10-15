@@ -39,9 +39,14 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(PlayAkkaHttp2Support) // enables serving HTTP/2 and gRPC
   .settings(
     akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
-    akkaGrpcExtraGenerators += PlayScalaServerCodeGenerator,
+    akkaGrpcGeneratedSources :=
+      Seq(
+        AkkaGrpc.Server,
+        AkkaGrpc.Client // the client is only used in tests. See https://github.com/akka/akka-grpc/issues/410
+      ),
+    akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
   ).settings(
-  workaroundSettings:_*
+    workaroundSettings:_*
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
@@ -63,7 +68,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
   .settings(
   akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
-  akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
+//  akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
 ).settings(
   libraryDependencies ++= Seq(
     lagomScaladslTestKit,
