@@ -1,7 +1,10 @@
 package com.example.helloproxy.impl
 
-import akka.actor.CoordinatedShutdown
+import java.util.concurrent.TimeUnit
+
+import akka.actor.{ ActorSystem, CoordinatedShutdown }
 import akka.grpc.GrpcClientSettings
+import akka.grpc.scaladsl.RestartingClient
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
@@ -12,6 +15,7 @@ import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceClient }
 import play.api.libs.ws.ahc.AhcWSComponents
 
 import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration.Duration
 
 class HelloProxyLoader extends LagomApplicationLoader {
 
@@ -31,19 +35,31 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
     with AhcWSComponents {
 
   private implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
+  private implicit val sys: ActorSystem = actorSystem
 
-  lazy val settings = GrpcClientSettings.fromConfig("my-fancy-client-name")(actorSystem)
-  lazy val greeterServiceClient: GreeterServiceClient = new GreeterServiceClient(settings)(materializer, dispatcher)
-  // Bind the service that this server provides
+  // A) Create the gRPC client
+  //   A.1) gRPC client settings
+  private lazy val settings = GrpcClientSettings
+    .usingServiceDiscovery(GreeterService.name)
+    .withServicePortName("https")
+    .withDeadline(Duration.create(5, TimeUnit.SECONDS)) // response timeout
+    .withConnectionAttempts(5) // use a small reconnectionAttempts value to cause a client reload in case of failure
+  //   A.2) create a client factory
+  private lazy val clientConstructor = () => new GreeterServiceClient(settings)(materializer, dispatcher)
+  //   A.3) create a restarting client with the client factory to handle reconnections
+  lazy val greeterServiceClient: RestartingClient[GreeterServiceClient] = new RestartingClient[GreeterServiceClient](clientConstructor)
+
+  //   A.4) register a shuhtdown task to release resources of the client
   coordinatedShutdown
     .addTask(
       CoordinatedShutdown.PhaseServiceUnbind,
       "shutdown-greeter-service-grpc-client"
     ) { () => greeterServiceClient.close() }
 
+  // B) Create the lagom client. Bind the HelloService client
+  lazy val helloService = serviceClient.implement[HelloService]
+
+  // C) Bind the service that this server provides
   override lazy val lagomServer = serverFor[HelloProxyService](wire[HelloProxyServiceImpl])
 
-
-  // Bind the HelloService client
-  lazy val helloService = serviceClient.implement[HelloService]
 }

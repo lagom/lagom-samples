@@ -1,5 +1,6 @@
 package com.example.helloproxy.impl
 
+import akka.grpc.scaladsl.RestartingClient
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
 import com.lightbend.lagom.scaladsl.api.ServiceCall
@@ -10,7 +11,9 @@ import scala.concurrent.{ ExecutionContext, Future }
 /**
   * Implementation of the HelloStreamService.
   */
-class HelloProxyServiceImpl(helloService: HelloService, greeterClient: GreeterServiceClient)(implicit exCtx: ExecutionContext) extends HelloProxyService {
+class HelloProxyServiceImpl(
+                             helloService: HelloService,
+                             greeterClient: RestartingClient[GreeterServiceClient])(implicit exCtx: ExecutionContext) extends HelloProxyService {
 
   def proxyViaHttp(id: String) = ServiceCall { _ =>
     val eventualString: Future[String] = helloService.hello(id).invoke()
@@ -18,7 +21,10 @@ class HelloProxyServiceImpl(helloService: HelloService, greeterClient: GreeterSe
   }
 
   def proxyViaGrpc(id: String) = ServiceCall { _ =>
-    val eventualString: Future[String] = greeterClient.sayHello(HelloRequest(id)).map(_.message)
+    val eventualString: Future[String] =
+      greeterClient.withClient(
+        _.sayHello(HelloRequest(id)).map(_.message)
+      )
     eventualString
   }
 }
