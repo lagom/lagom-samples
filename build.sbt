@@ -45,7 +45,6 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   ).settings(
     workaroundSettings:_*
   ).settings(
-    dependencyOverrides += "com.typesafe" %% "ssl-config-core" % "0.3.6-SNAPSHOT",
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
