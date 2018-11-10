@@ -6,14 +6,21 @@ import akka.grpc.GrpcClientSettings;
 import akka.stream.Materializer;
 import com.example.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+import com.lightbend.lagom.javadsl.testkit.ServiceTest;
+import example.myapp.helloworld.grpc.AkkaGrpcClientModule;
 import example.myapp.helloworld.grpc.GreeterServiceClient;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import scala.concurrent.ExecutionContext;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
+import static com.lightbend.lagom.javadsl.testkit.ServiceTest.startServer;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.bind;
@@ -22,21 +29,39 @@ import static org.junit.Assert.assertEquals;
 
 public class HelloProxyServiceImplTest {
 
-    @Test
-    public void helloProxyShouldPassthroughHttpRequests()  {
-        withServer(
-            defaultSetup().configureBuilder(builder ->
+    private static ServiceTest.TestServer server;
+
+    @BeforeClass
+    public static void setUp() {
+        ServiceTest.Setup setup = defaultSetup()
+            .withCluster(false)
+            .withSsl(false)
+            .configureBuilder(builder ->
                 builder
-                    .disable(example.myapp.helloworld.grpc.AkkaGrpcClientModule.class)
+                    .disable(AkkaGrpcClientModule.class)
                     .overrides(bind(HelloService.class).to(StubHelloService.class))
                     .overrides(bind(GreeterServiceClient.class).toProvider(GreeterServiceClientStubProvider.class))
-            ),
-            server -> {
-                HelloService proxyServiceClient = server.client(HelloService.class);
-                String msg = proxyServiceClient.hello("Alice").invoke().toCompletableFuture().get(5, SECONDS);
-                assertEquals("Hello Alice", msg);
-            });
+            );
+        server = startServer(setup);
     }
+
+    @AfterClass
+    public static void tearDown() {
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
+    }
+
+    @Test
+    public void helloProxyShouldRoundtripHttpRequests() throws InterruptedException, ExecutionException, TimeoutException {
+        HelloService proxyServiceClient = server.client(HelloService.class);
+        String msg = proxyServiceClient.hello("Alice").invoke()
+            .toCompletableFuture().get(5, SECONDS);
+        assertEquals("Hello Alice", msg);
+    }
+
+    // ---------------------------------------------------------------------------------
 
     public static class StubHelloService implements HelloService {
         @Override
@@ -61,4 +86,5 @@ public class HelloProxyServiceImplTest {
             return GreeterServiceClient.create(settings, mat, ec);
         }
     }
+
 }
