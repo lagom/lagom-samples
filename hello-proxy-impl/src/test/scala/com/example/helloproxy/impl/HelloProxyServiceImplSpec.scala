@@ -21,6 +21,24 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 
 class HelloProxyServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
+  "HelloProxy service" should {
+
+    "roundtrip over HTTP" in {
+      client.proxyViaHttp("Alice").invoke().map { answer =>
+        answer should ===("Stubbed - Hi Alice!")
+      }
+    }
+
+    "roundtrip over gRPC" in {
+      client.proxyViaGrpc("Alice").invoke().map { answer =>
+        answer should ===("Stubbed - Hi Alice! (gRPC)")
+      }
+    }
+
+  }
+
+  // ------------------------------------------------------------------------
+
   private val server: ServiceTest.TestServer[HelloProxyApplication] =
     ServiceTest.startServer(ServiceTest.defaultSetup) { ctx =>
       new HelloProxyApplication(ctx)
@@ -49,22 +67,6 @@ class HelloProxyServiceImplSpec extends AsyncWordSpec with Matchers with BeforeA
 
   implicit val mat: Materializer = server.materializer
 
-  "HelloProxy service" should {
-
-    "roundtrip over HTTP" in {
-      client.proxyViaHttp("Alice").invoke().map { answer =>
-        answer should ===("Stubbed - Hi Alice!")
-      }
-    }
-
-    "roundtrip over gRPC" in {
-      client.proxyViaGrpc("Alice").invoke().map { answer =>
-        answer should ===("Stubbed - Hi Alice! (gRPC)")
-      }
-    }
-
-  }
-
 }
 
 // At the moment, gRPC client obtains a `SimpleServiceDiscovery` from the ActorSystem default settings
@@ -91,11 +93,13 @@ class GreeterServiceClientStub extends GreeterServiceClient with StubbedAkkaGrpc
 
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
-protected trait StubbedAkkaGrpcClient extends AkkaGrpcClient{
+protected trait StubbedAkkaGrpcClient extends AkkaGrpcClient {
   private val _closed = Promise[Done]()
+
   override def close(): Future[Done] = {
     _closed.trySuccess(Done)
     _closed.future
   }
+
   override def closed(): Future[Done] = _closed.future
 }
