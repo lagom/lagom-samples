@@ -69,16 +69,6 @@ class HelloProxyServiceImplSpec extends AsyncWordSpec with Matchers with BeforeA
 
 }
 
-// At the moment, gRPC client obtains a `SimpleServiceDiscovery` from the ActorSystem default settings
-// but this test doesn't exercise that `SimpleServiceDiscovery` instance so we use a noop placeholder.
-class PlaceholderServiceDiscovery(system: ActorSystem) extends SimpleServiceDiscovery {
-  implicit val exCtx: ExecutionContext = system.dispatcher
-
-  override def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] = Future {
-    Resolved(lookup.serviceName, immutable.Seq(ResolvedTarget("localhost", None, None)))
-  }
-}
-
 class HelloServiceClientStub extends HelloService {
   override def hello(id: String): ServiceCall[NotUsed, String] = ServiceCall {
     _ => Future.successful(s"Stubbed - Hi $id!")
@@ -93,6 +83,17 @@ class GreeterServiceClientStub extends GreeterServiceClient with StubbedAkkaGrpc
 
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
+
+// At the moment, gRPC client obtains a `SimpleServiceDiscovery` from the ActorSystem default settings
+// but this test doesn't exercise that `SimpleServiceDiscovery` instance so we use a noop placeholder.
+class PlaceholderServiceDiscovery(system: ActorSystem) extends SimpleServiceDiscovery {
+  implicit val exCtx: ExecutionContext = system.dispatcher
+
+  override def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] = Future {
+    Resolved(lookup.serviceName, immutable.Seq(ResolvedTarget("localhost", None, None)))
+  }
+}
+
 protected trait StubbedAkkaGrpcClient extends AkkaGrpcClient {
   private val _closed = Promise[Done]()
 

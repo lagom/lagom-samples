@@ -5,7 +5,7 @@ import com.example.helloproxy.api.HelloProxyService
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloRequest }
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.ExecutionContext
 
 /**
   * Implementation of the HelloStreamService.
