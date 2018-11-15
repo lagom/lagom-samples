@@ -21,13 +21,15 @@ def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
 )
 
 
-
 lazy val `akka-grpc-lagom-quickstart-scala` = (project in file("."))
+  .settings(headerSettings)
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(
     libraryDependencies += lagomScaladslApi
+  ).settings(
+    headerSettings
   )
 
 lazy val `hello-impl` = (project in file("hello-impl"))
@@ -43,6 +45,8 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       ),
     akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
   ).settings(
+    headerSettings
+  ).settings(
     workaroundSettings:_*
   ).settings(
     libraryDependencies ++= Seq(
@@ -56,14 +60,18 @@ lazy val `hello-impl` = (project in file("hello-impl"))
 lazy val `hello-proxy-api` = (project in file("hello-proxy-api"))
   .settings(
     libraryDependencies +=lagomScaladslApi
+  ).settings(
+    headerSettings
   )
 
 lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(LagomScala)
   .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
   .settings(
-  akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
+    akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
+  ).settings(
+    headerSettings
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
@@ -94,3 +102,9 @@ lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http
 //    open docs/target/paradox/site/main/index.html
 lazy val docs = (project in file("docs"))
   .enablePlugins(ParadoxPlugin)
+
+
+def headerSettings: Seq[Setting[_]] = Seq(
+  headerLicense := Some(HeaderLicense.Custom("Copyright (C) 2018 Lightbend Inc. <https://www.lightbend.com>")),
+  licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0.html")))
+)
