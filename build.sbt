@@ -22,14 +22,14 @@ def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
 
 
 lazy val `akka-grpc-lagom-quickstart-scala` = (project in file("."))
-  .settings(headerSettings)
+  .settings(headerSettings:_*)
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(
     libraryDependencies += lagomScaladslApi
   ).settings(
-    headerSettings
+  headerSettings:_*
   )
 
 lazy val `hello-impl` = (project in file("hello-impl"))
@@ -45,7 +45,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       ),
     akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
   ).settings(
-    headerSettings
+    headerSettings:_*
   ).settings(
     workaroundSettings:_*
   ).settings(
@@ -61,17 +61,17 @@ lazy val `hello-proxy-api` = (project in file("hello-proxy-api"))
   .settings(
     libraryDependencies +=lagomScaladslApi
   ).settings(
-    headerSettings
+  headerSettings:_*
   )
 
 lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(LagomScala)
   .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
   .settings(
-    akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
+  akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
-  ).settings(
-    headerSettings
+).settings(
+  headerSettings:_*
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
