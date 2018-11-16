@@ -5,3 +5,5 @@ addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.4.2")
 
 // Needed for importing the project into Eclipse
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.2.4")
+
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.0.0")
