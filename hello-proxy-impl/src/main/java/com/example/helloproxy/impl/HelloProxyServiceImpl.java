@@ -18,7 +18,9 @@ public class HelloProxyServiceImpl implements HelloProxyService {
     private GreeterServiceClient greeterClient;
 
     @Inject
-    public HelloProxyServiceImpl(HelloService helloService, GreeterServiceClient greeterClient) {
+    public HelloProxyServiceImpl(
+        HelloService helloService,
+        GreeterServiceClient greeterClient) {
         this.helloService = helloService;
         this.greeterClient = greeterClient;
     }
