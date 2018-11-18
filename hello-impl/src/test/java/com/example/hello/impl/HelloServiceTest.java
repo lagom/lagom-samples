@@ -13,8 +13,6 @@ import example.myapp.helloworld.grpc.HelloRequest;
 import org.junit.Test;
 import scala.concurrent.ExecutionContext;
 
-import java.util.concurrent.CompletionStage;
-
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
 import static java.util.concurrent.TimeUnit.SECONDS;
