@@ -40,3 +40,4 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 * How do I configure the Circuit Breaker Panel for a Lagom Java application? ([Java/Maven example](./circuitbreakerpanel/circuitbreakerpanel-java-mvn/README.md))
 * How do I deploy a Lagom Maven application in Kubernetes? ([Java/Maven example](./kubernetes-deployment/hello-kubernetes-java-mvn/README.md))
 * How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](./couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
+* How do I authenticate/authorize by JWT? ([Scala example](./auth-jwt/auth-jwt-scala-sbt/README.md), [Java example](./auth-jwt/auth-jwt-java-sbt/README.md))
