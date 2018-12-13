@@ -98,8 +98,7 @@
         <!--#couchbase-begin-->
         <lagom.version>1.5.0-RC1</lagom.version>
 
-        <couchbase.persistence.version>0.1.0-SNAPSHOT</couchbase.persistence.version>
-        <!--<couchbase.persistence.version>0.1</couchbase.persistence.version>-->
+        <couchbase.persistence.version>0.2</couchbase.persistence.version>
         <!--#couchbase-end-->
     </properties>
 </project>
