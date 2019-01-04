@@ -2,9 +2,9 @@ package org.example.hello.impl
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import com.lightbend.lagom.scaladsl.testkit.PersistentEntityTestDriver
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import com.lightbend.lagom.scaladsl.testkit.PersistentEntityTestDriver
+import org.scalatest.{ BeforeAndAfterAll, Matchers, WordSpec }
 
 class HelloEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
 

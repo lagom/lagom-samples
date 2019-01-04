@@ -29,15 +29,9 @@ abstract class HelloApplication(context: LagomApplicationContext)
     //#couchbase-end
     with AhcWSComponents {
 
-  // Bind the service that this server provides
-  override lazy val lagomServer =
-    serverFor[HelloService](wire[HelloServiceImpl])
-
-  // Register the JSON serializer registry
+  override lazy val lagomServer = serverFor[HelloService](wire[HelloServiceImpl])
   override lazy val jsonSerializerRegistry = HelloSerializerRegistry
-
-  // Register the hello persistent entity
   persistentEntityRegistry.register(wire[HelloEntity])
-
+  lazy val repo = wire[GreetingsRepository]
   readSide.register(wire[HelloEventProcessor])
 }
