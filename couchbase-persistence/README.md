@@ -44,7 +44,7 @@ Docker image can be used to run Couchbase locally without installation.
 The Docker Compose preconfigured settings are available at 
 [Akka Persistence Couchbase GitHub](https://github.com/akka/akka-persistence-couchbase/tree/master/docker).
 
-Please see [Akka Persistence Couchbase Documentation](https://doc.akka.io/docs/akka-persistence-coucbase/current) for
+Please see [Akka Persistence Couchbase Documentation](https://doc.akka.io/docs/akka-persistence-couchbase/current) for
 further details on how to run Couchbase with Docker Compose and more.
 
 These samples use the next settings (can be adjusted in `application.conf`):
