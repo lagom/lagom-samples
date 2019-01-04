@@ -11,7 +11,6 @@ import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import org.example.hello.api.GreetingMessage;
 import org.example.hello.api.HelloService;
 import org.example.hello.api.UserGreeting;
-import org.example.hello.api.UserId;
 import org.example.hello.impl.HelloCommand.Hello;
 import org.example.hello.impl.HelloCommand.UseGreetingMessage;
 
@@ -20,9 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of the HelloService.
- */
 public class HelloServiceImpl implements HelloService {
 
   private final PersistentEntityRegistry persistentEntityRegistry;
@@ -37,21 +33,17 @@ public class HelloServiceImpl implements HelloService {
   }
 
   @Override
-  public ServiceCall<NotUsed, String> hello(UserId id) {
+  public ServiceCall<NotUsed, String> hello(String id) {
     return request -> {
-      // Look up the hello world entity for the given ID.
-      PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id.getValue());
-      // Ask the entity the Hello command.
-      return ref.ask(new Hello(id.getValue()));
+      PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
+      return ref.ask(new Hello(id));
     };
   }
 
   @Override
   public ServiceCall<GreetingMessage, Done> useGreeting(String id) {
     return request -> {
-      // Look up the hello world entity for the given ID.
       PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
-      // Tell the entity to use the greeting message specified.
       return ref.ask(new UseGreetingMessage(request.getMessage()));
     };
 
