@@ -59,12 +59,12 @@ hello.couchbase.connection {
 }
 ```
 
-hello-service-java
-------------------
+couchbase-persistence-java-mvn
+------------------------------
 
 `mvn lagom:runAll`
 
-hello-service-scala
--------------------
+couchbase-persistence-scala-sbt
+-------------------------------
 
 `sbt lagom:runAll`
