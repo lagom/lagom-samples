@@ -22,14 +22,13 @@ import java.util.stream.Collectors;
 public class HelloServiceImpl implements HelloService {
 
   private final PersistentEntityRegistry persistentEntityRegistry;
-  private final CouchbaseSession couchbaseSession;
+  private GreetingsRepository greetingsRepository;
 
   @Inject
-  public HelloServiceImpl(PersistentEntityRegistry persistentEntityRegistry, ReadSide readSide, CouchbaseSession session) {
+  public HelloServiceImpl(PersistentEntityRegistry persistentEntityRegistry, GreetingsRepository greetingsRepository) {
     this.persistentEntityRegistry = persistentEntityRegistry;
     persistentEntityRegistry.register(HelloEntity.class);
-    readSide.register(HelloEventProcessor.class);
-    this.couchbaseSession = session;
+    this.greetingsRepository = greetingsRepository;
   }
 
   @Override
@@ -46,22 +45,12 @@ public class HelloServiceImpl implements HelloService {
       PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
       return ref.ask(new UseGreetingMessage(request.getMessage()));
     };
-
   }
 
   @Override
   public ServiceCall<NotUsed, List<UserGreeting>> userGreetings() {
-    return request -> couchbaseSession.get(HelloEventProcessor.DOC_ID)
-        .thenApply(docOpt -> {
-          if (docOpt.isPresent()) {
-            JsonObject content = docOpt.get().content();
-            return content.getNames().stream().map(
-                name -> new UserGreeting(name, content.getString(name))
-            ).collect(Collectors.toList());
-          } else {
-            return Collections.emptyList();
-          }
-        });
+    return request ->
+        greetingsRepository.listUserGreetings();
   }
 
 }
