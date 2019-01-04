@@ -37,7 +37,7 @@ class HelloEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
     "allow updating the greeting message" in withTestDriver { driver =>
       val outcome1 = driver.run(UseGreetingMessage("Hi"))
-      outcome1.events should contain only GreetingMessageChanged("Alice", "Hi")
+      outcome1.events should contain only GreetingMessageChanged("hello-1", "Hi")
       val outcome2 = driver.run(Hello("Alice"))
       outcome2.replies should contain only "Hi, Alice!"
     }
