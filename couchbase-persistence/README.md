@@ -5,7 +5,7 @@ These are simple examples demonstrating how to use Couchbase with Lagom both in 
 These sample apps use PersistentEntity with Couchbase as a backend. Also they implement simple read-side processors that 
 consume events and update a couchbase document that can be queried.
 
-> Note: Couchbase specific parts are marked with `#couchbase-begin` and `#couchbase-end` in multiple fines.
+> Note: Couchbase specific parts are marked with `#couchbase-begin` and `#couchbase-end` in multiple files.
 
 
 What it can do
