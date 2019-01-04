@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.lightbend.lagom.sample.couchbase</groupId>
-        <artifactId>hello-service-java</artifactId>
+        <artifactId>couchbase-persistence-java-mvn</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
