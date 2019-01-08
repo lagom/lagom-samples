@@ -22,7 +22,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   .settings(
     libraryDependencies ++= Seq(
       //#couchbase-begin
-      "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0-RC1",
+      "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0-RC2",
       //#couchbase-end
       lagomScaladslTestKit,
       macwire,
