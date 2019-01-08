@@ -11,9 +11,6 @@ import org.example.hello.api.UserGreeting
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-/**
-  *
-  */
 //#couchbase-begin
 class GreetingsRepository(couchbaseSession: CouchbaseSession)(implicit executionContext: ExecutionContext) {
 
