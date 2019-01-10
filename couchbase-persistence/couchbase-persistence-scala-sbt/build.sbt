@@ -1,5 +1,5 @@
 organization in ThisBuild := "com.lightbend.lagom.sample.couchbase"
-name in ThisBuild := "hello-service-scala"
+name in ThisBuild := "couchbase-persistence-scala-sbt"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
@@ -11,7 +11,7 @@ lagomKafkaEnabled in ThisBuild := false
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
-lazy val `hello` = (project in file("."))
+lazy val `couchbase-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
@@ -22,7 +22,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   .settings(
     libraryDependencies ++= Seq(
       //#couchbase-begin
-      "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0-RC1",
+      "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0-RC2",
       //#couchbase-end
       lagomScaladslTestKit,
       macwire,

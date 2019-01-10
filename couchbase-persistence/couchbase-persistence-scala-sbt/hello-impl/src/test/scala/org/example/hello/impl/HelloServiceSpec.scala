@@ -8,11 +8,14 @@ import org.example.hello.api._
 class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
   private val server = ServiceTest.startServer(
-    //#couchbase-start
-    //TODO: how to override persistence to use Coucbhase instead of Cassandra?
+    //#couchbase-begin
+    // Since the `HelloApplication` already mixes in CouchbaseComponents the TestServer
+    // only needs to enable the cluster. Note that Lagom doesn't provide a managed Couchbase
+    // so there's no `withCouchbase(true)` on the Lagom testkit like there is a `withCassandra`.
+    // You must have a Couchbase server running manually before running the tests. Connection settings
+    // will be picked up from `application.conf`
     ServiceTest.defaultSetup
       .withCluster(true)
-      .withCassandra(false)
     //#couchbase-end
   ) { ctx =>
     new HelloApplication(ctx) with LocalServiceLocator

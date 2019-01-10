@@ -6,9 +6,6 @@ import com.google.common.base.Preconditions;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import lombok.Value;
 
-/**
- * The state for the {@link HelloEntity} entity.
- */
 @SuppressWarnings("serial")
 @Value
 @JsonDeserialize

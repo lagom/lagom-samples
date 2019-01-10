@@ -5,7 +5,6 @@ import com.lightbend.lagom.javadsl.persistence.couchbase.CouchbasePersistenceMod
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import org.example.hello.api.GreetingMessage;
 import org.example.hello.api.HelloService;
-import org.example.hello.api.UserId;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,10 +47,10 @@ public class HelloServiceTest {
     HelloService service = server.client(HelloService.class);
 
     service.useGreeting("Alice").invoke(new GreetingMessage("Hi")).toCompletableFuture().get(5, SECONDS);
-    String msg2 = service.hello(UserId.deserialize("Alice")).invoke().toCompletableFuture().get(5, SECONDS);
+    String msg2 = service.hello("Alice").invoke().toCompletableFuture().get(5, SECONDS);
     assertEquals("Hi, Alice!", msg2);
 
-    String msg3 = service.hello(UserId.deserialize("Bob")).invoke().toCompletableFuture().get(5, SECONDS);
+    String msg3 = service.hello("Bob").invoke().toCompletableFuture().get(5, SECONDS);
     assertEquals("Hello, Bob!", msg3); // default greeting
   }
 
@@ -60,10 +59,10 @@ public class HelloServiceTest {
     HelloService service = server.client(HelloService.class);
 
     service.useGreeting("Alice").invoke(new GreetingMessage("Hi")).toCompletableFuture().get(5, SECONDS);
-    String msg2 = service.hello(UserId.deserialize("Alice")).invoke().toCompletableFuture().get(5, SECONDS);
+    String msg2 = service.hello("Alice").invoke().toCompletableFuture().get(5, SECONDS);
     assertEquals("Hi, Alice!", msg2);
 
-    String msg3 = service.hello(UserId.deserialize("Bob")).invoke().toCompletableFuture().get(5, SECONDS);
+    String msg3 = service.hello("Bob").invoke().toCompletableFuture().get(5, SECONDS);
     assertEquals("Hello, Bob!", msg3); // default greeting
   }
 

@@ -1,5 +1,4 @@
-Couchbase Lagom Samples
-=======================
+# Couchbase Lagom Samples
 
 These are simple examples demonstrating how to use Couchbase with Lagom both in Java with Maven and in Scala with Sbt.
 These sample apps use PersistentEntity with Couchbase as a backend. Also they implement simple read-side processors that 
@@ -7,36 +6,10 @@ consume events and update a couchbase document that can be queried.
 
 > Note: Couchbase specific parts are marked with `#couchbase-begin` and `#couchbase-end` in multiple files.
 
+These recipes assume you are already familiar with Lagom and particularly with the [Lagom Hello World example app](https://www.lagomframework.com/documentation/1.4.x/java/UnderstandHello.html) in which these recipes are based on.
 
-What it can do
---------------
 
-1) Get user's greeting from the write-side
-
-```
-$ curl http://localhost:9000/api/hello/Alice
-
-Hello, Alice!✔ 
-```
-
-2) Change Alice's greeting
-
-```
-$ curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}' http://localhost:9000/api/hello/Alice
-
-{ "done" : true }✔ 
-```
-
-3) Get all users with their current greetings from the read-side
-
-```
-$ curl http://localhost:9000/api/user-greetings
-
-[{"user":"Alice","message":"Hi"}]✔ 
-```
-
-How to run
-----------
+## How to run
 
 In order to run these samples you'll need a Couchbase service. It also requires to pre-create necessary indexes.
 Docker image can be used to run Couchbase locally without installation.
@@ -59,12 +32,36 @@ hello.couchbase.connection {
 }
 ```
 
-couchbase-persistence-java-mvn
-------------------------------
+If you are using `couchbase-persistence-java-mvn` invoke `mvn lagom:runAll` on a terminal to start up the service.
 
-`mvn lagom:runAll`
+If you are using `couchbase-persistence-scala-sbt` then invoke `sbt lagom:runAll` instead.
 
-couchbase-persistence-scala-sbt
--------------------------------
+## Testing the service (manually)
 
-`sbt lagom:runAll`
+Once running, you can manually test the service:
+
+1) Get user's greeting from the write-side
+
+```
+$ curl http://localhost:9000/api/hello/Alice
+
+Hello, Alice!
+```
+
+2) Change Alice's greeting
+
+```
+$ curl -H "Content-Type: application/json" -X POST -d '{"message": "Hi"}' http://localhost:9000/api/hello/Alice
+
+{ "done" : true }
+```
+
+3) Get all users with their current greetings from the read-side
+
+```
+$ curl http://localhost:9000/api/user-greetings
+
+[{"user":"Alice","message":"Hi"}]
+```
+
+You can also have a look at the automated tests in the folder `hello-impl/src/{java,scala}/tests` and invoke them with the command `mvn clean test` or `sbt test` like you would do with any regular project.

@@ -1,25 +1,18 @@
 package org.example.hello.impl
 
 import akka.NotUsed
-import akka.stream.alpakka.couchbase.scaladsl.CouchbaseSession
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
-import org.example.hello.api.{HelloService, UserGreeting}
+import org.example.hello.api.{ HelloService, UserGreeting }
 
-import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext
 
-/**
-  * Implementation of the HelloService.
-  */
 class HelloServiceImpl(
   persistentEntityRegistry: PersistentEntityRegistry,
-  couchbaseSession: CouchbaseSession
+  greetingsRepository: GreetingsRepository
 )(implicit ec: ExecutionContext)
     extends HelloService {
-
-  import org.example.hello.impl.HelloEventProcessor.UserGreetingsDocId
 
   override def hello(id: String) = ServiceCall { _ =>
     // Look up the hello entity for the given ID.
@@ -37,20 +30,9 @@ class HelloServiceImpl(
     ref.ask(UseGreetingMessage(request.message))
   }
 
-  //#couchbase-begin
   override def userGreetings(): ServiceCall[NotUsed, Seq[UserGreeting]] =
     ServiceCall { _ =>
-      couchbaseSession.get(UserGreetingsDocId).map {
-        case Some(jsonDoc) =>
-          val json = jsonDoc.content()
-          json
-            .getNames()
-            .asScala
-            .map(name => UserGreeting(name, json.getString(name)))
-            .toList
-        case None => List.empty[UserGreeting]
-      }
+      greetingsRepository.listUserGreetings()
     }
-  //#couchbase-end
 
 }
