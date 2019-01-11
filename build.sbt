@@ -20,9 +20,7 @@ def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
   lagomServiceHttpsPort := `hello-impl-HTTPS-port`
 )
 
-
-
-lazy val `akka-grpc-lagom-quickstart-scala` = (project in file("."))
+lazy val `lagom-scala-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
