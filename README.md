@@ -1,4 +1,4 @@
-# Akka-gRPC Lagom Quickstart (java)
+# Lagom gRPC Example (Java)
 
 This project demonstrates the usage of [akka-grpc](https://github.com/akka/akka-grpc) into Lagom.
 
@@ -15,7 +15,7 @@ The first time you run that command it'll have to download dependencies so it ma
 at the `sbt` console. Use the `runAll` command to start the application: 
 
 ```
-sbt:akka-grpc-lagom-quickstart-java> runAll
+sbt:lagom-java-grpc-example> runAll
 ```
 
 Once started you should see Lagom's start message:
