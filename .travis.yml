@@ -1,9 +1,5 @@
 language: scala
-dist: trusty
-sudo: required
-group: edge
-jdk:
-  - oraclejdk8
+
 env:
   matrix:
     - SCRIPT="bin/runSbtJob consumer-service/consumer-service-java-sbt test"
@@ -22,22 +18,25 @@ env:
     # can't run telemetry recipes on travis
     #- SCRIPT="mvn -f lightbend-telemetry/lightbend-telemetry-java-mvn test"
     #- SCRIPT="mvn -f lightbend-telemetry/log-correlation-java-mvn test"
-script: $SCRIPT
+
 before_install:
-    # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
-    - rm ~/.m2/settings.xml
+  # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
+  - rm ~/.m2/settings.xml
+  - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+
+install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
+script: $SCRIPT
+
 cache:
   directories:
     - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot/scala*
+    - $HOME/.jabba/jdk
     - $HOME/.m2/repository
+    - $HOME/.sbt
+
 before_cache:
-  # Ensure changes to the cache aren't persisted
-  - rm -rf $HOME/.ivy2/cache/com.lightbend.lagom/*
-  - rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.lightbend.lagom/*
-  - rm -r $HOME/.m2/repository/com/lightbend/lagom/*
-  # Delete all ivydata files since ivy touches them on each build
-  - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
 
 notifications:
   webhooks:
