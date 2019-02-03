@@ -1,5 +1,6 @@
 package com.example.shoppingcart.impl
 
+import akka.Done
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import com.lightbend.lagom.scaladsl.testkit.PersistentEntityTestDriver
@@ -23,16 +24,82 @@ class ShoppingCartEntitySpec extends WordSpec with Matchers with BeforeAndAfterA
 
   "ShoppingCart entity" should {
 
-    "say hello by default" in withTestDriver { driver =>
-      val outcome = driver.run(Hello("Alice"))
-      outcome.replies should contain only "Hello, Alice!"
+    "add an item" in withTestDriver { driver =>
+      val outcome = driver.run(UpdateItem("123", 2))
+      outcome.replies should contain only Done
+      outcome.events should contain only ItemUpdated("123", 2)
+      outcome.state should === (ShoppingCartState(Map("123" -> 2), false))
     }
 
-    "allow updating the greeting message" in withTestDriver { driver =>
-      val outcome1 = driver.run(UseGreetingMessage("Hi"))
-      outcome1.events should contain only GreetingMessageChanged("Hi")
-      val outcome2 = driver.run(Hello("Alice"))
-      outcome2.replies should contain only "Hi, Alice!"
+    "remove an item" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2))
+      val outcome = driver.run(UpdateItem("123", 0))
+      outcome.replies should contain only Done
+      outcome.events should contain only ItemUpdated("123", 0)
+      outcome.state should === (ShoppingCartState(Map.empty, false))
+    }
+
+    "update multiple items" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2)).state should === (ShoppingCartState(
+        Map("123" -> 2), false))
+      driver.run(UpdateItem("456", 3)).state should === (ShoppingCartState(
+        Map("123" -> 2, "456" -> 3), false))
+      driver.run(UpdateItem("123", 1)).state should === (ShoppingCartState(
+        Map("123" -> 1, "456" -> 3), false))
+      driver.run(UpdateItem("456", 0)).state should === (ShoppingCartState(
+        Map("123" -> 1), false))
+    }
+
+    "allow checking out" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2))
+      val outcome = driver.run(Checkout)
+      outcome.replies should contain only Done
+      outcome.events should contain only CheckedOut
+      outcome.state should === (ShoppingCartState(Map("123" -> 2), true))
+    }
+
+    "allow getting the state" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2))
+      val outcome = driver.run(Get)
+      outcome.replies should contain only ShoppingCartState(Map("123" -> 2), false)
+      outcome.events should have size 0
+    }
+
+    "fail when removing an item that isn't added" in withTestDriver { driver =>
+      val outcome = driver.run(UpdateItem("123", 0))
+      outcome.replies should have size 1
+      outcome.replies.head shouldBe a[ShoppingCartException]
+      outcome.events should have size 0
+    }
+
+    "fail when adding a negative number of items" in withTestDriver { driver =>
+      val outcome = driver.run(UpdateItem("123", -1))
+      outcome.replies should have size 1
+      outcome.replies.head shouldBe a[ShoppingCartException]
+      outcome.events should have size 0
+    }
+
+    "fail when adding an item to a checked out cart" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2), Checkout)
+      val outcome = driver.run(UpdateItem("456", 3))
+      outcome.replies should have size 1
+      outcome.replies.head shouldBe a[ShoppingCartException]
+      outcome.events should have size 0
+    }
+
+    "fail when checking out twice" in withTestDriver { driver =>
+      driver.run(UpdateItem("123", 2), Checkout)
+      val outcome = driver.run(Checkout)
+      outcome.replies should have size 1
+      outcome.replies.head shouldBe a[ShoppingCartException]
+      outcome.events should have size 0
+    }
+
+    "fail when checking out an empty cart" in withTestDriver { driver =>
+      val outcome = driver.run(Checkout)
+      outcome.replies should have size 1
+      outcome.replies.head shouldBe a[ShoppingCartException]
+      outcome.events should have size 0
     }
 
   }

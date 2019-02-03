@@ -4,6 +4,7 @@ import akka.{Done, NotUsed}
 import com.example.shoppingcart.api.{ShoppingCart, ShoppingCartItem, ShoppingCartService}
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
+import com.lightbend.lagom.scaladsl.api.transport.BadRequest
 import com.lightbend.lagom.scaladsl.broker.TopicProducer
 import com.lightbend.lagom.scaladsl.persistence.{EventStreamElement, PersistentEntityRegistry}
 
@@ -27,11 +28,19 @@ class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry
   }
 
   override def updateItem(id: String): ServiceCall[ShoppingCartItem, Done] = ServiceCall { update =>
-    entityRef(id).ask(UpdateItem(update.productId, update.quantity))
+    entityRef(id)
+      .ask(UpdateItem(update.productId, update.quantity))
+      .recover {
+        case ShoppingCartException(message) => throw BadRequest(message)
+      }
   }
 
   override def checkout(id: String): ServiceCall[NotUsed, Done] = ServiceCall { _ =>
-    entityRef(id).ask(Checkout)
+    entityRef(id)
+      .ask(Checkout)
+      .recover {
+        case ShoppingCartException(message) => throw BadRequest(message)
+      }
   }
 
   override def shoppingCartTopic: Topic[ShoppingCart] = TopicProducer.singleStreamWithOffset { fromOffset =>

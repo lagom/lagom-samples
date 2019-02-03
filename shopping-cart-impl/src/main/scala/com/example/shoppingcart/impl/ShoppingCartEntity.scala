@@ -1,7 +1,6 @@
 package com.example.shoppingcart.impl
 
 import akka.Done
-import com.lightbend.lagom.scaladsl.api.transport.BadRequest
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventTag, PersistentEntity}
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
 import com.lightbend.lagom.scaladsl.playjson.{JsonSerializer, JsonSerializerRegistry}
@@ -54,28 +53,29 @@ class ShoppingCartEntity extends PersistentEntity {
     Actions().onCommand[UpdateItem, Done] {
 
       // Command handler for the UpdateItem command
-      case (UpdateItem(productId, quantity), ctx, state) =>
-        if (quantity < 0) {
-          ctx.commandFailed(BadRequest("Quantity must be greater than zero"))
-          ctx.done
-        } else if (quantity == 0 && !state.items.contains(productId)) {
-          ctx.commandFailed(BadRequest("Cannot delete item that is not already in cart"))
-          ctx.done
-        } else {
-          // In response to this command, we want to first persist it as a
-          // ItemUpdated event
-          ctx.thenPersist(
-            ItemUpdated(productId, quantity)
-          ) { _ =>
-            // Then once the event is successfully persisted, we respond with done.
-            ctx.reply(Done)
-          }
+      case (UpdateItem(_, quantity), ctx, _) if quantity < 0 =>
+        ctx.commandFailed(ShoppingCartException("Quantity must be greater than zero"))
+        ctx.done
+      case (UpdateItem(productId, 0), ctx, state) if !state.items.contains(productId) =>
+        ctx.commandFailed(ShoppingCartException("Cannot delete item that is not already in cart"))
+        ctx.done
+      case (UpdateItem(productId, quantity), ctx, _) =>
+        // In response to this command, we want to first persist it as a
+        // ItemUpdated event
+        ctx.thenPersist(
+          ItemUpdated(productId, quantity)
+        ) { _ =>
+          // Then once the event is successfully persisted, we respond with done.
+          ctx.reply(Done)
         }
 
     }.onCommand[Checkout.type, Done] {
 
       // Command handler for the Checkout command
-      case (Checkout, ctx, state) =>
+      case (Checkout, ctx, state) if state.items.isEmpty =>
+        ctx.commandFailed(ShoppingCartException("Cannot checkout empty cart"))
+        ctx.done
+      case (Checkout, ctx, _) =>
         // In response to this command, we want to first persist it as a
         // CheckedOut event
         ctx.thenPersist(
@@ -107,14 +107,14 @@ class ShoppingCartEntity extends PersistentEntity {
 
       // Not valid when checked out
       case (_, ctx, _) =>
-        ctx.commandFailed(BadRequest("Can't update item on already checked out shopping cart"))
+        ctx.commandFailed(ShoppingCartException("Can't update item on already checked out shopping cart"))
         ctx.done
 
     }.onCommand[Checkout.type, Done] {
 
       // Not valid when checked out
       case (_, ctx, _) =>
-        ctx.commandFailed(BadRequest("Can't checkout on already checked out shopping cart"))
+        ctx.commandFailed(ShoppingCartException("Can't checkout on already checked out shopping cart"))
         ctx.done
 
     }.onEvent(eventHandlers)
@@ -275,6 +275,24 @@ case object Checkout extends ShoppingCartCommand[Done] {
 }
 
 /**
+  * An exception thrown by the shopping cart validation
+  *
+  * @param message The message
+  */
+case class ShoppingCartException(message: String) extends RuntimeException(message)
+
+object ShoppingCartException {
+
+  /**
+    * Format for the ShoppingCartException.
+    *
+    * When a command fails, the error needs to be serialized and sent back to
+    * the node that requested it, this is used to do that.
+    */
+  implicit val format: Format[ShoppingCartException] = Json.format[ShoppingCartException]
+}
+
+/**
   * Akka serialization, used by both persistence and remoting, needs to have
   * serializers registered for every type serialized or deserialized. While it's
   * possible to use any serializer you want for Akka messages, out of the box
@@ -290,6 +308,7 @@ object ShoppingCartSerializerRegistry extends JsonSerializerRegistry {
     JsonSerializer[UpdateItem],
     JsonSerializer[Checkout.type],
     JsonSerializer[Get.type],
-    JsonSerializer[ShoppingCartState]
+    JsonSerializer[ShoppingCartState],
+    JsonSerializer[ShoppingCartException]
   )
 }
