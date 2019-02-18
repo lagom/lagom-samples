@@ -11,7 +11,7 @@ import com.lightbend.lagom.scaladsl.persistence.{EventStreamElement, PersistentE
 import scala.concurrent.ExecutionContext
 
 /**
-  * Implementation of the ShoppingcartService.
+  * Implementation of the [[ShoppingCartService]].
   */
 class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends ShoppingCartService {
 

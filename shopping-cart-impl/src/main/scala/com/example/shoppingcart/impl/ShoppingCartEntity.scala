@@ -10,7 +10,7 @@ import scala.collection.immutable.Seq
 
 /**
   * This is an event sourced entity. It has a state, [[ShoppingCartState]], which
-  * stores what the greeting should be (eg, "Hello").
+  * stores the current shopping cart items and whether it's checked out.
   *
   * Event sourced entities are interacted with by sending them commands. This
   * entity supports three commands, an [[UpdateItem]] crommand, which is used to

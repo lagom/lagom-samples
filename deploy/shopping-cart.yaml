@@ -1,0 +1,112 @@
+apiVersion: "apps/v1beta2"
+kind: Deployment
+metadata:
+  name: shopping-cart
+  labels:
+    app: shopping-cart
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shopping-cart
+      
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: shopping-cart
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: shopping-cart
+          image: "shopping-cart-impl:1.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
+            - name: APPLICATION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shopping-cart-application-secret
+                  key: secret
+            - name: POSTGRESQL_URL
+              value: "jdbc:postgresql://postgresql/shopping_cart"
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-shopping-cart
+                  key: username
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-shopping-cart
+                  key: password
+            - name: KAFKA_SERVICE_NAME
+              value: "_clients._tcp.strimzi-kafka-brokers"
+            - name: REQUIRED_CONTACT_POINT_NR
+              value: "3"
+          ports:
+            - name: management
+              containerPort: 8558
+          readinessProbe:
+            httpGet:
+              path: "/ready"
+              port: management
+            periodSeconds: 10
+            failureThreshold: 10
+            initialDelaySeconds: 20
+          livenessProbe:
+            httpGet:
+              path: "/alive"
+              port: management
+            periodSeconds: 10
+            failureThreshold: 10
+            initialDelaySeconds: 20
+          resources:
+            limits:
+              cpu: 0.25
+              memory: 512Mi
+            requests:
+              cpu: 0.25
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: shopping-cart
+  name: shopping-cart
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9000
+  selector:
+    app: shopping-cart
+  type: LoadBalancer
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+subjects:
+- kind: User
+  name: system:serviceaccount:myproject:default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io

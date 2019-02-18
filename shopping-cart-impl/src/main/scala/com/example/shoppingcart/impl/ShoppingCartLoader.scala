@@ -1,12 +1,13 @@
 package com.example.shoppingcart.impl
 
-import com.lightbend.lagom.scaladsl.api.ServiceLocator
-import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
+import akka.management.cluster.bootstrap.ClusterBootstrap
+import akka.management.scaladsl.AkkaManagement
 import com.lightbend.lagom.scaladsl.persistence.jdbc.JdbcPersistenceComponents
 import com.lightbend.lagom.scaladsl.server._
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import com.example.shoppingcart.api.ShoppingCartService
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.softwaremill.macwire._
 import play.api.db.HikariCPComponents
@@ -14,8 +15,9 @@ import play.api.db.HikariCPComponents
 class ShoppingCartLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
-    new ShoppingCartApplication(context) {
-      override def serviceLocator: ServiceLocator = NoServiceLocator
+    new ShoppingCartApplication(context) with AkkaDiscoveryComponents {
+      AkkaManagement(actorSystem).start()
+      ClusterBootstrap(actorSystem).start()
     }
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
