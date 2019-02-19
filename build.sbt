@@ -27,8 +27,13 @@ lazy val `shopping-cart-impl` = (project in file("shopping-cart-impl"))
       lagomJavadslTestKit,
       lombok,
       postgresDriver,
-      hamcrestLibrary
-    )
+      hamcrestLibrary,
+      akkaDiscoveryServiceLocator,
+      clusterBootstrap,
+      clusterHttp,
+      akkaDiscoveryKubernetesApi
+    ),
+    dockerBaseImage := "adoptopenjdk/openjdk8"
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(`shopping-cart-api`)
@@ -48,14 +53,22 @@ lazy val `inventory-impl` = (project in file("inventory-impl"))
     libraryDependencies ++= Seq(
       lagomJavadslKafkaClient,
       lagomLogback,
-      lagomJavadslTestKit
-    )
+      lagomJavadslTestKit,
+      akkaDiscoveryServiceLocator
+    ),
+    dockerBaseImage := "adoptopenjdk/openjdk8"
   )
   .dependsOn(`shopping-cart-api`, `inventory-api`)
 
 val lombok = "org.projectlombok" % "lombok" % "1.16.18"
 val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
 val hamcrestLibrary = "org.hamcrest" % "hamcrest-library" % "2.1" % Test
+val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % "0.0.12"
+
+val akkaManagementVersion = "1.0.0-RC2"
+val clusterBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % akkaManagementVersion
+val clusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion
+val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
 
 def common = Seq(
   javacOptions in compile += "-parameters"

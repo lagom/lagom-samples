@@ -12,5 +12,6 @@ public class ShoppingCartModule extends AbstractModule implements ServiceGuiceSu
     @Override
     protected void configure() {
         bindService(ShoppingCartService.class, ShoppingCartServiceImpl.class);
+        bind(ClusterBootstrapStart.class).asEagerSingleton();
     }
 }

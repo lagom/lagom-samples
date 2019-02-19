@@ -1,0 +1,60 @@
+apiVersion: "apps/v1beta2"
+kind: Deployment
+metadata:
+  name: inventory
+  labels:
+    app: inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: inventory
+        image: "inventory-impl:1.0-SNAPSHOT"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
+        - name: APPLICATION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: inventory-application-secret
+              key: secret
+        - name: KAFKA_SERVICE_NAME
+          value: "_clients._tcp.strimzi-kafka-brokers"
+        resources:
+          limits:
+            cpu: 0.25
+            memory: 512Mi
+          requests:
+            cpu: 0.25
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: inventory
+  name: inventory
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 9000
+  selector:
+    app: inventory
+  type: LoadBalancer
