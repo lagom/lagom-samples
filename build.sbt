@@ -9,6 +9,7 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "0.0.12"
 val akkaClusterBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "1.0.0-RC2"
+val akkaManagementClusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % "1.0.0-RC2"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0-RC2"
 
 lazy val `shopping-cart` = (project in file("."))
@@ -33,6 +34,7 @@ lazy val `shopping-cart-impl` = (project in file("shopping-cart-impl"))
       postgresDriver,
       akkaDiscoveryServiceLocator,
       akkaClusterBootstrap,
+      akkaManagementClusterHttp,
       akkaDiscoveryKubernetesApi
     ),
     dockerBaseImage := "adoptopenjdk/openjdk8"
@@ -54,8 +56,10 @@ lazy val `inventory-impl` = (project in file("inventory-impl"))
       lagomScaladslKafkaClient,
       lagomScaladslTestKit,
       macwire,
-      scalaTest
-    )
+      scalaTest,
+      akkaDiscoveryServiceLocator
+    ),
+    dockerBaseImage := "adoptopenjdk/openjdk8"
   )
   .dependsOn(`inventory-api`, `shopping-cart-api`)
 

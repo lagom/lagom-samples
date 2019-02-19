@@ -1,19 +1,17 @@
 package com.example.inventory.impl
 
-import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
 import com.lightbend.lagom.scaladsl.server._
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import com.example.inventory.api.InventoryService
 import com.example.shoppingcart.api.ShoppingCartService
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaClientComponents
 import com.softwaremill.macwire._
 
 class InventoryLoader extends LagomApplicationLoader {
   override def load(context: LagomApplicationContext): LagomApplication =
-    new InventoryApplication(context) {
-      override def serviceLocator = NoServiceLocator
-    }
+    new InventoryApplication(context) with AkkaDiscoveryComponents
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
     new InventoryApplication(context) with LagomDevModeComponents
