@@ -68,6 +68,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.26.1</version>
+                <configuration>
+                    <skip>true</skip>
+                    <images>
+                        <image>
+                            <name>%a:%l</name>
+                            <build>
+                                <from>adoptopenjdk/openjdk8</from>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <assembly>
+                                    <descriptorRef>artifact-with-dependencies</descriptorRef>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -106,6 +129,41 @@
                 <artifactId>hamcrest</artifactId>
                 <version>2.1</version>
             </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-discovery_${scala.binary.version}</artifactId>
+                <version>2.5.20</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.lagom</groupId>
+                <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
+                <version>0.0.12</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.akka.management</groupId>
+                <artifactId>akka-management-cluster-bootstrap_${scala.binary.version}</artifactId>
+                <version>${akka.management.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.akka.management</groupId>
+                <artifactId>akka-management-cluster-http_${scala.binary.version}</artifactId>
+                <version>${akka.management.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lightbend.akka.discovery</groupId>
+                <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
+                <version>${akka.management.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-http-core_${scala.binary.version}</artifactId>
+                <version>${akka.http.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-parsing_${scala.binary.version}</artifactId>
+                <version>${akka.http.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -113,5 +171,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lagom.version>1.4.11</lagom.version>
         <scala.binary.version>2.12</scala.binary.version>
+        <akka.management.version>1.0.0-RC2</akka.management.version>
+        <akka.http.version>10.1.7</akka.http.version>
     </properties>
 </project>
