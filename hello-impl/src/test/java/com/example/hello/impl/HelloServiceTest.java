@@ -25,7 +25,8 @@ public class HelloServiceTest {
         withServer(defaultSetup(), server -> {
             HelloService service = server.client(HelloService.class);
 
-            String msg = service.hello("Alice").invoke().toCompletableFuture().get(5, SECONDS);
+            String msg = service.hello("Alice").invoke()
+                .toCompletableFuture().get(5, SECONDS);
             assertEquals("Hi Alice!", msg);
         });
     }
@@ -35,9 +36,11 @@ public class HelloServiceTest {
         withServer(defaultSetup().withSsl(), server -> {
             withGrpcClient(
                 server,
-                GreeterServiceClient::create
-                , serviceClient -> {
-                    HelloReply reply = serviceClient.sayHello(HelloRequest.newBuilder().setName("Steve").build()).toCompletableFuture().get(5, SECONDS);
+                GreeterServiceClient::create,
+                serviceClient -> {
+                    HelloReply reply =
+                        serviceClient.sayHello(HelloRequest.newBuilder().setName("Steve").build())
+                            .toCompletableFuture().get(5, SECONDS);
                     assertEquals("Hi Steve (gRPC)", reply.getMessage());
                 });
         });
@@ -47,7 +50,7 @@ public class HelloServiceTest {
         ServiceTest.TestServer server,
         Function3<GrpcClientSettings, Materializer, ExecutionContext, T> clientFactory,
         Procedure<T> block
-    ) {
+    ) throws Exception {
         int sslPort = server.portSsl().get();
 
         GrpcClientSettings settings =
@@ -57,9 +60,12 @@ public class HelloServiceTest {
                 .withOverrideAuthority("localhost");
         T grpcClient = null;
         try {
-            grpcClient = clientFactory.apply(settings, server.materializer(), server.system().dispatcher());
+            grpcClient = clientFactory.apply(
+                settings,
+                server.materializer(),
+                server.system().dispatcher()
+            );
             block.apply(grpcClient);
-        } catch (Exception e) {
         } finally {
             if (grpcClient != null) {
                 grpcClient.close();
