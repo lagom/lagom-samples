@@ -19,3 +19,9 @@ CREATE TABLE IF NOT EXISTS snapshot (
   snapshot BYTEA NOT NULL,
   PRIMARY KEY(persistence_id, sequence_number)
 );
+
+CREATE TABLE read_side_offsets (
+  read_side_id VARCHAR(255), tag VARCHAR(255),
+  sequence_offset bigint, time_uuid_offset char(36),
+  PRIMARY KEY (read_side_id, tag)
+)
