@@ -12,6 +12,8 @@ env:
     - SCRIPT="bin/runSbtJob http-header-handling/http-header-handling-java-sbt test"
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
+    - SCRIPT="bin/runSbtJob auth-jwt/auth-jwt-java-sbt test"
+    - SCRIPT="bin/runSbtJob auth-jwt/auth-jwt-scala-sbt test"
     - SCRIPT="mvn -f circuitbreakerpanel/circuitbreakerpanel-java-mvn test"
     - SCRIPT="mvn -f i18n/hello-i18n-java-mvn test"
     - SCRIPT="mvn -f kubernetes-deployment/hello-kubernetes-java-mvn test"
