@@ -92,3 +92,8 @@ lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http
 //    open docs/target/paradox/site/main/index.html
 lazy val docs = (project in file("docs"))
   .enablePlugins(ParadoxPlugin)
+
+
+//----------------------------------
+
+ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked"
