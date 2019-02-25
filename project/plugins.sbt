@@ -1,5 +1,6 @@
 // The Lagom plugin
-addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.5.0-RC1-26-g7d68234")
+addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.5.0-RC2")
+
 // Akka GRPC
 addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.4.2")
 
