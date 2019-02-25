@@ -82,3 +82,6 @@ lagomKafkaEnabled in ThisBuild := false
 // will get "https://localhost:11000" and then be able to send a request.
 // See declaration and usages of `hello-impl-HTTPS-port`.
 lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"https://localhost:${`hello-impl-HTTPS-port`}")
+
+
+ThisBuild / javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation", "-Werror")
