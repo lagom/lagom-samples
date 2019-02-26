@@ -12,6 +12,9 @@ val akkaClusterBootstrap = "com.lightbend.akka.management" %% "akka-management-c
 val akkaManagementClusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % "1.0.0-RC2"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0-RC2"
 
+
+ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked")
+
 lazy val `shopping-cart` = (project in file("."))
   .aggregate(`shopping-cart-api`, `shopping-cart-impl`, `inventory-api`, `inventory-impl`)
 
