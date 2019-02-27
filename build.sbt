@@ -2,9 +2,9 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.8"
 
-lazy val `shopping-cart` = (project in file("."))
+lazy val `shopping-cart-java` = (project in file("."))
   .aggregate(`shopping-cart-api`, `shopping-cart-impl`, `inventory-api`, `inventory-impl`)
 
 lazy val `shopping-cart-api` = (project in file("shopping-cart-api"))
@@ -71,7 +71,7 @@ val clusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-ht
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
 
 def common = Seq(
-  javacOptions in compile += "-parameters"
+  javacOptions in (Compile,compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
 )
 
 lagomCassandraEnabled in ThisBuild := false
