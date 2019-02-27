@@ -1,5 +1,6 @@
 language: scala
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh && jabba install "$TRAVIS_JDK" && jabba use $_ && java -version
+script: sbt test
 
 env:
   - TRAVIS_JDK=adopt@1.8.192-12
