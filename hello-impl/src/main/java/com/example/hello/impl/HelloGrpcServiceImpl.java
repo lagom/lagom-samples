@@ -1,5 +1,6 @@
 package com.example.hello.impl;
 
+import akka.actor.ActorSystem;
 import akka.stream.Materializer;
 import example.myapp.helloworld.grpc.AbstractGreeterServiceRouter;
 import example.myapp.helloworld.grpc.HelloReply;
@@ -14,8 +15,8 @@ import java.util.concurrent.CompletionStage;
 public class HelloGrpcServiceImpl extends AbstractGreeterServiceRouter {
 
     @Inject
-    public HelloGrpcServiceImpl(Materializer mat) {
-        super(mat);
+    public HelloGrpcServiceImpl(ActorSystem sys, Materializer mat) {
+        super(mat, sys);
     }
 
     @Override
