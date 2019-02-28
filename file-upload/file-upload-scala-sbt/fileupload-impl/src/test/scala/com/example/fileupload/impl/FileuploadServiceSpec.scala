@@ -27,7 +27,7 @@ class FileUploadServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAf
 
   "FileUpload service" should {
 
-    "respond in upper case any payload received in /api/echo" in {
+    "respond with Hello when called on /api/hello/:name" in {
       // arrange
       val serviceCall = client.hello("John")
 
