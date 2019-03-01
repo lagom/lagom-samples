@@ -3,7 +3,8 @@ scala: 2.12.8
 
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
 install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
-script: sbt test
+script:
+  - sbt test docs/paradox
 
 cache:
   directories:

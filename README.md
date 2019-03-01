@@ -7,7 +7,7 @@ This project demonstrates the usage of [akka-grpc](https://github.com/akka/akka-
 Using gRPC in Lagom requires adding a Java Agent to the runtime. In order to handle this setting you can start the `sbt` console
 using the `ssl-lagom` script provided that takes care of downloading and setting the agent:
 
-```
+```bash
 ./ssl-lagom
 ```
 
@@ -62,9 +62,6 @@ $   grpcc --proto hello-impl/src/main/protobuf/helloworld.proto \
  }
 ```
 
-
-
-
 ## Structure
 
 There are two Lagom services (`hello` and `hello-proxy`) exposing the following HTTP API's:
@@ -79,34 +76,32 @@ While the `hello-service` is always returning hard-coded values the `hello-proxy
 
 So when you invoke:
 
-```
-$ curl http://localhost:9000/proxy/rest-hello/Alice
+```bash
+curl http://localhost:9000/proxy/rest-hello/Alice
 ```
 
 The following happens
 
-```
- curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(http)->  hello-service
+```bash
+curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(http)->  hello-service
 ```
 
 Alternatively:
 
-```
-$ curl http://localhost:9000/proxy/grpc-hello/Alice
+```bash
+curl http://localhost:9000/proxy/grpc-hello/Alice
 ```
 
 The following happens
 
+```bash
+curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(gRPC/https)->  hello-service
 ```
- curl  -(http)->  service gateway  -(http)->  hello-proxy-service  -(gRPC/https)->  hello-service
-```
-
-
 
 ### Testing gRPC
 
 You can test the gRPC endpoint on `hello-impl` using [grpcc](https://github.com/njpatel/grpcc)
 
 ```bash
-$ grpcc --proto hello-impl/src/main/protobuf/helloworld.proto --insecure --address 127.0.0.1:11000 --eval 'client.sayHello({name:"Alice"}, printReply)'
+grpcc --proto hello-impl/src/main/protobuf/helloworld.proto --insecure --address 127.0.0.1:11000 --eval 'client.sayHello({name:"Alice"}, printReply)'
 ```
