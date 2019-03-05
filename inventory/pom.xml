@@ -5,15 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>shopping-cart</artifactId>
+        <artifactId>shopping-cart-java</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>shopping-cart-impl</artifactId>
+    <artifactId>inventory</artifactId>
 
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>inventory-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>shopping-cart-api</artifactId>
@@ -25,11 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-persistence-jdbc_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-kafka-broker_${scala.binary.version}</artifactId>
+            <artifactId>lagom-javadsl-kafka-client_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
@@ -49,10 +50,6 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
             <scope>test</scope>
@@ -60,18 +57,6 @@
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.akka.management</groupId>
-            <artifactId>akka-management-cluster-bootstrap_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.akka.management</groupId>
-            <artifactId>akka-management-cluster-http_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.akka.discovery</groupId>
-            <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
         </dependency>
     </dependencies>
 
@@ -99,6 +84,15 @@
                         </image>
                     </images>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

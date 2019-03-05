@@ -2,30 +2,20 @@ apiVersion: "apps/v1beta2"
 kind: Deployment
 metadata:
   name: shopping-cart
-  labels:
-    app: shopping-cart
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: shopping-cart
 
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
-
   template:
     metadata:
       labels:
         app: shopping-cart
     spec:
-      restartPolicy: Always
       containers:
       - name: shopping-cart
-        image: "shopping-cart-impl:1.0-SNAPSHOT"
-        imagePullPolicy: IfNotPresent
+        image: "shopping-cart:latest"
         env:
         - name: JAVA_OPTS
           value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
@@ -52,7 +42,6 @@ spec:
           value: "3"
         resources:
           limits:
-            cpu: 0.25
             memory: 512Mi
           requests:
             cpu: 0.25
@@ -79,8 +68,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: shopping-cart
   name: shopping-cart
 spec:
   ports:
