@@ -31,6 +31,13 @@ import scala.collection.immutable.Seq
   */
 class ShoppingCartEntity extends PersistentEntity {
 
+  import play.api.libs.functional.syntax._
+  def naStringSerializer: Format[Option[String]] =
+    implicitly[Format[String]].inmap(
+      str => Some(str).filterNot(_ == "N/A"),
+      maybeStr => maybeStr.getOrElse("N/A")
+    )
+
   override type Command = ShoppingCartCommand[_]
   override type Event = ShoppingCartEvent
   override type State = ShoppingCartState
