@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: "inventory-impl:latest"
+          image: "inventory:latest"
           env:
             - name: JAVA_OPTS
               value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"

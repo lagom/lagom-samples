@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: shopping-cart
-          image: "shopping-cart-impl:latest"
+          image: "shopping-cart:latest"
           env:
             - name: JAVA_OPTS
               value: "-Xms256m -Xmx256m -Dconfig.resource=prod-application.conf"
