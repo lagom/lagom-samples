@@ -80,7 +80,7 @@ def common = Seq(
 def dockerSettings = Seq(
   dockerUpdateLatest := true,
   dockerBaseImage := "adoptopenjdk/openjdk8",
-  dockerUsername := Some("myproject"),
+  dockerUsername := sys.props.get("docker.username"),
   dockerRepository := sys.props.get("docker.registry")
 )
 
