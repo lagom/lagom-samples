@@ -1,17 +1,11 @@
 package com.example.hello.impl;
 
-import akka.grpc.GrpcClientSettings;
-import akka.grpc.javadsl.AkkaGrpcClient;
-import akka.japi.function.Function3;
-import akka.japi.function.Procedure;
-import akka.stream.Materializer;
 import com.example.hello.api.HelloService;
-import com.lightbend.lagom.javadsl.testkit.ServiceTest;
+import com.lightbend.lagom.javadsl.testkit.grpc.AkkaGrpcClientHelpers;
 import example.myapp.helloworld.grpc.GreeterServiceClient;
 import example.myapp.helloworld.grpc.HelloReply;
 import example.myapp.helloworld.grpc.HelloRequest;
 import org.junit.Test;
-import scala.concurrent.ExecutionContext;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
@@ -34,43 +28,19 @@ public class HelloServiceTest {
     @Test
     public void shouldSayHelloUsingGrpc() throws Exception {
         withServer(defaultSetup().withSsl(), server -> {
-            withGrpcClient(
-                server,
-                GreeterServiceClient::create,
-                serviceClient -> {
-                    HelloReply reply =
-                        serviceClient.sayHello(HelloRequest.newBuilder().setName("Steve").build())
-                            .toCompletableFuture().get(5, SECONDS);
-                    assertEquals("Hi Steve (gRPC)", reply.getMessage());
-                });
+            AkkaGrpcClientHelpers
+                .withGrpcClient(
+                    server,
+                    GreeterServiceClient::create,
+                    serviceClient -> {
+                        HelloRequest request =
+                            HelloRequest.newBuilder().setName("Steve").build();
+                        HelloReply reply = serviceClient
+                            .sayHello(request)
+                            .toCompletableFuture()
+                            .get(5, SECONDS);
+                        assertEquals("Hi Steve (gRPC)", reply.getMessage());
+                    });
         });
-    }
-
-    private <T extends AkkaGrpcClient> void withGrpcClient(
-        ServiceTest.TestServer server,
-        Function3<GrpcClientSettings, Materializer, ExecutionContext, T> clientFactory,
-        Procedure<T> block
-    ) throws Exception {
-        int sslPort = server.portSsl().get();
-
-        GrpcClientSettings settings =
-            GrpcClientSettings
-                .connectToServiceAt("127.0.0.1", sslPort, server.system())
-                .withSSLContext(server.clientSslContext().get())
-                .withOverrideAuthority("localhost");
-        T grpcClient = null;
-        try {
-            grpcClient = clientFactory.apply(
-                settings,
-                server.materializer(),
-                server.system().dispatcher()
-            );
-            block.apply(grpcClient);
-        } finally {
-            if (grpcClient != null) {
-                grpcClient.close();
-            }
-
-        }
     }
 }

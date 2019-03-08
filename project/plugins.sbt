@@ -2,7 +2,7 @@
 addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.5.0-RC2")
 
 // Akka GRPC
-addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.5.0+14-c97a24a0")
+addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.6.0")
 resolvers ++= Seq(          // for the snapshot ^
   Resolver.bintrayIvyRepo("akka", "sbt-plugin-releases"),
   Resolver.bintrayRepo("akka", "maven"),
