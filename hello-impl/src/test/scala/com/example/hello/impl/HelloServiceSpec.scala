@@ -1,10 +1,10 @@
 package com.example.hello.impl
 
-import akka.grpc.GrpcClientSettings
 import akka.stream.Materializer
 import com.example.hello.api._
 import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
+import com.lightbend.lagom.scaladsl.testkit.grpc.AkkaGrpcClientHelpers
 import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloRequest }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 
@@ -17,19 +17,15 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
   }
 
   val client: HelloService = server.serviceClient.implement[HelloService]
-  val grpcClient: Option[GreeterServiceClient] = server.playServer.httpsPort.map{ httpsPort =>
-    val settings = GrpcClientSettings
-      .connectToServiceAt("127.0.0.1", httpsPort)(server.actorSystem)
-        .withSSLContext(server.clientSslContext.get)
-        .withOverrideAuthority("localhost")
-
-    GreeterServiceClient(settings)(server.materializer, server.executionContext)
-  }
+  val grpcClient: GreeterServiceClient = AkkaGrpcClientHelpers.grpcClient(
+    server,
+    GreeterServiceClient.apply,
+  )
 
   implicit val mat: Materializer = server.materializer
 
   override protected def afterAll(): Unit = {
-    grpcClient.map(_.close())
+    grpcClient.close()
     server.stop()
   }
 
@@ -42,7 +38,7 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
     }
 
     "say hello over gRPC" in {
-      grpcClient.get
+      grpcClient
         .sayHello(HelloRequest("Alice"))
         .map{
           _.message should be ("Hi Alice! (gRPC)")

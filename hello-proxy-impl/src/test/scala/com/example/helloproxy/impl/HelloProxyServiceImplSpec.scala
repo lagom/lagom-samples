@@ -1,8 +1,8 @@
 package com.example.helloproxy.impl
 
 import akka.actor.ActorSystem
-import akka.discovery.SimpleServiceDiscovery.{ Resolved, ResolvedTarget }
-import akka.discovery.{ Lookup, SimpleServiceDiscovery }
+import akka.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
+import akka.discovery.{ Lookup, ServiceDiscovery }
 import akka.grpc.scaladsl.AkkaGrpcClient
 import akka.stream.Materializer
 import akka.{ Done, NotUsed }
@@ -12,7 +12,7 @@ import com.lightbend.lagom.scaladsl.api.{ ProvidesAdditionalConfiguration, Servi
 import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
 import com.typesafe.config.ConfigFactory
-import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceClient, HelloReply, HelloRequest }
+import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloReply, HelloRequest }
 import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
 
 import scala.collection.immutable
@@ -86,7 +86,7 @@ class GreeterServiceClientStub extends GreeterServiceClient with StubbedAkkaGrpc
 
 // At the moment, gRPC client obtains a `SimpleServiceDiscovery` from the ActorSystem default settings
 // but this test doesn't exercise that `SimpleServiceDiscovery` instance so we use a noop placeholder.
-class PlaceholderServiceDiscovery(system: ActorSystem) extends SimpleServiceDiscovery {
+class PlaceholderServiceDiscovery(system: ActorSystem) extends ServiceDiscovery {
   implicit val exCtx: ExecutionContext = system.dispatcher
 
   override def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] = Future {

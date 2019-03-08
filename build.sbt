@@ -4,10 +4,12 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.8"
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
+
+val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % "0.6.0"
 
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
@@ -46,7 +48,8 @@ lazy val `hello-impl` = (project in file("hello-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
-      scalaTest
+      scalaTest,
+      lagomGrpcTestkit
     )
   ).settings(lagomForkedTestSettings: _*)
   .dependsOn(`hello-api`)
