@@ -10,7 +10,8 @@ import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 import static com.lightbend.lagom.javadsl.api.ServiceAcl.path;
 
 /**
- * This Service represents your usual Lagom code. You will have many call heres.
+ * This Service represents your usual Lagom code. You can have many calls here.
+ *
  * The particularity of this file resides on the ACLs declaration: we are manually
  * creating the list of ACLs to include `/api/files` which is not a call handled
  * by the Lagom Router but still a Call available in the FileUpload Application.
@@ -29,9 +30,7 @@ public interface FileUploadService extends Service {
                 .withCalls(
                         pathCall("/api/echo", this::uppercaseEcho)
                 )
-                .withServiceAcls(
-                        path("/api/echo"),
-                        path("/api/files")
-                );
+                .withAutoAcl(true)
+                .withServiceAcls(path("/api/files"));
     }
 }

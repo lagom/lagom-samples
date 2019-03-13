@@ -15,11 +15,7 @@ lazy val `fileupload-api` = (project in file("fileupload-api"))
   )
 
 lazy val `fileupload-impl` = (project in file("fileupload-impl"))
-  .enablePlugins(LagomJava, PlayJava)
-  .disablePlugins(PlayLayoutPlugin)
-  .settings(
-    routesGenerator := InjectedRoutesGenerator
-  )
+  .enablePlugins(LagomJava)
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslTestKit
