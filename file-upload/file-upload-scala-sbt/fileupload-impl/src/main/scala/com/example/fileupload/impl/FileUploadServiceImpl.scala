@@ -11,8 +11,8 @@ class FileUploadServiceImpl extends FileUploadService {
     * This service call is implemented to have a basic Lagom ServiceImpl that we
     * can merge with the Play Router in FileUploadLoader.
     */
-  override def uppercaseEcho() = ServiceCall { input =>
-    Future.successful(input.toUpperCase)
+  override def hello(name: String) = ServiceCall { _ =>
+    Future.successful(s"Hello, $name")
   }
 
 }
