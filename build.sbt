@@ -7,9 +7,7 @@ val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "0.0.12"
-val akkaClusterBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "1.0.0-RC2"
-val akkaManagementClusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % "1.0.0-RC2"
-val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0-RC2"
+val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0-RC4"
 
 ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked")
 
@@ -45,8 +43,6 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       scalaTest,
       postgresDriver,
       akkaDiscoveryServiceLocator,
-      akkaClusterBootstrap,
-      akkaManagementClusterHttp,
       akkaDiscoveryKubernetesApi
     )
   )
