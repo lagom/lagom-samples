@@ -8,7 +8,7 @@ The inventory service consumes a stream of events published to Kafka by the shop
 
 ## Setup
 
-You will need to install PostgreSQL. In development, the application expects it to be running on localhost on the default port (9042), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
+You will need to install PostgreSQL. In development, the application expects it to be running on localhost on the default port (5432), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
 
 ```sql
 CREATE DATABASE shopping_cart;
