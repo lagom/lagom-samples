@@ -157,17 +157,7 @@
             <dependency>
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
-                <version>0.0.12</version>
-            </dependency>
-            <dependency>
-                <groupId>com.lightbend.akka.management</groupId>
-                <artifactId>akka-management-cluster-bootstrap_${scala.binary.version}</artifactId>
-                <version>${akka.management.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.lightbend.akka.management</groupId>
-                <artifactId>akka-management-cluster-http_${scala.binary.version}</artifactId>
-                <version>${akka.management.version}</version>
+                <version>0.1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.lightbend.akka.discovery</groupId>
@@ -191,7 +181,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lagom.version>1.5.0-RC2</lagom.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <akka.management.version>1.0.0-RC2</akka.management.version>
+        <akka.management.version>1.0.0</akka.management.version>
         <akka.http.version>10.1.7</akka.http.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
     </properties>
