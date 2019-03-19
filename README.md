@@ -8,15 +8,17 @@ The inventory service consumes a stream of events published to Kafka by the shop
 
 ## Setup
 
-We provide a `docker-compose` file that you use to create a Postgres database already configured for this application. The docker container will be exposed on port 5432.
+To run this application locally you will need access to a Postgres database. We suggest you run it on a docker container but a local or remote native instance will also work.
 
-To create the image and start the container, run the command bellow at the root of this project.
+We provide a `docker-compose.yml` file that you can use to run a Postgres database already configured for this application. The docker container will be exposed on port 5432.
+
+To create the image and start the container, run the command below at the root of this project.
 
 ```bash 
 docker-compose up -d
 ```
 
-If you prefer to run Postgres on your own machine, you need to create the database, the user and password yourself. The application expects it to be running on localhost on the default port (5432), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
+If you prefer to run Postgres natively on your machine, you need to create the database, the user and password yourself. The application expects it to be running on localhost on the default port (5432), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
 
 ```sql
 CREATE DATABASE shopping_cart;
