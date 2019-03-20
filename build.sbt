@@ -61,10 +61,10 @@ lazy val inventory = (project in file("inventory"))
   )
   .dependsOn(`shopping-cart-api`, `inventory-api`)
 
-val lombok = "org.projectlombok" % "lombok" % "1.16.18"
+val lombok = "org.projectlombok" % "lombok" % "1.18.6"
 val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
 val hamcrestLibrary = "org.hamcrest" % "hamcrest-library" % "2.1" % Test
-val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % "0.1.0"
+val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % "1.0.0"
 
 val akkaManagementVersion = "1.0.0"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
