@@ -4,12 +4,12 @@ organization in ThisBuild := "com.example"
 scalaVersion in ThisBuild := "2.12.8"
 
 val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
-val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
-val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "0.1.0"
+val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.2" % "provided"
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.7" % Test
+val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "1.0.0"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
 
-ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked")
+ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings")
 
 def dockerSettings = Seq(
   dockerUpdateLatest := true,
