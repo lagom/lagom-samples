@@ -8,5 +8,3 @@ resolvers ++= Seq(          // for the snapshot ^
   Resolver.bintrayRepo("akka", "maven"),
 )
 
-// Needed for importing the project into Eclipse
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "5.2.4")
