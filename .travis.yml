@@ -4,6 +4,8 @@ env:
   matrix:
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
+    - SCRIPT="bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
+    - SCRIPT="mvn -f couchbase-persistence/couchbase-persistence-java-mvn test"
     # can't run telemetry recipes on travis
     #- SCRIPT="mvn -f lightbend-telemetry/lightbend-telemetry-java-mvn test"
     #- SCRIPT="mvn -f lightbend-telemetry/log-correlation-java-mvn test"
