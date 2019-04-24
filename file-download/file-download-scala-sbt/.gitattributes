@@ -1,2 +1,0 @@
-# Don't convert line endings on CSV files (these are required to use CRLF endings)
-*.csv text eol=crlf

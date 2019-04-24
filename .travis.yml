@@ -2,21 +2,8 @@ language: scala
 
 env:
   matrix:
-    - SCRIPT="bin/runSbtJob consumer-service/consumer-service-java-sbt test"
-    - SCRIPT="bin/runSbtJob consumer-service/consumer-service-java-sbt test"
-    - SCRIPT="bin/runSbtJob cors/cors-java test"
-    - SCRIPT="bin/runSbtJob cors/cors-scala test"
-    - SCRIPT="bin/runSbtJob file-download/file-download-scala-sbt test"
-    - SCRIPT="bin/runSbtJob file-upload/file-upload-scala-sbt test"
-    - SCRIPT="bin/runSbtJob file-upload/file-upload-java-sbt test"
-    - SCRIPT="bin/runSbtJob http-header-handling/http-header-handling-java-sbt test"
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
     - SCRIPT="bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
-    - SCRIPT="bin/runSbtJob auth-jwt/auth-jwt-java-sbt test"
-    - SCRIPT="bin/runSbtJob auth-jwt/auth-jwt-scala-sbt test"
-    - SCRIPT="mvn -f circuitbreakerpanel/circuitbreakerpanel-java-mvn test"
-    - SCRIPT="mvn -f i18n/hello-i18n-java-mvn test"
-    - SCRIPT="mvn -f kubernetes-deployment/hello-kubernetes-java-mvn test"
     # can't run telemetry recipes on travis
     #- SCRIPT="mvn -f lightbend-telemetry/lightbend-telemetry-java-mvn test"
     #- SCRIPT="mvn -f lightbend-telemetry/log-correlation-java-mvn test"
