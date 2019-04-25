@@ -8,3 +8,4 @@ logs
 .project
 .settings
 .classpath
+.factorypath
