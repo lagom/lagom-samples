@@ -95,7 +95,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <lagom.version>1.5.0</lagom.version>
         <!--#couchbase-begin-->
-        <couchbase.persistence.version>1.0-RC2</couchbase.persistence.version>
+        <couchbase.persistence.version>1.0</couchbase.persistence.version>
         <!--#couchbase-end-->
     </properties>
 </project>
