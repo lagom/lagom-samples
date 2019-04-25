@@ -113,12 +113,6 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-            <!-- Use Coda Hale Metrics -->
-            <dependency>
-                <groupId>com.lightbend.cinnamon</groupId>
-                <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
-                <version>${cinnamon.version}</version>
-            </dependency>
             <!-- Use Lagom instrumentation -->
             <dependency>
                 <groupId>com.lightbend.cinnamon</groupId>
