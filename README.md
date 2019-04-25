@@ -1,9 +1,10 @@
 <!--- Copyright (C) 2016-2018 Lightbend Inc. <https://www.lightbend.com> -->
-# Lagom Recipes
+# Lagom Samples
 
-[Lagom](https://www.lagomframework.com/) is an [open source](https://github.com/lagom/lagom) framework for building reactive microservice systems in Java or Scala. This repository contains code examples to help you understand how to achieve common goals. In general, code in each folder of this repository tries to answer a question of type "How do I _xyz_ ?". For example: "How do I use RDBMS read-sides with Cassandra write-sides?".
+[Lagom](https://www.lagomframework.com/) is an [open source](https://github.com/lagom/lagom) framework for building reactive microservice systems in Java or Scala. 
 
-Each example is usually built in two steps (git commits) where the first commit introduces an example project and the second commit introduces the minimum changes required to complete the example. For example: in commit [9f8de2f](https://github.com/lagom/lagom-recipes/commit/9f8de2f34f0978aeeb0f50cb261345e24da44caf) a new project is added which is edited in commit [b759a18](https://github.com/lagom/lagom-recipes/commit/b759a1821b235603cf65bd1556b57050b76ca69c). You can browse the repo history to find the changes demonstrating how to solve each specific problem.
+This repository contains code examples to help you understand how to achieve common goals. In general, code in each folder of this repository tries to answer a question of type "How do I _xyz_ ?". For example: "How do I use RDBMS read-sides with Cassandra write-sides?".
+
 
 ## Pre-requisites
 
@@ -19,13 +20,13 @@ To download and run these examples you will need:
 If you want to run a specific example you will have to clone the whole repository and then navigate to a specific application folder. For example:
 
 * `git clone https://github.com/lagom/lagom-recipes.git`
-* `cd consumer-service/consumer-service-java-sbt`
+* `cd mixed-persistence/mixed-persistence-java-sbt`
 
 Each example includes specific instructions in it's `README.md` file on how to run and exercise the application.
 
 ## Contributing examples
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+This project follows the [Lagom contributor guidelines](https://github.com/lagom/lagom/blob/master/CONTRIBUTING.md). Please read and follow those when contributing Lagom Samples.
 
 ## Complete example index
 
