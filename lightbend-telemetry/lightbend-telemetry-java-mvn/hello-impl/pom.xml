@@ -34,7 +34,7 @@
         <!-- Use Coda Hale Metrics -->
         <dependency>
             <groupId>com.lightbend.cinnamon</groupId>
-            <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
+            <artifactId>cinnamon-chmetrics</artifactId>
         </dependency>
         <!-- Use Lagom instrumentation -->
         <dependency>
