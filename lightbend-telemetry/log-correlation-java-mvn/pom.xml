@@ -52,10 +52,6 @@
                             <argument>-classpath</argument>
                             <classpath/>
                             <argument>-javaagent:${project.build.directory}/dependency/cinnamon-agent.jar</argument>
-                            <!-- Play requires the play.http.secret.key property to be set to run in production mode,
-                               - but this isn't used in Lagom, so the specific value doesn't matter.
-                              -->
-                            <argument>-Dplay.http.secret.key=x</argument>
                             <argument>play.core.server.ProdServerStart</argument>
                         </arguments>
                     </configuration>
@@ -112,12 +108,6 @@
                 <version>${lagom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <!-- Use Coda Hale Metrics -->
-            <dependency>
-                <groupId>com.lightbend.cinnamon</groupId>
-                <artifactId>cinnamon-chmetrics_${scala.binary.version}</artifactId>
-                <version>${cinnamon.version}</version>
             </dependency>
             <!-- Use Lagom instrumentation -->
             <dependency>
