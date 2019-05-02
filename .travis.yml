@@ -22,11 +22,13 @@ jobs:
       
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 20s
     - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
     name: "Run tests Couchbase Persistence Java" 
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 20s
     - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
     name: "Run tests Couchbase Persistence Scala"     
 
