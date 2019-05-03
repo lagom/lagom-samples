@@ -67,6 +67,7 @@ val hamcrestLibrary = "org.hamcrest" % "hamcrest-library" % "2.1" % Test
 
 val akkaManagementVersion = "1.0.0"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
+val lagomJavadslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % "1.5.1"
 
 def common = Seq(
   javacOptions in (Compile,compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")

@@ -169,6 +169,11 @@
                 <artifactId>akka-parsing_${scala.binary.version}</artifactId>
                 <version>${akka.http.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.lightbend.lagom</groupId>
+                <artifactId>lagom-javadsl-akka-discovery-service-locator_${scala.binary.version}</artifactId>
+                <version>${lagom.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
