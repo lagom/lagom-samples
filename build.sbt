@@ -32,7 +32,7 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       lombok,
       postgresDriver,
       hamcrestLibrary,
-      akkaDiscoveryServiceLocator,
+      lagomJavadslAkkaDiscovery,
       akkaDiscoveryKubernetesApi
     )
   )
@@ -56,7 +56,7 @@ lazy val inventory = (project in file("inventory"))
       lagomJavadslKafkaClient,
       lagomLogback,
       lagomJavadslTestKit,
-      akkaDiscoveryServiceLocator
+      lagomJavadslAkkaDiscovery
     )
   )
   .dependsOn(`shopping-cart-api`, `inventory-api`)
@@ -64,7 +64,6 @@ lazy val inventory = (project in file("inventory"))
 val lombok = "org.projectlombok" % "lombok" % "1.18.6"
 val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
 val hamcrestLibrary = "org.hamcrest" % "hamcrest-library" % "2.1" % Test
-val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % "1.0.0"
 
 val akkaManagementVersion = "1.0.0"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % akkaManagementVersion
