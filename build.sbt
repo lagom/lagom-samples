@@ -1,3 +1,5 @@
+import com.lightbend.lagom.core.LagomVersion
+
 organization in ThisBuild := "com.example"
 
 // the Scala version that will be used for cross-compiled libraries
@@ -6,8 +8,8 @@ scalaVersion in ThisBuild := "2.12.8"
 val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.2" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.7" % Test
-val akkaDiscoveryServiceLocator = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % "1.0.0"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
+val lagomScaladslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
 
 ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings")
 
@@ -42,7 +44,7 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       macwire,
       scalaTest,
       postgresDriver,
-      akkaDiscoveryServiceLocator,
+      lagomScaladslAkkaDiscovery,
       akkaDiscoveryKubernetesApi
     )
   )
@@ -65,7 +67,7 @@ lazy val inventory = (project in file("inventory"))
       lagomScaladslTestKit,
       macwire,
       scalaTest,
-      akkaDiscoveryServiceLocator
+      lagomScaladslAkkaDiscovery
     )
   )
   .settings(dockerSettings)
