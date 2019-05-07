@@ -31,10 +31,12 @@ This project follows the [Lagom contributor guidelines](https://github.com/lagom
 
 * Shopping Cart example [Java example](shopping-cart/shopping-cart-java/README.md)
 * Shopping Cart example [Scala example](shopping-cart/shopping-cart-scala/README.md)
+* gRPC example [Java example](grpc-example/grpc-example-java/README.md)
+* gRPC example [Scala example](grpc-example/grpc-example-scala/README.md)
 * How do I use RDBMS read-sides with Cassandra write-sides? ([mixed persistence in java](mixed-persistence/mixed-persistence-java-sbt/README.md) or [mixed persistence in scala](mixed-persistence/mixed-persistence-scala-sbt/README.md))
 * How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
+* How do I configure Log correlation (Cinnamon)? ([Java/Maven example](lightbend-telemetry/log-correlation-java-mvn/README.md))
 * How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
-
 #### License
 
 <sup>
