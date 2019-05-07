@@ -1,0 +1,9 @@
+postgres:
+  image: postgres:latest
+  container_name: shopping_cart_postgres
+  environment:
+    - "TZ=Europe/Amsterdam"
+    - "POSTGRES_USER=shopping_cart"
+    - "POSTGRES_PASSWORD=shopping_cart"
+  ports:
+    - "5432:5432"  # credentials (shopping_cart:shopping_cart)
