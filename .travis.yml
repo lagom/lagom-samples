@@ -25,16 +25,16 @@ jobs:
     name: "Run tests gRPC example Java"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-scala test"
+    - "bin/runSbtJob grpc-example/grpc-example-scala test"
     name: "Run tests gRPC example Scala"
 
   - script:
     - "bin/runSbtJob shopping-cart/shopping-cart-java test"
-    name: "Run tests gRPC example Java"
+    name: "Run tests Shopping Cart example Java"
 
   - script:
-    - "bin/runSbtJob grpc-example/grpc-example-scala test"
-    name: "Run tests gRPC example Scala"    
+    - "bin/runSbtJob shopping-cart/shopping-cart-scala test"
+    name: "Run tests Shopping Cart example Scala"
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
