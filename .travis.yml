@@ -19,13 +19,13 @@ jobs:
   - script: 
     - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
     name: "Run tests Mixed Persistence Scala"  
-    
+
   - script:
-    - "bin/runSbtJob grpc-example/java-api test"
+    - "bin/runSbtJob grpc-example/grpc-example-java test"
     name: "Run tests gRPC example Java"
 
   - script:
-    - "bin/runSbtJob grpc-example/scala-api test"
+    - "bin/runSbtJob grpc-example/grpc-example-scala test"
     name: "Run tests gRPC example Scala"
 
   - script:
