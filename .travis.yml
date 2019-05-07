@@ -34,17 +34,17 @@ jobs:
 
   - script:
     - "bin/runSbtJob grpc-example/grpc-example-scala test"
-    name: "Run tests gRPC example Scala"
+    name: "Run tests gRPC example Scala"    
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
-    - sleep 20s
+    - sleep 30s
     - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
     name: "Run tests Couchbase Persistence Java" 
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
-    - sleep 20s
+    - sleep 30s
     - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
     name: "Run tests Couchbase Persistence Scala"     
 
