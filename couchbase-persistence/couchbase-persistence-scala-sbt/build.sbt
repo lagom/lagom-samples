@@ -3,7 +3,7 @@ name in ThisBuild := "couchbase-persistence-scala-sbt"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.8"
 
 lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
