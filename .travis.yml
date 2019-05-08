@@ -14,39 +14,43 @@ jobs:
     
     script: 
      - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
-    name: "Run tests Mixed Persistence Java"  
+    name: "Run tests Mixed Persistence (java)"  
 
   - script: 
     - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
-    name: "Run tests Mixed Persistence Scala"  
+    name: "Run tests Mixed Persistence (scala)"  
 
   - script:
     - "bin/runSbtJob grpc-example/grpc-example-java test"
-    name: "Run tests gRPC example Java"
+    name: "Run tests gRPC example (java)"
 
   - script:
     - "bin/runSbtJob grpc-example/grpc-example-scala test"
-    name: "Run tests gRPC example Scala"
+    name: "Run tests gRPC example (scala)"
 
   - script:
     - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
-    name: "Run tests Shopping Cart example Java"
+    name: "Run tests Shopping Cart example (java/sbt)"
+
+  - script:
+    - mvn -f shopping-cart/shopping-cart-java test
+    name: "Run tests Shopping Cart example (java/mvn)"
 
   - script:
     - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
-    name: "Run tests Shopping Cart example Scala"
+    name: "Run tests Shopping Cart example (scala)"
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
     - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
-    name: "Run tests Couchbase Persistence Java" 
+    name: "Run tests Couchbase Persistence (java)" 
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
     - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
-    name: "Run tests Couchbase Persistence Scala"     
+    name: "Run tests Couchbase Persistence (scala)"     
 
 cache:
   directories:
