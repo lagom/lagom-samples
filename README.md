@@ -37,6 +37,11 @@ This project follows the [Lagom contributor guidelines](https://github.com/lagom
 * How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
 * How do I configure Log correlation (Cinnamon)? ([Java/Maven example](lightbend-telemetry/log-correlation-java-mvn/README.md))
 * How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
+
+## Community-driven examples
+
+* How do I authenticate/authorize by JWT? ([Java/Maven example](https://github.com/pac4j/lagom-pac4j-java-demo), [Scala/Sbt example](https://github.com/pac4j/lagom-pac4j-scala-demo))
+
 #### License
 
 <sup>
