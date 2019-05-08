@@ -9,25 +9,31 @@ import play.api.libs.json._
 import scala.collection.immutable.Seq
 
 /**
-  * This is an event sourced entity. It has a state, [[ShoppingCartState]], which
-  * stores the current shopping cart items and whether it's checked out.
+  * This is an event sourced entity. It has a state,
+  * [[com.example.shoppingcart.impl.ShoppingCartState]], which stores the
+  * current shopping cart items and whether it's checked out.
   *
   * Event sourced entities are interacted with by sending them commands. This
-  * entity supports three commands, an [[UpdateItem]] crommand, which is used to
-  * update the quantity of an item in the cart, a [[Checkout]] command which is
-  * used to set checkout the shopping cart, and a [[Get]] command, which is a read
-  * only command which returns the current shopping cart state.
+  * entity supports three commands, an
+  * [[com.example.shoppingcart.impl.UpdateItem]] crommand, which is used to
+  * update the quantity of an item in the cart, a
+  * [[com.example.shoppingcart.impl.Checkout]] command which is used to set
+  * checkout the shopping cart, and a [[com.example.shoppingcart.impl.Get]]
+  * command, which is a read only command which returns the current shopping
+  * cart state.
   *
-  * Commands get translated to events, and it's the events that get persisted by
-  * the entity. Each event will have an event handler registered for it, and an
-  * event handler simply applies an event to the current state. This will be done
-  * when the event is first created, and it will also be done when the entity is
-  * loaded from the database - each event will be replayed to recreate the state
-  * of the entity.
+  * Commands get translated to events, and it's the events that get persisted
+  * by the entity. Each event will have an event handler registered for it, and
+  * an event handler simply applies an event to the current state. This will be
+  * done when the event is first created, and it will also be done when the
+  * entity is loaded from the database - each event will be replayed to
+  * recreate the state of the entity.
   *
-  * This entity defines two events, the [[ItemUpdated]] event, which is emitted
-  * when a [[UpdateItem]] command is received, and a [[CheckedOut]] event, which
-  * is emitted when a [[Checkout]] command is received.
+  * This entity defines two events, the
+  * [[com.example.shoppingcart.impl.ItemUpdated]] event, which is emitted when
+  * a [[com.example.shoppingcart.impl.UpdateItem]] command is received, and a
+  * [[com.example.shoppingcart.impl.CheckedOut]] event, which is emitted when a
+  * [[com.example.shoppingcart.impl.Checkout]] command is received.
   */
 class ShoppingCartEntity extends PersistentEntity {
 
@@ -216,8 +222,8 @@ sealed trait ShoppingCartCommand[R] extends ReplyType[R]
 /**
   * A command to update an item.
   *
-  * It has a reply type of [[Done]], which is sent back to the caller
-  * when all the events emitted by this command are successfully persisted.
+  * It has a reply type of `Done`, which is sent back to the caller when
+  * all the events emitted by this command are successfully persisted.
   */
 case class UpdateItem(productId: String, quantity: Int) extends ShoppingCartCommand[Done]
 

@@ -29,11 +29,11 @@ jobs:
     name: "Run tests gRPC example Scala"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-java test"
+    - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
     name: "Run tests Shopping Cart example Java"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-scala test"
+    - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
     name: "Run tests Shopping Cart example Scala"
 
   - script:
