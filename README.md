@@ -4,6 +4,24 @@
 
 This repository contains code examples to help you understand how to achieve common goals. In general, code in each folder of this repository tries to answer a question of type "How do I _xyz_ ?". For example: "How do I use RDBMS read-sides with Cassandra write-sides?".
 
+## Samples index
+
+* Shopping Cart: a reference application demoing core Lagom features. It is available in [Java](shopping-cart/shopping-cart-java/README.md) and  [Scala](shopping-cart/shopping-cart-scala/README.md).
+
+* Using gRPC in Lagom ([Java](grpc-example/grpc-example-java/README.md), [Scala](grpc-example/grpc-example-scala/README.md))
+
+* How do I use RDBMS read-sides with Cassandra write-sides? ([mixed persistence in java](mixed-persistence/mixed-persistence-java-sbt/README.md) or [mixed persistence in scala](mixed-persistence/mixed-persistence-scala-sbt/README.md))
+* How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
+* How do I configure Log correlation (Cinnamon)? ([Java/Maven example](lightbend-telemetry/log-correlation-java-mvn/README.md))
+* How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
+
+## Contributing examples
+
+This project follows the [Lagom contributor guidelines](https://github.com/lagom/lagom/blob/master/CONTRIBUTING.md). Please read and follow those when contributing Lagom Samples.
+
+### Community-driven examples
+
+* How do I authenticate/authorize by JWT? ([Java/Maven example](https://github.com/pac4j/lagom-pac4j-java-demo), [Scala/Sbt example](https://github.com/pac4j/lagom-pac4j-scala-demo))
 
 ## Pre-requisites
 
@@ -23,24 +41,6 @@ If you want to run a specific example you will have to clone the whole repositor
 
 Each example includes specific instructions in it's `README.md` file on how to run and exercise the application.
 
-## Contributing examples
-
-This project follows the [Lagom contributor guidelines](https://github.com/lagom/lagom/blob/master/CONTRIBUTING.md). Please read and follow those when contributing Lagom Samples.
-
-## Complete example index
-
-* Shopping Cart example [Java example](shopping-cart/shopping-cart-java/README.md)
-* Shopping Cart example [Scala example](shopping-cart/shopping-cart-scala/README.md)
-* gRPC example [Java example](grpc-example/grpc-example-java/README.md)
-* gRPC example [Scala example](grpc-example/grpc-example-scala/README.md)
-* How do I use RDBMS read-sides with Cassandra write-sides? ([mixed persistence in java](mixed-persistence/mixed-persistence-java-sbt/README.md) or [mixed persistence in scala](mixed-persistence/mixed-persistence-scala-sbt/README.md))
-* How do I integrate Lightbend Telemetry (Cinnamon)? ([Java/Maven example](lightbend-telemetry/lightbend-telemetry-java-mvn/README.md))
-* How do I configure Log correlation (Cinnamon)? ([Java/Maven example](lightbend-telemetry/log-correlation-java-mvn/README.md))
-* How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
-
-## Community-driven examples
-
-* How do I authenticate/authorize by JWT? ([Java/Maven example](https://github.com/pac4j/lagom-pac4j-java-demo), [Scala/Sbt example](https://github.com/pac4j/lagom-pac4j-scala-demo))
 
 #### License
 
