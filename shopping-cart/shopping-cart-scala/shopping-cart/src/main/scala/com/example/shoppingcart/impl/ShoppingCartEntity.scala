@@ -15,7 +15,7 @@ import scala.collection.immutable.Seq
   *
   * Event sourced entities are interacted with by sending them commands. This
   * entity supports three commands, an
-  * [[com.example.shoppingcart.impl.UpdateItem]] crommand, which is used to
+  * [[com.example.shoppingcart.impl.UpdateItem]] command, which is used to
   * update the quantity of an item in the cart, a
   * [[com.example.shoppingcart.impl.Checkout]] command which is used to set
   * checkout the shopping cart, and a [[com.example.shoppingcart.impl.Get]]
