@@ -1,14 +1,29 @@
 #!/bin/bash
 
+##  Usage:
+##    ./test-shopping-cart.sh 
+##    ./test-shopping-cart.sh <shopping-cart-java|shopping-cart-scala>
+##    ./test-shopping-cart.sh <shopping-cart-java|shopping-cart-scala> <sbt|maven>
+##
+CODE_VARIANT=${1:-shopping-cart-scala}
+shift 
+BUILD_TOOL=${1:-sbt}
+
+## The ID will be the PR number or `local`
+ID=${TRAVIS_PULL_REQUEST:-local}
+
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
 DEPLOY_DIR=$SCRIPTS_DIR/..
+## BASE_DIR must point to <git_repo_root>/shopping-cart
 BASE_DIR=$DEPLOY_DIR/..
-SHOPPING_CART_SCALA_DIR=$BASE_DIR/shopping-cart-scala
+SHOPPING_CART_SOURCES=$BASE_DIR/$CODE_VARIANT
 
 # 0. Setup the NAMESPACE (predates all)
-export NAMESPACE=shopping-cart-lagom-scala-$TRAVIS_PULL_REQUEST
+#   e.g. lagom-shopping-cart-scala-sbt-23  (23 is the PR number)
+export NAMESPACE=lagom-$CODE_VARIANT-$BUILD_TOOL-$USER-$ID
+echo "Testing deployment $NAMESPACE"
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh

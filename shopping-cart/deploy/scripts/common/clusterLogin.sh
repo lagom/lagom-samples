@@ -10,4 +10,4 @@ SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 echo "Attempting login to Openshift cluster (this will fail on PR builds)"
 if [ -z ${CP2_PLAY_PASSWORD+x} ]; then echo "CP2_PLAY_PASSWORD is unset."; else echo "CP2_PLAY_PASSWORD is available."; fi
-oc login https://$OPENSHIFT_SERVER --username=play-team --password=$CP2_PLAY_PASSWORD  || exit 1
+oc login https://$OPENSHIFT_SERVER --username=play-team --password=$CP2_PLAY_PASSWORD --namespace=$NAMESPACE  || exit 1

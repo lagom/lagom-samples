@@ -35,10 +35,10 @@ createNamespace() {
 
 ## Login the local client into a docker registry.
 ## 
-## 1. DOCKER_REGISTRY
+## 1. DCKR_REGISTRY
 dockerLogin() {
-    DOCKER_REGISTRY=$1
-    oc whoami -t | docker login -u unused --password-stdin $DOCKER_REGISTRY
+    DCKR_REGISTRY=$1
+    oc whoami -t | docker login -u unused --password-stdin $DCKR_REGISTRY
 } 
    
 
