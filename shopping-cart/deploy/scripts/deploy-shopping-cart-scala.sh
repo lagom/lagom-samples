@@ -11,7 +11,7 @@ SHOPPING_CART_SCALA_DIR=$BASE_DIR/shopping-cart-scala
 installOC
 
 # 0. Setup the NAMESPACE (predates all)
-export NAMESPACE=shopping-cart-lagom-scala
+export NAMESPACE=shopping-cart-lagom-scala-$TRAVIS_PULL_REQUEST
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
