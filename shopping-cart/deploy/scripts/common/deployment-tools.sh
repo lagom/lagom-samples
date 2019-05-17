@@ -130,3 +130,14 @@ setupRbac() {
     YAML_SOURCE=$2
     sed -e "s/myproject/$NAMESPACE/g" $YAML_SOURCE | oc apply -f - 
 }
+
+buildRoute() {
+  SERVICE_NAME=$1
+  ## Must use `oc create route edge ...` instead of `oc expose service` because 
+  ## centralpark2 only allows HTTPS traffic. Using Edge means external HTTPS 
+  ## with TLS termination on the edge.
+  ## 
+  ## The hostname is set to '${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER'  since that's 
+  ## the convention used by openshift when using `oc expose service`
+  oc create route edge --service=$SERVICE_NAME --hostname=${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER
+}

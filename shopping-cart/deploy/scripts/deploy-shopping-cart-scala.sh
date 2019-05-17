@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
@@ -8,30 +7,34 @@ DEPLOY_DIR=$SCRIPTS_DIR/..
 BASE_DIR=$DEPLOY_DIR/..
 SHOPPING_CART_SCALA_DIR=$BASE_DIR/shopping-cart-scala
 
+# 0. Setup the NAMESPACE (predates all)
+export NAMESPACE=shopping-cart-lagom-scala
 
-# Load some helping functions
+# 1. Setup session and load some helping functions
+. $COMMON_SCRIPTS_DIR/setupEnv.sh
+. $COMMON_SCRIPTS_DIR/clusterLogin.sh
+
+# 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
-. $COMMON_SCRIPTS_DIR/postgresql.sh
 
-# Setup env vars for deployment
-export OPENSHIFT_SERVER=centralpark2.lightbend.com
-export NAMESPACE=shopping-cart-lagom
-export DOCKER_REGISTRY=docker-registry-default.centralpark2.lightbend.com
-export DOCKER_REPOSITORY=$DOCKER_REGISTRY/$NAMESPACE
-
-
-echo "Attempting login to Openshift cluster (this will fail on PR builds)"
-if [ -z ${CP2_PLAY_PASSWORD+x} ]; then echo "CP2_PLAY_PASSWORD is unset."; else echo "CP2_PLAY_PASSWORD is available."; fi
-oc login https://$OPENSHIFT_SERVER --username=play-team --password=$CP2_PLAY_PASSWORD  || exit 1
-
-
+# 3. Recreate the NAMESPACE
 deleteNamespace $NAMESPACE
 createNamespace $NAMESPACE
 
-build() {
+# 4. Install PG and create a DB and a schema
+. $COMMON_SCRIPTS_DIR/postgresql.sh
+## TODO parameterize PG functions
+installPostgres
+createDatabase $SHOPPING_CART_SCALA_DIR/schemas/shopping-cart.sql
+
+
+# 5. Build the docker images to be deployed
+buildSbt() {
     cd $SHOPPING_CART_SCALA_DIR
     sbt clean docker:publishLocal 
 
+
+    ## TODO: This hack to discover the IMAGE_TAG is very brittle and doesn't work when there are local changes.
     ## once the images are published, we can inspect the generated files to discover the tag
     ## The following works by looking for a file named something like `target/scala-2.12/shopping-cart-scala_2.12-353-0e34faa0.pom`
     ## It then reverses the string: mop.0aaf43e0-353-21.2_alacs-trac-gnippohs/21.2-alacs/tegrat
@@ -44,19 +47,23 @@ build() {
     echo " - - - "
 }
 
-build
+buildSbt
+#buildMaven
 
-## TODO parameterize these functions
-installPostgres
-createDatabase $SHOPPING_CART_SCALA_DIR/schemas/shopping-cart.sql
-
-
+# 6. Push images
 dockerLogin $DOCKER_REGISTRY
-
 pushImage $DOCKER_REPOSITORY "shopping-cart" $IMAGE_TAG
 pushImage $DOCKER_REPOSITORY "inventory" $IMAGE_TAG
 
+# 7. Deploy application
 setupRbac $NAMESPACE ../specs/common/rbac.yaml
-
 deploy shopping-cart ../specs/shopping-cart.yaml
 deploy inventory ../specs/inventory.yaml
+
+# 8. Test application
+waitForApp app=shopping-cart 3
+waitForApp app=inventory 1
+
+buildRoute shoppping-cart
+buildRoute inventory
+
