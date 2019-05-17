@@ -67,6 +67,5 @@ deploy inventory ../specs/inventory.yaml
 waitForApp app=shopping-cart 3
 waitForApp app=inventory 1
 
-buildRoute shoppping-cart
+buildRoute shopping-cart
 buildRoute inventory
-

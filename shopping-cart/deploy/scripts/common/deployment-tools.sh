@@ -29,6 +29,8 @@ createNamespace() {
             exit 1
         fi
     done
+    ## Extra sleep to allow the cluster to completely see the changes.
+    sleep 5
 }
 
 ## Login the local client into a docker registry.
@@ -117,7 +119,7 @@ deploy() {
     # tuning openshift's image lookup
     oc set image-lookup $SERVICE_NAME
     ## DEPLOYOLO!
-    oc apply -f $YAML_SOURCE
+    oc apply -f $YAML_SOURCE || exit 1
 }
 
 ## Sets RBAC and Roles so services can query the k8s API.
@@ -139,5 +141,5 @@ buildRoute() {
   ## 
   ## The hostname is set to '${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER'  since that's 
   ## the convention used by openshift when using `oc expose service`
-  oc create route edge --service=$SERVICE_NAME --hostname=${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER
+  oc create route edge --service=$SERVICE_NAME --hostname=${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER  || exit 1
 }

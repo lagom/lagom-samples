@@ -8,7 +8,7 @@ BASE_DIR=$DEPLOY_DIR/..
 SHOPPING_CART_SCALA_DIR=$BASE_DIR/shopping-cart-scala
 
 # 0. Setup the NAMESPACE (predates all)
-export NAMESPACE=shopping-cart-lagom-scala
+export NAMESPACE=shopping-cart-lagom-scala-$TRAVIS_PULL_REQUEST
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
@@ -18,17 +18,16 @@ export NAMESPACE=shopping-cart-lagom-scala
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
 
 
-
 SHOPPING_CART_HOST=$(oc get route shopping-cart -o jsonpath='{.spec.host}')
 INVENTORY_HOST=$(oc get route inventory -o jsonpath='{.spec.host}')
 
 SHOPPING_CART_ID=$(openssl rand -base64 6 | tr -- '+=/' '-_~')
 PRODUCT_ID=$(openssl rand -base64 6 | tr -- '+=/' '-_~')
 
-
-
+sleep 3 
 echo "Touch a shopping-cart [$SHOPPING_CART_ID]"
-curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID"
+echo "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" 
+curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" || exit 1
 echo
 
 echo "Add items on the shopping-cart [$SHOPPING_CART_ID]"
