@@ -7,6 +7,9 @@ DEPLOY_DIR=$SCRIPTS_DIR/..
 BASE_DIR=$DEPLOY_DIR/..
 SHOPPING_CART_SCALA_DIR=$BASE_DIR/shopping-cart-scala
 
+. $COMMON_SCRIPTS_DIR/installers.sh
+installOC
+
 # 0. Setup the NAMESPACE (predates all)
 export NAMESPACE=shopping-cart-lagom-scala
 
