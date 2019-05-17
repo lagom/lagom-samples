@@ -95,10 +95,10 @@ pushImage() {
 
     echo "Tagging image: $NAME:$TAG $REGISTRY/$NAME:$TAG"
     echo "Tagging image: $NAME:latest $REGISTRY/$NAME:latest"
-    docker tag $NAME:$TAG $REGISTRY/$NAME:$TAG
-    docker tag $NAME:$TAG $REGISTRY/$NAME:latest
-    docker push $REGISTRY/$NAME:$TAG
-    docker push $REGISTRY/$NAME:latest
+    docker tag $NAME:$TAG $REGISTRY/$NAME:$TAG || exit 1
+    docker tag $NAME:$TAG $REGISTRY/$NAME:latest || exit 1
+    docker push $REGISTRY/$NAME:$TAG || exit 1
+    docker push $REGISTRY/$NAME:latest || exit 1
 }
 
 ## Deploys a Play or Lagom app. Creates a ${SERVICE_NAME}-application-secret (key is `secret`)
