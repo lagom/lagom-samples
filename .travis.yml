@@ -9,6 +9,48 @@ install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
 
 jobs:
   include:
+
+  - stage: test
+    script: 
+     - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
+    name: "Run tests Mixed Persistence (java)"  
+
+  - script: 
+    - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
+    name: "Run tests Mixed Persistence (scala)"  
+
+  - script:
+    - "bin/runSbtJob grpc-example/grpc-example-java test"
+    name: "Run tests gRPC example (java)"
+
+  - script:
+    - "bin/runSbtJob grpc-example/grpc-example-scala test"
+    name: "Run tests gRPC example (scala)"
+
+  - script:
+    - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
+    name: "Run tests Shopping Cart example (java/sbt)"
+
+  - script:
+    - mvn -f shopping-cart/shopping-cart-java test
+    name: "Run tests Shopping Cart example (java/mvn)"
+
+  - script:
+    - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
+    name: "Run tests Shopping Cart example (scala)"
+
+  - script:
+    - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 30s
+    - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
+    name: "Run tests Couchbase Persistence (java)" 
+
+  - script:
+    - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 30s
+    - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
+    name: "Run tests Couchbase Persistence (scala)"     
+
   - stage: deploy
     script:
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
@@ -23,48 +65,7 @@ jobs:
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"
-
-  # - stage: test
-  #   script: 
-  #    - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
-  #   name: "Run tests Mixed Persistence (java)"  
-
-  # - script: 
-  #   - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
-  #   name: "Run tests Mixed Persistence (scala)"  
-
-  # - script:
-  #   - "bin/runSbtJob grpc-example/grpc-example-java test"
-  #   name: "Run tests gRPC example (java)"
-
-  # - script:
-  #   - "bin/runSbtJob grpc-example/grpc-example-scala test"
-  #   name: "Run tests gRPC example (scala)"
-
-  # - script:
-  #   - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
-  #   name: "Run tests Shopping Cart example (java/sbt)"
-
-  # - script:
-  #   - mvn -f shopping-cart/shopping-cart-java test
-  #   name: "Run tests Shopping Cart example (java/mvn)"
-
-  # - script:
-  #   - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
-  #   name: "Run tests Shopping Cart example (scala)"
-
-  # - script:
-  #   - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
-  #   - sleep 30s
-  #   - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
-  #   name: "Run tests Couchbase Persistence (java)" 
-
-  # - script:
-  #   - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
-  #   - sleep 30s
-  #   - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
-  #   name: "Run tests Couchbase Persistence (scala)"     
-
+    
 stages:
   - name: deploy
     if: repo = lagom/lagom-samples
