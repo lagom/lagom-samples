@@ -64,24 +64,24 @@ echo
 
 
 # So that it can be copied...
-echo
-echo "Await for eventual Inventory update using: "
-echo curl "https://$INVENTORY_HOST/inventory/$PRODUCT_ID"
-echo -n "Waiting for inventory service to process shopping cart message."
+# echo
+# echo "Await for eventual Inventory update using: "
+# echo curl "https://$INVENTORY_HOST/inventory/$PRODUCT_ID"
+# echo -n "Waiting for inventory service to process shopping cart message."
 
-count=0
-while [ $(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID") != "-2" ]
-do
-    (( count = count + 1 ))
-    if [ $count -gt 30 ]
-    then
-        echo "FAILED."
-        echo "Expected $PRODUCT_ID to have -2 inventory, but got $(curl -s "http://$INVENTORY_HOST/inventory/$PRODUCT_ID")."
-        exit 1
-    fi
-    echo -n "."
-    sleep 2
-done
+# count=0
+# while [ $(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID") != "-2" ]
+# do
+#     (( count = count + 1 ))
+#     if [ $count -gt 30 ]
+#     then
+#         echo "FAILED."
+#         echo "Expected $PRODUCT_ID to have -2 inventory, but got $(curl -s "http://$INVENTORY_HOST/inventory/$PRODUCT_ID")."
+#         exit 1
+#     fi
+#     echo -n "."
+#     sleep 2
+# done
 
 echo "SUCCESS!!"
 
