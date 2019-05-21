@@ -182,7 +182,7 @@
         <lagom.version>1.5.1</lagom.version>
         <scala.binary.version>2.12</scala.binary.version>
         <akka.management.version>1.0.0</akka.management.version>
-        <akka.http.version>10.1.7</akka.http.version>
+        <akka.http.version>10.1.8</akka.http.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
     </properties>
 </project>
