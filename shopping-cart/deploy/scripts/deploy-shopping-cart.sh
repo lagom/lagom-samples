@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ##  Usage:
-##    ./deploy-shopping-cart-scala.sh
-##    ./deploy-shopping-cart-scala.sh <shopping-cart-java|shopping-cart-scala>
-##    ./deploy-shopping-cart-scala.sh <shopping-cart-java|shopping-cart-scala> <sbt|maven>
+##    ./deploy-shopping-cart.sh
+##    ./deploy-shopping-cart.sh <shopping-cart-java|shopping-cart-scala>
+##    ./deploy-shopping-cart.sh <shopping-cart-java|shopping-cart-scala> <sbt|maven>
 ##
 CODE_VARIANT=${1:-shopping-cart-scala}
 shift 
