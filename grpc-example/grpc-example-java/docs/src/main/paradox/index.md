@@ -7,10 +7,11 @@ This Guide will show you how to use Akka & Play gRPC as an alternate RPC library
 
 ## Downloading the example
 
-The Lagom gRPC Example is a [GitHub repository](https://github.com/lagom/lagom-java-grpc-example) that you can clone locally:
+The Lagom gRPC Example is in the [Lagom Samples GitHub repository](https://github.com/lagom/lagom-samples) that you can clone locally:
 
 ```bash
-git clone https://github.com/lagom/lagom-java-grpc-example.git
+git clone https://github.com/lagom/lagom-samples.git
+cd grpc-example/grpc-example-java
 ```
 
 ## Running the example
@@ -141,4 +142,4 @@ The command above:
 ## References
 
 - [Akka gRPC](https://developer.lightbend.com/docs/akka-grpc/current/)
-- [Play gRPC](https://developer.lightbend.com/docs/play-grpc/current/) 
+- [Play gRPC](https://developer.lightbend.com/docs/play-grpc/current/)

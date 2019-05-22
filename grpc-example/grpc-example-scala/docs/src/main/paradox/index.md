@@ -7,10 +7,11 @@ This Guide will show you how to use Akka gRPC as an alternate RPC library to com
 
 ## Downloading the example.
 
-The Lagom gRPC Example is a [GitHub repository](https://github.com/lagom/lagom-scala-grpc-example) that you can clone locally:
+The Lagom gRPC Example is the [Lagom Samples GitHub repository](https://github.com/lagom/lagom-samples) that you can clone locally:
 
 ```bash
-git clone https://github.com/lagom/lagom-scala-grpc-example.git
+git clone https://github.com/lagom/lagom-samples.git
+cd grpc-example/grpc-example-scala
 ```
 
 ## Running the example
