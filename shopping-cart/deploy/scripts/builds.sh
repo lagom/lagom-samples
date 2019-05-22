@@ -21,7 +21,7 @@ build() {
         if [ "$BUILD_TOOL" == "sbt" ]; then
             sbt clean docker:publishLocal 
         elif [ "$BUILD_TOOL" == "maven" ]; then
-            mvn package docker:build
+            mvn --batch-mode package docker:build
         else
             echo "unknown build tool [$BUILD_TOOL]"
             exit 1
