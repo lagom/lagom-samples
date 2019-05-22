@@ -17,8 +17,8 @@ val `hello-impl-HTTPS-port` = 11000
 
 // ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
 def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
-  // Lagom still can't register a service under the gRPC name so we hard-code t
-  // he port and the use the value to add the entry on the Service Registry
+  // Lagom still can't register a service under the gRPC name so we hard-code 
+  // the port and use the value to add the entry on the Service Registry
   lagomServiceHttpsPort := `hello-impl-HTTPS-port`
 )
 
@@ -70,7 +70,10 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
       lagomScaladslTestKit,
       macwire,
       scalaTest
-  )
+  ),
+ 
+  // workaround for akka discovery method lookup in dev-mode
+  lagomDevSettings := Seq("akka.discovery.method" -> "lagom-dev-mode")
 )
   .dependsOn(`hello-proxy-api`, `hello-api`)
 
