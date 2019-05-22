@@ -42,11 +42,15 @@ deleteNamespace $NAMESPACE
 createNamespace $NAMESPACE
 useNamespace $NAMESPACE
 
-# 4. Install PG and create a DB and a schema
+# 4.1 Install PG and create a DB and a schema
 . $COMMON_SCRIPTS_DIR/postgresql.sh
 ## TODO parameterize PG functions
 installPostgres
 createDatabase $SHOPPING_CART_SOURCES/schemas/shopping-cart.sql
+
+# 4.2 Setup Kafka (assumes Strimzi is installed and the `play-team` user can access/use it)
+. $COMMON_SCRIPTS_DIR/kafka.sh
+installKafka $NAMESPACE $DEPLOY_DIR/specs/common/kafka.yaml
 
 # 5. Build the docker images to be deployed
 . $SCRIPTS_DIR/builds.sh
