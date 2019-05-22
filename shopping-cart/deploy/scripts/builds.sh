@@ -11,6 +11,14 @@ setTag() {
     echo " - - - "
 }
 
+buildSbt() {
+    sbt clean docker:publishLocal
+}
+
+buildMvn() {
+    mvn package docker:build
+}
+
 build() {
     SHOPPING_CART_SOURCES=$1
     BUILD_TOOL=$2
@@ -19,9 +27,9 @@ build() {
         cd $SHOPPING_CART_SOURCES
         
         if [ "$BUILD_TOOL" == "sbt" ]; then
-            sbt clean docker:publishLocal 
+            buildSbt 
         elif [ "$BUILD_TOOL" == "maven" ]; then
-            mvn package docker:build
+            buildMvn
         else
             echo "unknown build tool [$BUILD_TOOL]"
             exit 1
