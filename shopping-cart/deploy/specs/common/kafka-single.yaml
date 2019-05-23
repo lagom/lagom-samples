@@ -1,3 +1,5 @@
+## These settings are not valid for production. Please refer to 
+## https://developer.lightbend.com/docs/fast-data-platform/current-OpenShift/#kafka-resource-templates
 apiVersion: kafka.strimzi.io/v1alpha1
 kind: Kafka
 metadata:
