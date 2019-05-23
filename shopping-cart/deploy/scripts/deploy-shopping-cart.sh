@@ -40,6 +40,7 @@ echo "Deploying to $NAMESPACE"
 # 3. Recreate the NAMESPACE
 deleteNamespace $NAMESPACE
 createNamespace $NAMESPACE
+useNamespace $NAMESPACE
 
 # 4. Install PG and create a DB and a schema
 . $COMMON_SCRIPTS_DIR/postgresql.sh

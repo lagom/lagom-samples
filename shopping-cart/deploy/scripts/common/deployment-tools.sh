@@ -8,6 +8,11 @@ deleteNamespace() {
     oc delete project $NAMESPACE
 }
 
+useNamespace() {
+    NAMESPACE=$1
+    oc project $NAMESPACE
+}
+
 ## Creates a namespace. This operation will timeout in 20 seconds.
 ##
 ## 1. NAMESPACE

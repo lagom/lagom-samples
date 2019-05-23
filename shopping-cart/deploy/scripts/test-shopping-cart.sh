@@ -31,7 +31,7 @@ echo "Testing deployment $NAMESPACE"
 
 # 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
-
+useNamespace $NAMESPACE
 
 SHOPPING_CART_HOST=$(oc get route shopping-cart -o jsonpath='{.spec.host}')
 INVENTORY_HOST=$(oc get route inventory -o jsonpath='{.spec.host}')
