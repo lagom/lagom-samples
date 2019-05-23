@@ -67,8 +67,9 @@ jobs:
     name: "Deploy Shopping Cart example (java/maven)"
     
 stages:
+  - test
   - name: deploy
-    if: repo = lagom/lagom-samples
+    if: fork = false
 
 env:
   global:
