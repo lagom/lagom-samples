@@ -26,7 +26,7 @@ CREATE USER shopping_cart WITH PASSWORD 'shopping_cart';
 GRANT ALL PRIVILEGES ON DATABASE shopping_cart TO shopping_cart;
 ```
 
-Once PostgreSQL is setup, you can start the system by running:
+Once Postgres is setup, you can start the system by running:
 
 ```
 sbt runAll

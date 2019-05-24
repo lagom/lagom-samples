@@ -9,7 +9,7 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide,
 
   override def buildHandler() =
     readSide
-      .builder[ShoppingCartEvent]("shopping-cart-view")
+      .builder[ShoppingCartEvent]("shopping-cart-report")
       .setGlobalPrepare(repository.createTable())
       .setEventHandler[ItemUpdated] { envelope =>
         repository.createReport(envelope.entityId, envelope.event.eventTime)

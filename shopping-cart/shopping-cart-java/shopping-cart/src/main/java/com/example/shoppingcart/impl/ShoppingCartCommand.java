@@ -1,7 +1,6 @@
 package com.example.shoppingcart.impl;
 
 import akka.Done;
-import com.example.shoppingcart.api.ShoppingCart;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;

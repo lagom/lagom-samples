@@ -9,6 +9,10 @@ scalaVersion in ThisBuild := "2.12.8"
 version in ThisBuild ~= (_.replace('+', '-'))
 dynver in ThisBuild ~= (_.replace('+', '-'))
 
+val hibernateEntityManager = "org.hibernate" % "hibernate-entitymanager" % "5.4.2.Final"
+val jpaApi  = "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % "1.0.0.Final"
+val validationApi = "javax.validation" % "validation-api" % "1.1.0.Final"
+
 lazy val `shopping-cart-java` = (project in file("."))
   .aggregate(`shopping-cart-api`, `shopping-cart`, `inventory-api`, inventory)
 
@@ -28,6 +32,7 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceJdbc,
+      lagomJavadslPersistenceJpa,
       lagomJavadslKafkaBroker,
       lagomLogback,
       lagomJavadslTestKit,
@@ -35,7 +40,10 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       postgresDriver,
       hamcrestLibrary,
       lagomJavadslAkkaDiscovery,
-      akkaDiscoveryKubernetesApi
+      akkaDiscoveryKubernetesApi,
+      hibernateEntityManager,
+      jpaApi,
+      validationApi
     )
   )
   .settings(lagomForkedTestSettings: _*)
