@@ -4,7 +4,7 @@ import com.example.shoppingcart.api.ShoppingCartService
 import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
-import com.lightbend.lagom.scaladsl.persistence.jdbc.JdbcPersistenceComponents
+import com.lightbend.lagom.scaladsl.persistence.slick.SlickPersistenceComponents
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import play.api.db.HikariCPComponents
@@ -23,7 +23,7 @@ class ShoppingCartLoader extends LagomApplicationLoader {
 
 abstract class ShoppingCartApplication(context: LagomApplicationContext)
   extends LagomApplication(context)
-    with JdbcPersistenceComponents
+    with SlickPersistenceComponents
     with HikariCPComponents
     with LagomKafkaComponents
     with AhcWSComponents {
@@ -36,4 +36,8 @@ abstract class ShoppingCartApplication(context: LagomApplicationContext)
 
   // Register the ShoppingCart persistent entity
   persistentEntityRegistry.register(wire[ShoppingCartEntity])
+
+  lazy val reportRepository = wire[ShoppingCartReportRepository]
+
+  readSide.register(wire[ShoppingCartReportProcessor])
 }

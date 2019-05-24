@@ -1,5 +1,7 @@
 package com.example.shoppingcart.api
 
+import java.time.Instant
+
 import akka.{Done, NotUsed}
 import com.lightbend.lagom.scaladsl.api.broker.Topic
 import com.lightbend.lagom.scaladsl.api.broker.kafka.{KafkaProperties, PartitionKeyStrategy}
@@ -27,6 +29,13 @@ trait ShoppingCartService extends Service {
   def get(id: String): ServiceCall[NotUsed, ShoppingCart]
 
   /**
+   * Get a shopping cart report (view model).
+   *
+   * Example: curl http://localhost:9000/shoppingcart/123/report
+   */
+  def getReport(id: String): ServiceCall[NotUsed, ShoppingCartReport]
+
+  /**
     * Update an items quantity in the shopping cart.
     *
     * Example: curl -H "Content-Type: application/json" -X POST -d '{"productId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
@@ -51,6 +60,7 @@ trait ShoppingCartService extends Service {
     named("shopping-cart")
       .withCalls(
         restCall(Method.GET, "/shoppingcart/:id", get _),
+        restCall(Method.GET, "/shoppingcart/:id/report", getReport _),
         restCall(Method.POST, "/shoppingcart/:id", updateItem _),
         restCall(Method.POST, "/shoppingcart/:id/checkout", checkout _)
       )
@@ -101,3 +111,16 @@ object ShoppingCart {
 
   implicit val format: Format[ShoppingCart] = Json.format
 }
+
+
+/**
+ * A shopping cart report exposes information about a ShoppingCart.
+ */
+case class ShoppingCartReport(cartId: String,
+                              creationDate: Instant,
+                              checkoutDate: Option[Instant])
+
+object ShoppingCartReport {
+  implicit val format: Format[ShoppingCartReport] = Json.format
+}
+

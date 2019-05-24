@@ -1,5 +1,7 @@
 package com.example.shoppingcart.impl
 
+import java.time.{Instant, OffsetDateTime}
+
 import akka.Done
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventTag, PersistentEntity}
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
@@ -51,15 +53,15 @@ class ShoppingCartEntity extends PersistentEntity {
   /**
     * The initial state. This is used if there is no snapshotted state to be found.
     */
-  override def initialState: ShoppingCartState = ShoppingCartState(Map.empty, false)
+  override def initialState: ShoppingCartState = ShoppingCartState(Map.empty, checkedOut = false)
 
   /**
     * An entity can define different behaviours for different states, so the behaviour
     * is a function of the current state to a set of actions.
     */
   override def behavior: Behavior = {
-    case ShoppingCartState(items, false) => openShoppingCart
-    case ShoppingCartState(items, true) => checkedOut
+    case ShoppingCartState(_, false) => openShoppingCart
+    case ShoppingCartState(_, true) => checkedOut
   }
 
   def openShoppingCart = {
@@ -76,7 +78,7 @@ class ShoppingCartEntity extends PersistentEntity {
         // In response to this command, we want to first persist it as a
         // ItemUpdated event
         ctx.thenPersist(
-          ItemUpdated(productId, quantity)
+          ItemUpdated(productId, quantity, Instant.now())
         ) { _ =>
           // Then once the event is successfully persisted, we respond with done.
           ctx.reply(Done)
@@ -92,7 +94,7 @@ class ShoppingCartEntity extends PersistentEntity {
         // In response to this command, we want to first persist it as a
         // CheckedOut event
         ctx.thenPersist(
-          CheckedOut
+          CheckedOut(Instant.now())
         ) { _ =>
           // Then once the event is successfully persisted, we respond with done.
           ctx.reply(Done)
@@ -135,10 +137,10 @@ class ShoppingCartEntity extends PersistentEntity {
 
   def eventHandlers: EventHandler = {
     // Event handler for the ItemUpdated event
-    case (ItemUpdated(productId: String, quantity: Int), state) => state.updateItem(productId, quantity)
+    case (ItemUpdated(productId: String, quantity: Int, _), state) => state.updateItem(productId, quantity)
 
     // Event handler for the checkout event
-    case (CheckedOut, state) => state.checkout
+    case (_: CheckedOut, state) => state.checkout
   }
 }
 
@@ -184,7 +186,7 @@ object ShoppingCartEvent {
 /**
   * An event that represents a item updated event.
   */
-case class ItemUpdated(productId: String, quantity: Int) extends ShoppingCartEvent
+case class ItemUpdated(productId: String, quantity: Int, eventTime: Instant) extends ShoppingCartEvent
 
 object ItemUpdated {
 
@@ -200,18 +202,16 @@ object ItemUpdated {
 /**
   * An event that represents a checked out event.
   */
-case object CheckedOut extends ShoppingCartEvent {
+case class CheckedOut(eventTime: Instant) extends ShoppingCartEvent
 
+object CheckedOut {
   /**
-    * Format for the checked out event.
-    *
-    * Events get stored and loaded from the database, hence a JSON format
-    * needs to be declared so that they can be serialized and deserialized.
-    */
-  implicit val format: Format[CheckedOut.type] = Format(
-    Reads(_ => JsSuccess(CheckedOut)),
-    Writes(_ => Json.obj())
-  )
+   * Format for the checked out event.
+   *
+   * Events get stored and loaded from the database, hence a JSON format
+   * needs to be declared so that they can be serialized and deserialized.
+   */
+  implicit val format: Format[CheckedOut] = Json.format
 }
 
 /**
@@ -317,7 +317,7 @@ object ShoppingCartException {
 object ShoppingCartSerializerRegistry extends JsonSerializerRegistry {
   override def serializers: Seq[JsonSerializer[_]] = Seq(
     JsonSerializer[ItemUpdated],
-    JsonSerializer[CheckedOut.type],
+    JsonSerializer[CheckedOut],
     JsonSerializer[UpdateItem],
     JsonSerializer[Checkout.type],
     JsonSerializer[Get.type],

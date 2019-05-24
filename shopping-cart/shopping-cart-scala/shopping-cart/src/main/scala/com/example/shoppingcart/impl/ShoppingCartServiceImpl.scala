@@ -1,10 +1,12 @@
 package com.example.shoppingcart.impl
 
+import java.time.OffsetDateTime
+
 import akka.{Done, NotUsed}
-import com.example.shoppingcart.api.{ShoppingCart, ShoppingCartItem, ShoppingCartService}
+import com.example.shoppingcart.api.{ShoppingCart, ShoppingCartItem, ShoppingCartReport, ShoppingCartService}
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
-import com.lightbend.lagom.scaladsl.api.transport.BadRequest
+import com.lightbend.lagom.scaladsl.api.transport.{BadRequest, NotFound, TransportException}
 import com.lightbend.lagom.scaladsl.broker.TopicProducer
 import com.lightbend.lagom.scaladsl.persistence.{EventStreamElement, PersistentEntityRegistry}
 
@@ -13,7 +15,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Implementation of the `ShoppingCartService`.
   */
-class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends ShoppingCartService {
+class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry, reportRepository: ShoppingCartReportRepository)(implicit ec: ExecutionContext) extends ShoppingCartService {
 
   /**
     * Looks up the shopping cart entity for the given ID.
@@ -45,7 +47,7 @@ class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry
 
   override def shoppingCartTopic: Topic[ShoppingCart] = TopicProducer.singleStreamWithOffset { fromOffset =>
     persistentEntityRegistry.eventStream(ShoppingCartEvent.Tag, fromOffset)
-      .filter(_.event.isInstanceOf[CheckedOut.type])
+      .filter(_.event.isInstanceOf[CheckedOut])
       .mapAsync(4) {
         case EventStreamElement(id, _, offset) =>
           entityRef(id)
@@ -56,5 +58,12 @@ class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry
 
   private def convertShoppingCart(id: String, cart: ShoppingCartState) = {
     ShoppingCart(id, cart.items.map((ShoppingCartItem.apply _).tupled).toSeq, cart.checkedOut)
+  }
+
+  override def getReport(cartId: String): ServiceCall[NotUsed, ShoppingCartReport] = ServiceCall { _ =>
+    reportRepository.findById(cartId).map {
+      case Some(cart) => cart
+      case None => throw NotFound(s"Couldn't find a shopping cart report for $cartId")
+    }
   }
 }

@@ -1,5 +1,7 @@
 package com.example.shoppingcart.impl
 
+import java.time.OffsetDateTime
+
 import akka.Done
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
@@ -27,41 +29,40 @@ class ShoppingCartEntitySpec extends WordSpec with Matchers with BeforeAndAfterA
     "add an item" in withTestDriver { driver =>
       val outcome = driver.run(UpdateItem("123", 2))
       outcome.replies should contain only Done
-      outcome.events should contain only ItemUpdated("123", 2)
-      outcome.state should === (ShoppingCartState(Map("123" -> 2), false))
+      outcome.events should have size 1
+      outcome.events.head should matchPattern { case ItemUpdated("123", 2, _) => }
+      outcome.state should ===(ShoppingCartState(Map("123" -> 2), checkedOut = false))
     }
 
     "remove an item" in withTestDriver { driver =>
       driver.run(UpdateItem("123", 2))
       val outcome = driver.run(UpdateItem("123", 0))
       outcome.replies should contain only Done
-      outcome.events should contain only ItemUpdated("123", 0)
-      outcome.state should === (ShoppingCartState(Map.empty, false))
+      outcome.events should have size 1
+      outcome.events.head should matchPattern { case ItemUpdated("123", 0, _) => }
+      outcome.state should ===(ShoppingCartState(Map.empty, checkedOut = false))
     }
 
     "update multiple items" in withTestDriver { driver =>
-      driver.run(UpdateItem("123", 2)).state should === (ShoppingCartState(
-        Map("123" -> 2), false))
-      driver.run(UpdateItem("456", 3)).state should === (ShoppingCartState(
-        Map("123" -> 2, "456" -> 3), false))
-      driver.run(UpdateItem("123", 1)).state should === (ShoppingCartState(
-        Map("123" -> 1, "456" -> 3), false))
-      driver.run(UpdateItem("456", 0)).state should === (ShoppingCartState(
-        Map("123" -> 1), false))
+      driver.run(UpdateItem("123", 2)).state should ===(ShoppingCartState(Map("123" -> 2), checkedOut = false))
+      driver.run(UpdateItem("456", 3)).state should ===(ShoppingCartState(Map("123" -> 2, "456" -> 3), checkedOut = false))
+      driver.run(UpdateItem("123", 1)).state should ===(ShoppingCartState(Map("123" -> 1, "456" -> 3), checkedOut = false))
+      driver.run(UpdateItem("456", 0)).state should ===(ShoppingCartState(Map("123" -> 1), checkedOut = false))
     }
 
     "allow checking out" in withTestDriver { driver =>
       driver.run(UpdateItem("123", 2))
       val outcome = driver.run(Checkout)
       outcome.replies should contain only Done
-      outcome.events should contain only CheckedOut
-      outcome.state should === (ShoppingCartState(Map("123" -> 2), true))
+      outcome.events should have size 1
+      outcome.events.head should matchPattern { case CheckedOut(_) => }
+      outcome.state should ===(ShoppingCartState(Map("123" -> 2), checkedOut = true))
     }
 
     "allow getting the state" in withTestDriver { driver =>
       driver.run(UpdateItem("123", 2))
       val outcome = driver.run(Get)
-      outcome.replies should contain only ShoppingCartState(Map("123" -> 2), false)
+      outcome.replies should contain only ShoppingCartState(Map("123" -> 2), checkedOut = false)
       outcome.events should have size 0
     }
 
