@@ -1,5 +1,7 @@
 # Lagom Samples
 
+[![Build Status](https://travis-ci.com/lagom/lagom-samples.svg?branch=1.6.x)](https://travis-ci.com/lagom/lagom-samples)
+
 [Lagom](https://www.lagomframework.com/) is an [open source](https://github.com/lagom/lagom) framework for building reactive microservice systems in Java or Scala. 
 
 This repository contains code examples to help you understand how to achieve common goals. In general, code in each folder of this repository tries to answer a question of type "How do I _xyz_ ?". For example: "How do I use RDBMS read-sides with Cassandra write-sides?".
@@ -41,19 +43,8 @@ If you want to run a specific example you will have to clone the whole repositor
 
 Each example includes specific instructions in it's `README.md` file on how to run and exercise the application.
 
+## License
 
-#### License
+To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 
-<sup>
-To the extent possible under law, the author(s) have dedicated all copyright and
-related and neighboring rights to this software to the public domain worldwide.
-This software is distributed without any warranty.
-</sup>
-
-<br>
-
-<sub>
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion by you shall be licensed as above, without any additional terms
-or conditions.
-</sub>
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion by you shall be licensed as above, without any additional terms or conditions.

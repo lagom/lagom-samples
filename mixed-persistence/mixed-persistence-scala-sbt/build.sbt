@@ -4,9 +4,9 @@ version in ThisBuild := "1.0-SNAPSHOT"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.12.8"
 
-val h2 = "com.h2database" % "h2" % "1.4.196"
-val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
+val h2 = "com.h2database" % "h2" % "1.4.199"
+val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.2" % "provided"
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8-RC5" % Test
 
 lazy val `mixed-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
