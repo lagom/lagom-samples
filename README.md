@@ -19,6 +19,7 @@ This repository contains code examples to help you understand how to achieve com
 
 * How do I authenticate/authorize by JWT? ([Java/Maven example](https://github.com/pac4j/lagom-pac4j-java-demo), [Scala/Sbt example](https://github.com/pac4j/lagom-pac4j-scala-demo))
 * How do I generate _OpenAPI/Swagger Specification_ for Lagom service? ([Java/Maven example](https://github.com/taymyr/lagom-samples/blob/master/openapi/java/README.md), [Scala/Sbt example](https://github.com/taymyr/lagom-samples/blob/master/openapi/scala/README.md))
+* How do I using Play's JPA API to do CRUD-oriented persistence in a Lagom service? ([Java/SBT example](https://github.com/taymyr/lagom-samples/blob/master/jpa-crud/java-sbt/README.md))
 
 ## Contributing examples
 
