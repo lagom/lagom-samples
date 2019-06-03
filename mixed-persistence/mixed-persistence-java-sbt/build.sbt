@@ -16,9 +16,9 @@ lazy val `hello-api` = (project in file("hello-api"))
     )
   )
 
-val lombok = "org.projectlombok" % "lombok" % "1.16.10"
-val h2 = "com.h2database" % "h2" % "1.4.196"
-val hibernate = "org.hibernate" % "hibernate-core" % "5.2.12.Final"
+val lombok = "org.projectlombok" % "lombok" % "1.18.8"
+val h2 = "com.h2database" % "h2" % "1.4.199"
+val hibernate = "org.hibernate" % "hibernate-core" % "5.4.3.Final"
 
 lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomJava)

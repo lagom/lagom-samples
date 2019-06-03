@@ -126,10 +126,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <scala.binary.version>2.12</scala.binary.version>
-
-        <lagom.version>1.5.1</lagom.version>
+        <lagom.version>1.6.0-M2</lagom.version>
         <cinnamon.version>2.11.1</cinnamon.version>
     </properties>
 
