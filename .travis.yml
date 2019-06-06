@@ -7,6 +7,10 @@ before_install:
 
 install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
 
+services:
+  # shopping cart is using postgres for testing
+  - postgresql
+
 jobs:
   include:
 
@@ -28,15 +32,15 @@ jobs:
     name: "Run tests gRPC example (scala)"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java sbt"
     name: "Run tests Shopping Cart example (java/sbt)"
 
   - script:
-    - mvn -f shopping-cart/shopping-cart-java test
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java maven"
     name: "Run tests Shopping Cart example (java/mvn)"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-scala sbt"
     name: "Run tests Shopping Cart example (scala)"
 
   - script:
