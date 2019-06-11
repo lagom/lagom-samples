@@ -32,6 +32,12 @@ Once PostgreSQL is setup, you can start the system by running:
 sbt runAll
 ```
 
+or, if you prefer to use Maven:
+
+```
+mvn lagom:runAll
+```
+
 ## Shopping cart service
 
 The shopping cart service offers three REST endpoints:
