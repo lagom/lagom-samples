@@ -9,8 +9,8 @@ CODE_VARIANT=${1:-shopping-cart-scala}
 shift 
 BUILD_TOOL=${1:-sbt}
 
-## The ID will be the PR number or `local`
-ID=${TRAVIS_PULL_REQUEST:-local}
+## The ID will be the PR number, the branch name on Travis or `local`
+ID="$(sed "s/false/$TRAVIS_BRANCH/" <<<${TRAVIS_PULL_REQUEST:-local})"
 
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
