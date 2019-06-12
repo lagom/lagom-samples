@@ -165,8 +165,10 @@ buildRoute() {
   ## Must use `oc create route edge ...` instead of `oc expose service` because 
   ## centralpark2 only allows HTTPS traffic. Using Edge means external HTTPS 
   ## with TLS termination on the edge.
-  ## 
-  ## The hostname is set to '${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER'  since that's 
-  ## the convention used by openshift when using `oc expose service`
-  oc create route edge --service=$SERVICE_NAME --hostname=${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER  || exit 1
+  ##
+  ## The hostname is set to '${SERVICE_NAME}-$NAMESPACE.$OPENSHIFT_SERVER', since that's
+  ## the convention used by openshift when using `oc expose service`.
+  ## The hostname is truncated after 63 characters, the maximum length for a DNS hostname.
+  local hostname="${SERVICE_NAME}-$NAMESPACE"
+  oc create route edge --service=$SERVICE_NAME --hostname=${hostname:0:63}.$OPENSHIFT_SERVER  || exit 1
 }
