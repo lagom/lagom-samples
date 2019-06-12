@@ -1,11 +1,32 @@
 #! /bin/bash
 
 ## Deletes a namespace and sleeps a bit for the deletion to complete.
+## This operation will timeout in 20 seconds.
 ##
 ## 1. NAMESPACE
 deleteNamespace() {
     NAMESPACE=$1
-    oc delete project $NAMESPACE
+    # Don't do anything if the namespace doesn't already exist
+    if [ -z "$(oc get project $NAMESPACE --no-headers=true)" ]
+    then
+        return
+    fi
+    oc delete project $NAMESPACE --wait=true
+    # Project deletion is async, even with --wait=true
+    # See https://bugzilla.redhat.com/show_bug.cgi?id=1700026#c6
+    echo "Waiting for $NAMESPACE to be deleted."
+    local -i count=0
+    while [ -n "$(oc get project $NAMESPACE --no-headers=true)" ]
+    do
+        sleep 2
+        (( count = count + 1 ))
+        if [ $count -gt 10 ]
+        then
+            echo "$NAMESPACE couldn't be deleted."
+            exit 1
+        fi
+    done
+    echo "$NAMESPACE was deleted."
 }
 
 useNamespace() {
@@ -18,8 +39,9 @@ useNamespace() {
 ## 1. NAMESPACE
 createNamespace() {
     NAMESPACE=$1
-    echo -n "Waiting for $NAMESPACE to be created."
-    while [ "$(oc get projects --no-headers=true | grep $NAMESPACE | wc -l)" -ne 1 ]
+    echo "Waiting for $NAMESPACE to be created."
+    local -i count=0
+    while [ -z "$(oc get project $NAMESPACE --no-headers=true)" ]
     do
         sleep 2
         # aggressively retries to build the project. This is necessary because even if `oc get projects` 
@@ -29,11 +51,11 @@ createNamespace() {
         (( count = count + 1 ))
         if [ $count -gt 10 ]
         then
-            echo " failed."
             echo "$NAMESPACE couldn't be created."
             exit 1
         fi
     done
+    echo "$NAMESPACE was created."
     ## Extra sleep to allow the cluster to completely see the changes.
     sleep 5
 }
@@ -62,7 +84,7 @@ waitForApp() {
         CONTAINERS="$3/$3"
     fi
 
-    count=0
+    local -i count=0
     echo -n "Waiting for $SELECTOR to be provisioned."
     while [ "$(oc get pods -l $SELECTOR -n $NAMESPACE --no-headers=true --ignore-not-found=true | grep Running | grep "$CONTAINERS" | wc -l)" -lt $REPLICAS ]
     do
