@@ -10,9 +10,6 @@ shift
 BUILD_TOOL=${1:-sbt}
 
 
-## The ID will be the PR number, the branch name on Travis or `local`
-ID="$(sed "s/false/$TRAVIS_BRANCH/" <<<${TRAVIS_PULL_REQUEST:-local})"
-
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
@@ -25,13 +22,9 @@ SHOPPING_CART_SOURCES=$BASE_DIR/$CODE_VARIANT
 . $COMMON_SCRIPTS_DIR/installers.sh
 installOC
 
-# 0. Setup the NAMESPACE (predates all)
-#   e.g. lagom-shopping-cart-scala-sbt-23  (23 is the PR number)
-export NAMESPACE=lagom-$CODE_VARIANT-$BUILD_TOOL-$USER-$ID
-echo "Deploying to $NAMESPACE"
-
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
+echo "Deploying to $NAMESPACE"
 . $COMMON_SCRIPTS_DIR/clusterLogin.sh
 
 # 2. Load extra tools to manage the deployment
