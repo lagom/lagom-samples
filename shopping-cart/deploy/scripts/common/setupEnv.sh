@@ -11,6 +11,9 @@ else
     ID=local
 fi
 export NAMESPACE=lagom-$CODE_VARIANT-$BUILD_TOOL-$USER-$ID
+## The NAMESPACE is truncated after 63 characters, the maximum length for an OpenShift project name.
+NAMESPACE=${NAMESPACE:0:63}
+
 
 # Setup env vars for deployment
 export OPENSHIFT_SERVER=centralpark2.lightbend.com
