@@ -1,6 +1,8 @@
 package com.lightbend.lagom.samples.mixedpersistence.hello.impl.entity;
 
 import akka.Done;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
@@ -23,8 +25,14 @@ public interface HelloCommand extends Jsonable {
      * when all the events emitted by this command are successfully persisted.
      */
     @Value
+    @JsonDeserialize
     final class UseGreetingMessage implements HelloCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
         @NonNull String message;
+
+        @JsonCreator
+        public UseGreetingMessage(@NonNull String message) {
+            this.message = message;
+        }
     }
 
     /**
@@ -34,8 +42,14 @@ public interface HelloCommand extends Jsonable {
      * person.
      */
     @Value
+    @JsonDeserialize
     final class Hello implements HelloCommand, PersistentEntity.ReplyType<String> {
         @NonNull String name;
+
+        @JsonCreator
+        public Hello(@NonNull String name) {
+            this.name = name;
+        }
     }
 
 }

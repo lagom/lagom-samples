@@ -22,7 +22,7 @@ val hibernate = "org.hibernate" % "hibernate-core" % "5.2.12.Final"
 
 lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomJava)
-  .settings(common: _*)
+  .settings(common)
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
