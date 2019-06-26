@@ -5,7 +5,7 @@ before_install:
   - rm ~/.m2/settings.xml
   - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
 
-install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
+install: jabba install adopt@1.11.0-3 && jabba use $_ && java -version
 
 services:
   # shopping cart is using postgres for testing
