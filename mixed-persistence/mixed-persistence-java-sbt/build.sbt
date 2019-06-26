@@ -16,7 +16,7 @@ lazy val `hello-api` = (project in file("hello-api"))
     )
   )
 
-val lombok = "org.projectlombok" % "lombok" % "1.16.10"
+val lombok = "org.projectlombok" % "lombok" % "1.18.8"
 val h2 = "com.h2database" % "h2" % "1.4.196"
 val hibernate = "org.hibernate" % "hibernate-core" % "5.2.12.Final"
 
