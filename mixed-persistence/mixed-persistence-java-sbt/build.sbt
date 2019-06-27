@@ -8,7 +8,7 @@ lazy val `hello` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
-  .settings(common: _*)
+  .settings(common)
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslApi,
@@ -38,7 +38,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
 
 
 def common = Seq(
-  javacOptions in compile += "-parameters"
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation")
 )
 
 lagomKafkaEnabled in ThisBuild := false

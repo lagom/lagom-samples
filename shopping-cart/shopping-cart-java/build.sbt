@@ -72,7 +72,7 @@ val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discove
 val lagomJavadslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % LagomVersion.current
 
 def common = Seq(
-  javacOptions in (Compile,compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
 )
 
 def dockerSettings = Seq(
