@@ -3,9 +3,7 @@ language: scala
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
   - rm ~/.m2/settings.xml
-  - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
-
-install: jabba install adopt@1.11.0-3 && jabba use $_ && java -version
+  - . bin/jabbaLib && installJabba
 
 services:
   # shopping cart is using postgres for testing
@@ -13,59 +11,69 @@ services:
 
 jobs:
   include:
-
   - stage: test
     script: 
-     - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
+    - useAdoptOpenJdk8 
+    - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
     name: "Run tests Mixed Persistence (java)"  
 
   - script: 
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
     name: "Run tests Mixed Persistence (scala)"  
 
   - script:
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob grpc-example/grpc-example-java test"
     name: "Run tests gRPC example (java)"
 
   - script:
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob grpc-example/grpc-example-scala test"
     name: "Run tests gRPC example (scala)"
 
   - script:
+    - useAdoptOpenJdk8 
     - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java sbt"
     name: "Run tests Shopping Cart example (java/sbt)"
 
   - script:
+    - useAdoptOpenJdk8 
     - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java maven"
     name: "Run tests Shopping Cart example (java/mvn)"
 
   - script:
+    - useAdoptOpenJdk8 
     - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-scala sbt"
     name: "Run tests Shopping Cart example (scala)"
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
+    - useAdoptOpenJdk8 
     - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
     name: "Run tests Couchbase Persistence (java)" 
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
     name: "Run tests Couchbase Persistence (scala)"     
 
   - stage: deploy
     script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
   - script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
-
   - script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"

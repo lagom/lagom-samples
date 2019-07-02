@@ -1,0 +1,24 @@
+#! /bin/bash
+
+# Lib for Jabba scripts
+
+installJabba() {
+  curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+}
+
+installJdk() {
+    jabba install $1
+}
+
+useJdk() {
+    jabba use $1 && java -version
+}
+
+useAdoptOpenJdk8() {
+    installJdk "adopt@1.8.212-04"
+    useJdk "adopt@1.8.212-04"
+}
+useAdoptOpenJdk11() {
+    installJdk "adopt@1.11.0-3"
+    useJdk "adopt@1.11.0-3"
+}
