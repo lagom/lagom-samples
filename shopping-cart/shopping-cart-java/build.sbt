@@ -72,14 +72,19 @@ val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discove
 val lagomJavadslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-javadsl-akka-discovery-service-locator" % LagomVersion.current
 
 def common = Seq(
-  javacOptions in (Compile,compile) ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
 )
 
 def dockerSettings = Seq(
   dockerUpdateLatest := true,
-  dockerBaseImage := "adoptopenjdk/openjdk8",
+  dockerBaseImage := getDockerBaseImage(),
   dockerUsername := sys.props.get("docker.username"),
   dockerRepository := sys.props.get("docker.registry")
 )
+
+def getDockerBaseImage(): String = sys.props.get("java.version") match {
+  case Some(v) if v.startsWith("11") => "adoptopenjdk/openjdk11"
+  case _ => "adoptopenjdk/openjdk8"
+}
 
 lagomCassandraEnabled in ThisBuild := false

@@ -8,7 +8,7 @@ lazy val `hello` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
-  .settings(common: _*)
+  .settings(common)
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslApi,
@@ -16,13 +16,13 @@ lazy val `hello-api` = (project in file("hello-api"))
     )
   )
 
-val lombok = "org.projectlombok" % "lombok" % "1.16.10"
+val lombok = "org.projectlombok" % "lombok" % "1.18.8"
 val h2 = "com.h2database" % "h2" % "1.4.196"
 val hibernate = "org.hibernate" % "hibernate-core" % "5.2.12.Final"
 
 lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomJava)
-  .settings(common: _*)
+  .settings(common)
   .settings(
     libraryDependencies ++= Seq(
       lagomJavadslPersistenceCassandra,
@@ -38,7 +38,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
 
 
 def common = Seq(
-  javacOptions in compile += "-parameters"
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation")
 )
 
 lagomKafkaEnabled in ThisBuild := false
