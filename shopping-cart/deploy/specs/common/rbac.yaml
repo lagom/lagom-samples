@@ -12,8 +12,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: read-pods
 subjects:
-- kind: User
-  name: system:serviceaccount:myproject:default
+- kind: ServiceAccount
+  name: default
 roleRef:
   kind: Role
   name: pod-reader
