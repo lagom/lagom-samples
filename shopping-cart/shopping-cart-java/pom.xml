@@ -16,6 +16,28 @@
         <module>inventory</module>
     </modules>
 
+    <!--
+        For users: you don't need to define a profile like the one below.
+        We are doing so because we want to test this sample using Java 8
+        and Java 11, which requires some additional configuration.
+     -->
+    <profiles>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <!-- This will activate if the build runs using a jdk version number that matches the prefix given. -->
+                <jdk>11</jdk>
+            </activation>
+            <properties>
+                <!-- Using Lagom prefix to avoid conflicts with others -->
+                <lagom.jdk.source>11</lagom.jdk.source>
+                <lagom.jdk.target>11</lagom.jdk.target>
+                <lagom.docker.image>adoptopenjdk/openjdk11</lagom.docker.image>
+            </properties>
+        </profile>
+    </profiles>
+
+
     <build>
         <pluginManagement>
             <plugins>
@@ -24,8 +46,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.5.1</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>${lagom.jdk.source}</source>
+                        <target>${lagom.jdk.target}</target>
                         <compilerArgs>
                             <arg>-parameters</arg>
                             <arg>-Xlint:unchecked</arg>
@@ -80,7 +102,7 @@
                         <image>
                             <name>%a:%l</name>
                             <build>
-                                <from>adoptopenjdk/openjdk8</from>
+                                <from>${lagom.docker.image}</from>
                                 <tags>
                                     <tag>${version.number}</tag>
                                     <tag>latest</tag>
@@ -184,5 +206,14 @@
         <akka.management.version>1.0.0</akka.management.version>
         <akka.http.version>10.1.8</akka.http.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
+
+        <!--
+            Using Lagom prefix to avoid conflicts with others.
+            The values here can be overridden by the Java 11 profile
+            defined above in this file.
+        -->
+        <lagom.jdk.source>1.8</lagom.jdk.source>
+        <lagom.jdk.target>1.8</lagom.jdk.target>
+        <lagom.docker.image>adoptopenjdk/openjdk8</lagom.docker.image>
     </properties>
 </project>
