@@ -77,9 +77,14 @@ def common = Seq(
 
 def dockerSettings = Seq(
   dockerUpdateLatest := true,
-  dockerBaseImage := "adoptopenjdk/openjdk8",
+  dockerBaseImage := getDockerBaseImage(),
   dockerUsername := sys.props.get("docker.username"),
   dockerRepository := sys.props.get("docker.registry")
 )
+
+def getDockerBaseImage(): String = sys.props.get("java.version") match {
+  case Some(v) if v.startsWith("11") => "adoptopenjdk/openjdk11"
+  case _ => "adoptopenjdk/openjdk8"
+}
 
 lagomCassandraEnabled in ThisBuild := false
