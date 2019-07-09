@@ -131,8 +131,51 @@
                     <dateFormat>yyyyMMdd-HHmmss</dateFormat>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                     <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                    <!-- 
+                        Don't fail the buidl when git dir is not detected.
+                        We just keep going and let the maven-antrun-plugin set the properties 
+                    -->
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- Workaround for projects without a .git folder
+                Typically, that happens when downloading the zip from 
+                https://developer.lightbend.com/start/?group=lagom&project=lagom-samples-lagom-java-shopping-cart-example
+
+                In such case, there is not .git folder included and properties `git.commit.time` and `git.commit.id.abbrev` won't be set.
+                Using the maven-antrun-plugin, we can conditionally set the properties to `maven.build.timestamp` and `no-git` respectively.
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <property environment="env"/>
+                                                      
+                                <!--
+                                    When a .git directory is present, `git-commit-id-plugin` will set the variables 
+                                    `git.commit.time` and `git.commit.id.abbrev`. We will use it to define `version.number`. 
+                                    Later used to tag the docker image.
+
+                                    When a .git directory is not detected, we use `maven.build.timestamp` instead.
+                                    Note: maven.build.timestamp is configured to use format yyyyMMdd-HHmmss, see maven.build.timestamp.format defintion below.
+                                -->               
+                                <condition property="version.number" value="${git.commit.time}.${git.commit.id.abbrev}" else="${maven.build.timestamp}" >
+                                    <isset property="git.commit.time" />
+                                </condition>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
     </build>
 
@@ -205,8 +248,11 @@
         <scala.binary.version>2.12</scala.binary.version>
         <akka.management.version>1.0.0</akka.management.version>
         <akka.http.version>10.1.8</akka.http.version>
-        <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
-
+        <!--
+            This property is needed to generate a valid timestamp format to be used on docker images. 
+            Useful when generating build timestmap (see maven-antrun-plugin configuration above)
+        -->
+        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
         <!--
             Using Lagom prefix to avoid conflicts with others.
             The values here can be overridden by the Java 11 profile
