@@ -157,9 +157,7 @@
                         </goals>
                         <configuration>
                             <exportAntProperties>true</exportAntProperties>
-                            <target>
-                                <property environment="env"/>
-                                                      
+                            <target>                  
                                 <!--
                                     When a .git directory is present, `git-commit-id-plugin` will set the variables 
                                     `git.commit.time` and `git.commit.id.abbrev`. We will use it to define `version.number`. 
