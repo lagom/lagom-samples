@@ -3,12 +3,12 @@ import com.lightbend.lagom.core.LagomVersion
 organization in ThisBuild := "com.example"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.8"
+scalaVersion in ThisBuild := "2.13.0"
 
-val postgresDriver = "org.postgresql" % "postgresql" % "42.2.5"
-val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.2" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.7" % Test
-val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.0"
+val postgresDriver = "org.postgresql" % "postgresql" % "42.2.6"
+val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
+val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.1"
 val lagomScaladslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
 
 ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings")
