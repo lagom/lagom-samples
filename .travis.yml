@@ -1,5 +1,9 @@
 language: scala
 
+# Only build non-pushes (so PRs, API requests & cron jobs) OR main branch builds
+# https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
+if: type != push OR branch IN (1.5.x, 1.6.x)
+
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
   - rm ~/.m2/settings.xml
@@ -141,9 +145,9 @@ stages:
   - test
   - test-java11
   - name: deploy
-    if: type = push # only deploy branches that are pushed directly to the repo
+    if: repo = lagom/lagom-samples # only deploy branches that are pushed directly to the repo
   - name: deploy-java11
-    if: type = push # only deploy branches that are pushed directly to the repo
+    if: repo = lagom/lagom-sample # only deploy branches that are pushed directly to the repo
 
 env:
   global:
