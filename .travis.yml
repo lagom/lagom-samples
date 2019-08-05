@@ -112,16 +112,19 @@ jobs:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
   - script:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
   - script:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"
 
   - stage: deploy-java11
@@ -129,16 +132,19 @@ jobs:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
   - script:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
   - script:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"
     
 stages:
