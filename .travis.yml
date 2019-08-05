@@ -151,9 +151,9 @@ stages:
   - test
   - test-java11
   - name: deploy
-    if: repo = lagom/lagom-samples # only deploy branches that are pushed directly to the repo
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java11
-    if: repo = lagom/lagom-sample # only deploy branches that are pushed directly to the repo
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
 
 env:
   global:
