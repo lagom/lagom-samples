@@ -34,7 +34,7 @@ public interface HelloCommand extends Jsonable {
         @NonNull String message;
 
         @JsonCreator
-        public UseGreetingMessage(String message) {
+        public UseGreetingMessage(@NonNull String message) {
             this.message = Preconditions.checkNotNull(message, "message must NOT be null");
         }
     }
@@ -51,7 +51,7 @@ public interface HelloCommand extends Jsonable {
         @NonNull String name;
 
         @JsonCreator
-        public Hello(String name) {
+        public Hello(@NonNull String name) {
             this.name = Preconditions.checkNotNull(name, "name must NOT be null");
         }
     }

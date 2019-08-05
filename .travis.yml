@@ -1,82 +1,166 @@
 language: scala
 
+# Only build non-pushes (so PRs, API requests & cron jobs) OR main branch builds
+# https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
+if: type != push OR branch IN (1.5.x, 1.6.x)
+
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
   - rm ~/.m2/settings.xml
-  - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+  - . bin/jabbaLib && installJabba
 
-install: jabba install adopt@1.8.192-12 && jabba use $_ && java -version
+services:
+  # shopping cart is using postgres for testing
+  - postgresql
 
 jobs:
   include:
-
   - stage: test
     script: 
-     - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
+    - useAdoptOpenJdk8 
+    - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
     name: "Run tests Mixed Persistence (java)"  
-
   - script: 
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
     name: "Run tests Mixed Persistence (scala)"  
 
   - script:
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob grpc-example/grpc-example-java test"
     name: "Run tests gRPC example (java)"
-
   - script:
+    - useAdoptOpenJdk8 
     - "bin/runSbtJob grpc-example/grpc-example-scala test"
     name: "Run tests gRPC example (scala)"
 
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-java docker:publishLocal test"
+    - useAdoptOpenJdk8 
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java sbt"
     name: "Run tests Shopping Cart example (java/sbt)"
-
   - script:
-    - mvn -f shopping-cart/shopping-cart-java test
+    - useAdoptOpenJdk8 
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java maven"
     name: "Run tests Shopping Cart example (java/mvn)"
-
   - script:
-    - "bin/runSbtJob shopping-cart/shopping-cart-scala docker:publishLocal test"
+    - useAdoptOpenJdk8 
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-scala sbt"
     name: "Run tests Shopping Cart example (scala)"
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
+    - useAdoptOpenJdk8 
     - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
     name: "Run tests Couchbase Persistence (java)" 
+  - script:
+    - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 30s
+    - useAdoptOpenJdk8 
+    - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
+    name: "Run tests Couchbase Persistence (scala)"     
+
+
+  - stage: test-java11
+    script: 
+    - useAdoptOpenJdk11
+    - "bin/runSbtJob mixed-persistence/mixed-persistence-java-sbt test"
+    name: "Run tests Mixed Persistence (java)"  
+  - script: 
+    - useAdoptOpenJdk11
+    - "bin/runSbtJob mixed-persistence/mixed-persistence-scala-sbt test"
+    name: "Run tests Mixed Persistence (scala)"  
+
+  - script:
+    - useAdoptOpenJdk11
+    - "bin/runSbtJob grpc-example/grpc-example-java test"
+    name: "Run tests gRPC example (java)"
+  - script:
+    - useAdoptOpenJdk11
+    - "bin/runSbtJob grpc-example/grpc-example-scala test"
+    name: "Run tests gRPC example (scala)"
+
+  - script:
+    - useAdoptOpenJdk11
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java sbt"
+    name: "Run tests Shopping Cart example (java/sbt)"
+  - script:
+    - useAdoptOpenJdk11
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-java maven"
+    name: "Run tests Shopping Cart example (java/mvn)"
+  - script:
+    - useAdoptOpenJdk11
+    - "shopping-cart/travis-scripts/build.sh shopping-cart/shopping-cart-scala sbt"
+    name: "Run tests Shopping Cart example (scala)"
 
   - script:
     - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
     - sleep 30s
+    - useAdoptOpenJdk11
+    - mvn -f couchbase-persistence/couchbase-persistence-java-mvn test
+    name: "Run tests Couchbase Persistence (java)" 
+  - script:
+    - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase 
+    - sleep 30s
+    - useAdoptOpenJdk11
     - "bin/runSbtJob couchbase-persistence/couchbase-persistence-scala-sbt test"
     name: "Run tests Couchbase Persistence (scala)"     
 
+
   - stage: deploy
     script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
   - script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
-
   - script:
+    - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
+    name: "Deploy Shopping Cart example (java/maven)"
+
+  - stage: deploy-java11
+    script:
+    - useAdoptOpenJdk11
+    - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
+    - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
+    name: "Deploy Shopping Cart example (scala/sbt)"
+  - script:
+    - useAdoptOpenJdk11
+    - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
+    - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
+    name: "Deploy Shopping Cart example (java/sbt)"
+  - script:
+    - useAdoptOpenJdk11
+    - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
+    - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
+    - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"
     
 stages:
   - test
+  - test-java11
   - name: deploy
-    if: fork = false
+    if: repo = lagom/lagom-samples # only deploy branches that are pushed directly to the repo
+  - name: deploy-java11
+    if: repo = lagom/lagom-sample # only deploy branches that are pushed directly to the repo
 
 env:
   global:
     # Following secret is for CP2_PLAY_PASSWORD (password of the 'play-team' user in centralpark2 cluster) 
     # The secret was created for the repo 'lagom/lagom-ssamples' using
     #  $ travis encrypt --com CP2_PLAY_PASSWORD="asdf-qwer-1234-..."
-    # !!NOTE: the use of `--com` is required because the lagom org in travis uses tracis-ci.com (not travis-ci.org)
+    # !!NOTE: the use of `--com` is required because the lagom org in travis uses travis-ci.com (not travis-ci.org)
     # See https://docs.travis-ci.com/user/encryption-keys/
     secure: "Z7UAwHr8aVoFbhpE7wJHrP2yy/q33aNdKEiJdS7vO2xTPVedG/NWPFXfvpCliaKGwl6L9zDGEh0EaX7KgYuQ5C2uXjoEluv40Iyc+6qyA/yyMHT/ofBIuWl3Oo5jf4NZFXLUYSu5m9TWguuB0+xm6bJVa0USFK0frmazrWUjaAcXrvQ2tKyHi74ZpNCoVIKrrs/CdsBhAMApDjMPAxVQogcq6uT2Fe/oBKP8PuU1U8tNEJ/TXaWBKWRqjhLOq7pzuU19+oJD7R3T3Rs/NiHZq8WqR8ZvhrWsHWD5BUOIQ4Y+5Yp+K0PYkpYWPK5kYWxbtDPMNz/Af5fMG5oEiaPPvH6nPnNODpEW9T8BDjGHvTGPc1/upuDg3DHqbXaxF1u1/Zyfn6UW8K/iQvu5c3NznXvgLqGAz2HEjdmFr4DALBoxmNA3jheXg7GME5Dtus7qgBAKl+qu/N0AfPozl9TSvsjX5uJkzUOL2FYyqMB1Wv8QQOfGC7wfteX5K/pxL8obf9lKarZufdIr/DjPrR5Hj6ZgypmKnPEDur8peAprZvw9IFSXCcTtYXHGAdkuqOTFXKyrNlDv8r5f63JMYutJ382345M9Yhe/1wilFfEXrqMOyR8lj3QT0uIg42W2bCzYKNY+ZTsLeqIowTfJyIZoyZvfl3yk4rbs+58EGYzVw2c="
 

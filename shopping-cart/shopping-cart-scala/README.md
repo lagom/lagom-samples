@@ -34,11 +34,15 @@ sbt runAll
 
 ## Shopping cart service
 
-The shopping cart service offers three REST endpoints:
+The shopping cart service offers four REST endpoints:
 
 * Get the current contents of the shopping cart:
     ```
     curl http://localhost:9000/shoppingcart/123
+    ```
+* Get a report of the shopping cart creation and checkout dates:
+    ```
+    curl http://localhost:9000/shoppingcart/123/report
     ```
 * Update the quantity of an item in the shopping cart:
     ```
