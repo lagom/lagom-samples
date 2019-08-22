@@ -119,7 +119,7 @@ You can test the gRPC endpoint using [grpcc](https://github.com/njpatel/grpcc). 
 certificates, you will have to export and trust the CA certificate:
 
 ```bash
-keytool -export -alias playgeneratedCAtrusted -keystore target/dev-mode/generated.keystore  -storepass "" -file trustedCA.crt
+keytool -export -alias sslconfig-selfsigned  -keystore target/dev-mode/selfsigned.keystore  -storepass "" -file trustedCA.crt
 openssl x509 -in  trustedCA.crt -out trustedCA.pem -inform DER -outform PEM
 ```
 
