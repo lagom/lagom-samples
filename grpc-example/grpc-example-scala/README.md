@@ -12,7 +12,6 @@ knowledge as small as possible. Feel free to refer to the
 [Akka-gRPC reference guide](https://developer.lightbend.com/docs/akka-grpc/current/) or the 
 [Lagom documentation](https://www.lagomframework.com/documentation/current/scala/Home.html) for extra details.
 
-
 ## Sample license
 
 Written in 2018 by Lightbend, Inc.
