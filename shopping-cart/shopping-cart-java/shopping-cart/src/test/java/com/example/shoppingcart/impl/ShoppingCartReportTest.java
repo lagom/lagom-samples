@@ -8,6 +8,7 @@ import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import akka.actor.ActorSystem;
@@ -63,7 +64,7 @@ public class ShoppingCartReportTest {
     private ReadSideTestDriver testDriver = testServer.injector().instanceOf(ReadSideTestDriver.class);
     private ReportRepository reportRepository = testServer.injector().instanceOf(ReportRepository.class);
 
-    @Test
+    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
     public void createAReportOnFirstEvent() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
@@ -77,7 +78,7 @@ public class ShoppingCartReportTest {
         assertNull("checkout date is not set", report.getCheckoutDate());
     }
 
-    @Test
+    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
     public void creationDateDoesNotChangeOnNewEvents() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
@@ -98,7 +99,7 @@ public class ShoppingCartReportTest {
         assertNull("checkout date is not set", updatedReport.getCheckoutDate());
     }
 
-    @Test
+    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
     public void checkoutDateIsSetOnCheckout() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
