@@ -24,6 +24,9 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       //#couchbase-begin
       "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0",
       //#couchbase-end
+      // An explicit dependency to lagom-scaladsl-projection is required to
+      // workaround https://github.com/lagom/lagom/issues/2192
+      "com.lightbend.lagom" %% "lagom-scaladsl-projection" % "1.6.0-M5",
       lagomScaladslTestKit,
       macwire,
       scalaTest
