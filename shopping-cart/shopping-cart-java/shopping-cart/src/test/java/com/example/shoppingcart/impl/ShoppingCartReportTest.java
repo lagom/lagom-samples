@@ -2,18 +2,12 @@ package com.example.shoppingcart.impl;
 
 import com.lightbend.lagom.javadsl.persistence.Offset;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
-import com.lightbend.lagom.javadsl.persistence.jpa.JpaSession;
 import com.lightbend.lagom.javadsl.testkit.ReadSideTestDriver;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import akka.actor.ActorSystem;
-import akka.actor.ExtendedActorSystem;
-import akka.cluster.Cluster;
 
 import java.time.Instant;
 import java.util.UUID;

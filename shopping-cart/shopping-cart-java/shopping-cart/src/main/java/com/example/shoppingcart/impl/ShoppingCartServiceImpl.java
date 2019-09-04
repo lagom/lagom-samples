@@ -17,8 +17,6 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import javax.inject.Inject;
 
 import com.example.shoppingcart.api.ShoppingCartItem;
-import com.lightbend.lagom.javadsl.persistence.ReadSide;
-import com.lightbend.lagom.javadsl.persistence.jpa.JpaSession;
 import org.pcollections.TreePVector;
 
 import java.util.ArrayList;
