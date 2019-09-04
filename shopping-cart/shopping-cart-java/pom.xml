@@ -201,11 +201,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.6.0-M4</lagom.version>
-        <akka.version>2.6.0-M4</akka.version>
+        <lagom.version>1.6.0-M5</lagom.version>
+        <akka.version>2.6.0-M5</akka.version>
         <scala.binary.version>2.13</scala.binary.version>
-        <akka.management.version>1.0.1</akka.management.version>
-        <akka.http.version>10.1.8</akka.http.version>
+        <akka.management.version>1.0.3</akka.management.version>
+        <akka.http.version>10.1.9</akka.http.version>
         <hamcrest.version>2.1</hamcrest.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
 

@@ -7,6 +7,7 @@ import com.lightbend.lagom.scaladsl.persistence.couchbase.CouchbasePersistenceCo
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import com.lightbend.lagom.sampleshello.api.HelloService
+import com.lightbend.lagom.scaladsl.projection.ProjectionComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 
 class HelloLoader extends LagomApplicationLoader {
@@ -27,6 +28,9 @@ abstract class HelloApplication(context: LagomApplicationContext)
     //#couchbase-begin
     with CouchbasePersistenceComponents
     //#couchbase-end
+    // The ProjectionsComponents must be mixed-in after XyzPersistenceComponents
+    // as a workaround for https://github.com/lagom/lagom/issues/2192
+    with ProjectionComponents
     with AhcWSComponents {
 
   override lazy val lagomServer = serverFor[HelloService](wire[HelloServiceImpl])
