@@ -48,12 +48,6 @@ public class ShoppingCartReportTest {
     @BeforeClass
     public static void beforeAll() {
         testServer = ServiceTest.startServer(setup);
-
-        // Quickly form a Cluster with self: this is a workaround an issue in ReadSideTestDriver for Java
-        // see: https://github.com/lagom/lagom/issues/2140
-        ActorSystem actorSystem = testServer.injector().instanceOf(ActorSystem.class);
-        Cluster cluster = Cluster.get((ExtendedActorSystem) actorSystem);
-        cluster.join(cluster.selfAddress());
     }
 
     @AfterClass
@@ -64,7 +58,7 @@ public class ShoppingCartReportTest {
     private ReadSideTestDriver testDriver = testServer.injector().instanceOf(ReadSideTestDriver.class);
     private ReportRepository reportRepository = testServer.injector().instanceOf(ReportRepository.class);
 
-    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
+    @Test
     public void createAReportOnFirstEvent() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
@@ -78,7 +72,7 @@ public class ShoppingCartReportTest {
         assertNull("checkout date is not set", report.getCheckoutDate());
     }
 
-    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
+    @Test
     public void creationDateDoesNotChangeOnNewEvents() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
@@ -99,7 +93,7 @@ public class ShoppingCartReportTest {
         assertNull("checkout date is not set", updatedReport.getCheckoutDate());
     }
 
-    @Test @Ignore // ignored until https://github.com/lagom/lagom/issues/2140 is fixed
+    @Test
     public void checkoutDateIsSetOnCheckout() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
