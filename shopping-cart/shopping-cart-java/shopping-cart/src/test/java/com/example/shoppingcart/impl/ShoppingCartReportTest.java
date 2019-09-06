@@ -56,8 +56,6 @@ public class ShoppingCartReportTest {
     public void createAReportOnFirstEvent() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
-        assertNull(Await.result(reportRepository.findById(cartId)));
-
         Instant eventTime = Instant.now();
         feed(new ShoppingCartEvent.ItemUpdated(cartId, "abc", 2, eventTime));
 
@@ -70,8 +68,6 @@ public class ShoppingCartReportTest {
     public void creationDateDoesNotChangeOnNewEvents() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
-        assertNull(Await.result(reportRepository.findById(cartId)));
-
         Instant eventTime = Instant.now();
         feed(new ShoppingCartEvent.ItemUpdated(cartId, "abc", 1, eventTime));
 
@@ -91,8 +87,6 @@ public class ShoppingCartReportTest {
     public void checkoutDateIsSetOnCheckout() throws InterruptedException, ExecutionException, TimeoutException {
 
         String cartId = UUID.randomUUID().toString();
-        assertNull(Await.result(reportRepository.findById(cartId)));
-
         Instant eventTime = Instant.now();
         feed(new ShoppingCartEvent.ItemUpdated(cartId, "abc", 1, eventTime));
 
