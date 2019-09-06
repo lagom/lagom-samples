@@ -3,21 +3,20 @@ package com.example.shoppingcart.impl;
 import akka.Done;
 import akka.actor.ActorSystem;
 import akka.testkit.javadsl.TestKit;
+import com.example.shoppingcart.impl.ShoppingCartCommand.Checkout;
+import com.example.shoppingcart.impl.ShoppingCartCommand.Get;
+import com.example.shoppingcart.impl.ShoppingCartCommand.UpdateItem;
+import com.example.shoppingcart.impl.ShoppingCartEvent.CheckedOut;
+import com.example.shoppingcart.impl.ShoppingCartEvent.ItemUpdated;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver.Outcome;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.example.shoppingcart.impl.ShoppingCartEvent.*;
-import com.example.shoppingcart.impl.ShoppingCartCommand.*;
+import org.junit.*;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class ShoppingCartEntityTest {
@@ -52,7 +51,13 @@ public class ShoppingCartEntityTest {
         Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", 2));
 
         assertThat(outcome.getReplies(), contains(Done.getInstance()));
-        assertThat(outcome.events(), contains(new ItemUpdated(ENTITY_ID,"123", 2)));
+
+        assertEquals(outcome.events().size(), 1);
+        ItemUpdated itemUpdated = (ItemUpdated) outcome.events().get(0);
+        assertEquals(itemUpdated.shoppingCartId, ENTITY_ID);
+        assertEquals(itemUpdated.productId, "123");
+        assertEquals(itemUpdated.quantity, 2);
+
         assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY.updateItem("123", 2)));
     }
 
@@ -62,7 +67,13 @@ public class ShoppingCartEntityTest {
         Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", 0));
 
         assertThat(outcome.getReplies(), contains(Done.getInstance()));
-        assertThat(outcome.events(), contains(new ItemUpdated(ENTITY_ID,"123", 0)));
+
+        assertEquals(outcome.events().size(), 1);
+        ItemUpdated itemUpdated = (ItemUpdated) outcome.events().get(0);
+        assertEquals(itemUpdated.shoppingCartId, ENTITY_ID);
+        assertEquals(itemUpdated.productId, "123");
+        assertEquals(itemUpdated.quantity, 0);
+
         assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY));
     }
 
@@ -84,7 +95,11 @@ public class ShoppingCartEntityTest {
         Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(Checkout.INSTANCE);
 
         assertThat(outcome.getReplies(), contains(Done.getInstance()));
-        assertThat(outcome.events(), contains(new CheckedOut(ENTITY_ID)));
+
+        assertEquals(outcome.events().size(), 1);
+        CheckedOut checkedOut = (CheckedOut) outcome.events().get(0);
+        assertEquals(checkedOut.shoppingCartId, ENTITY_ID);
+
         assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY.updateItem("123", 2).checkout()));
     }
 

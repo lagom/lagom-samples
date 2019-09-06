@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
-import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
 import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
+
+import java.time.Instant;
 
 /**
  * This interface defines all the events that the {@link ShoppingCartEntity} supports.
@@ -32,12 +33,14 @@ public interface ShoppingCartEvent extends Jsonable, AggregateEvent<ShoppingCart
         public final String shoppingCartId;
         public final String productId;
         public final int quantity;
+        public final Instant eventTime;
 
         @JsonCreator
-        ItemUpdated(String shoppingCartId, String productId, int quantity) {
+        ItemUpdated(String shoppingCartId, String productId, int quantity, Instant eventTime) {
             this.shoppingCartId = Preconditions.checkNotNull(shoppingCartId, "shoppingCartId");
             this.productId = Preconditions.checkNotNull(productId, "productId");
             this.quantity = quantity;
+            this.eventTime = eventTime;
         }
     }
 
@@ -48,11 +51,14 @@ public interface ShoppingCartEvent extends Jsonable, AggregateEvent<ShoppingCart
     @Value
     @JsonDeserialize
     final class CheckedOut implements ShoppingCartEvent {
+
         public final String shoppingCartId;
+        public final Instant eventTime;
 
         @JsonCreator
-        CheckedOut(String shoppingCartId) {
+        CheckedOut(String shoppingCartId, Instant eventTime) {
             this.shoppingCartId = Preconditions.checkNotNull(shoppingCartId, "shoppingCartId");
+            this.eventTime = eventTime;
         }
     }
 

@@ -28,6 +28,14 @@ public interface ShoppingCartService extends Service {
      */
     ServiceCall<NotUsed, ShoppingCart> get(String id);
 
+
+    /**
+     * Get a shopping cart report (view model).
+     *
+     * Example: curl http://localhost:9000/shoppingcart/123/report
+     */
+    ServiceCall<NotUsed, ShoppingCartReportView> getReport(String id);
+
     /**
      * Update an items quantity in the shopping cart.
      * <p>
@@ -52,6 +60,7 @@ public interface ShoppingCartService extends Service {
         return named("shopping-cart")
             .withCalls(
                 restCall(Method.GET, "/shoppingcart/:id", this::get),
+                restCall(Method.GET, "/shoppingcart/:id/report", this::getReport),
                 restCall(Method.POST, "/shoppingcart/:id", this::updateItem),
                 restCall(Method.POST, "/shoppingcart/:id/checkout", this::checkout)
             )
