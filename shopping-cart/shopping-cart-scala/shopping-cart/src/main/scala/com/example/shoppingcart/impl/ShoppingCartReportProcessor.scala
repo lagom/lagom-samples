@@ -3,9 +3,8 @@ package com.example.shoppingcart.impl
 import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
 import com.lightbend.lagom.scaladsl.persistence.slick.SlickReadSide
 
-
-class ShoppingCartReportProcessor(readSide: SlickReadSide,
-                                  repository: ShoppingCartReportRepository) extends ReadSideProcessor[ShoppingCartEvent] {
+class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingCartReportRepository)
+    extends ReadSideProcessor[ShoppingCartEvent] {
 
   override def buildHandler() =
     readSide
@@ -19,5 +18,5 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide,
       }
       .build()
 
-  override def aggregateTags = Set(ShoppingCartEvent.Tag)
+  override def aggregateTags = ShoppingCartEvent.Tag.allTags
 }

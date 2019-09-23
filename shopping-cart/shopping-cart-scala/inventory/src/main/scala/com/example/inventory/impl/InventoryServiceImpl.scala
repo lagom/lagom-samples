@@ -3,20 +3,22 @@ package com.example.inventory.impl
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.stream.scaladsl.Flow
-import akka.{Done, NotUsed}
+import akka.Done
+import akka.NotUsed
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.example.inventory.api.InventoryService
-import com.example.shoppingcart.api.{ShoppingCart, ShoppingCartService}
+import com.example.shoppingcart.api.ShoppingCart
+import com.example.shoppingcart.api.ShoppingCartService
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 /**
-  * Implementation of the inventory service.
-  *
-  * This just stores the inventory in memory, so it will be lost on restart, and also won't work
-  * with more than one replicas, but it's enough to demonstrate things working.
-  */
+ * Implementation of the inventory service.
+ *
+ * This just stores the inventory in memory, so it will be lost on restart, and also won't work
+ * with more than one replicas, but it's enough to demonstrate things working.
+ */
 class InventoryServiceImpl(shoppingCartService: ShoppingCartService) extends InventoryService {
 
   private val inventory = TrieMap.empty[String, AtomicInteger]

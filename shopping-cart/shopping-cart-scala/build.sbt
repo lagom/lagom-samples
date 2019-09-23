@@ -11,6 +11,15 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.1"
 val lagomScaladslAkkaDiscovery = "com.lightbend.lagom" %% "lagom-scaladsl-akka-discovery-service-locator" % LagomVersion.current
 
+lazy val akkaVersion         = "2.6.0-M7"
+val akkaPersistenceTyped     = "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion
+val akkaShardingTyped        = "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion
+val akkaSerializationJackson = "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion
+val akkaDiscovery            = "com.typesafe.akka" %% "akka-discovery" % akkaVersion
+val akkaProtobuf             = "com.typesafe.akka" %% "akka-protobuf" % akkaVersion
+val akkaPersistenceQuery     = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
+val akkaTestkit              = "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion
+
 ThisBuild / scalacOptions ++= List("-encoding", "utf8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings")
 
 def dockerSettings = Seq(
@@ -41,6 +50,12 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       lagomScaladslPersistenceJdbc,
       lagomScaladslKafkaBroker,
       lagomScaladslTestKit,
+      akkaShardingTyped,
+      akkaPersistenceTyped,
+      akkaSerializationJackson,
+      akkaDiscovery,
+      akkaProtobuf,
+      akkaPersistenceQuery,
       macwire,
       scalaTest,
       postgresDriver,
