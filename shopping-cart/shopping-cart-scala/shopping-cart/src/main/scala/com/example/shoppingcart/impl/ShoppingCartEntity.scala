@@ -180,7 +180,7 @@ sealed trait ShoppingCartEvent extends AggregateEvent[ShoppingCartEvent] {
 }
 
 object ShoppingCartEvent {
-  val Tag = AggregateEventTag[ShoppingCartEvent]
+  val Tag = AggregateEventTag.sharded[ShoppingCartEvent](10)
 }
 
 /**

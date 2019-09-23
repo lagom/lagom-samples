@@ -19,5 +19,5 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide,
       }
       .build()
 
-  override def aggregateTags = Set(ShoppingCartEvent.Tag)
+  override def aggregateTags = ShoppingCartEvent.Tag.allTags
 }
