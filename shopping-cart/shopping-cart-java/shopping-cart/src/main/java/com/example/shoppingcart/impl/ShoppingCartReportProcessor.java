@@ -23,22 +23,17 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
         this.jpaReadSide = jpaReadSide;
     }
 
-
     @Override
     public ReadSideHandler<ShoppingCartEvent> buildHandler() {
-        return jpaReadSide
-                .<ShoppingCartEvent>builder("shopping-cart-report")
-                .setGlobalPrepare(this::createSchema)
+        return jpaReadSide.<ShoppingCartEvent>builder("shopping-cart-report").setGlobalPrepare(this::createSchema)
                 .setEventHandler(ShoppingCartEvent.ItemUpdated.class, this::createReport)
-                .setEventHandler(ShoppingCartEvent.CheckedOut.class, this::addCheckoutTime)
-                .build();
+                .setEventHandler(ShoppingCartEvent.CheckedOut.class, this::addCheckoutTime).build();
     }
 
     private void createSchema(@SuppressWarnings("unused") EntityManager ignored) {
         Persistence.generateSchema("default", ImmutableMap.of("hibernate.hbm2ddl.auto", "update"));
     }
 
-    
     private void createReport(EntityManager entityManager, ShoppingCartEvent.ItemUpdated evt) {
 
         logger.debug("Received ItemUpdate event: " + evt);
@@ -63,14 +58,14 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
             throw new RuntimeException("Didn't find cart for checkout. CartID: " + evt.shoppingCartId);
         }
     }
+
     private ShoppingCartReport findReport(EntityManager entityManager, String cartId) {
         return entityManager.find(ShoppingCartReport.class, cartId);
     }
 
-
     @Override
     public PSequence<AggregateEventTag<ShoppingCartEvent>> aggregateTags() {
-        return TreePVector.singleton(ShoppingCartEvent.TAG);
+        return ShoppingCartEvent.TAG.allTags();
     }
 
 }

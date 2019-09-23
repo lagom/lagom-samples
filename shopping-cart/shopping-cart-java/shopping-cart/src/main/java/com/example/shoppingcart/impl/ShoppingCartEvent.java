@@ -6,22 +6,25 @@ import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
 
 import java.time.Instant;
 
 /**
- * This interface defines all the events that the {@link ShoppingCartEntity} supports.
+ * This interface defines all the events that the {@link ShoppingCartEntity}
+ * supports.
  * <p>
  * By convention, the events should be inner classes of the interface, which
  * makes it simple to get a complete picture of what events an entity has.
  */
 public interface ShoppingCartEvent extends Jsonable, AggregateEvent<ShoppingCartEvent> {
     /**
-     * The tag for shopping cart events, used for consuming the Journal event stream later.
+     * The tag for shopping cart events, used for consuming the Journal event stream
+     * later.
      */
-    AggregateEventTag<ShoppingCartEvent> TAG = AggregateEventTag.of(ShoppingCartEvent.class);
+    AggregateEventShards<ShoppingCartEvent> TAG = AggregateEventTag.sharded(ShoppingCartEvent.class, 10);
 
     /**
      * An event that represents a item updated event.
