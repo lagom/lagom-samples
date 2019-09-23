@@ -56,6 +56,9 @@ echo "Check status of the cart [$SHOPPING_CART_ID]"
 curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID"
 echo 
 
+echo "Check status of the cart report [$SHOPPING_CART_ID]"
+curl -f "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID/report"
+echo 
 
 # So that it can be copied...
 echo

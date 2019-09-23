@@ -7,4 +7,3 @@ resolvers ++= Seq(          // for the snapshot ^
   Resolver.bintrayIvyRepo("akka", "sbt-plugin-releases"),
   Resolver.bintrayRepo("akka", "maven"),
 )
-

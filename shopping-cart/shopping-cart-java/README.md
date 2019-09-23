@@ -8,17 +8,17 @@ The inventory service consumes a stream of events published to Kafka by the shop
 
 ## Setup
 
-To run this application locally you will need access to a PostgreSQL database. We suggest you run it on a docker container but a local or remote native instance will also work.
+To run this application locally you will need access to a Postgres database. We suggest you run it on a docker container but a local or remote native instance will also work.
 
-We provide a `docker-compose.yml` file that you can use to run a PostgreSQL database already configured for this application. The docker container will be exposed on port 5432.
+We provide a `docker-compose.yml` file that you can use to run a Postgres database already configured for this application. The docker container will be exposed on port 5432.
 
-To create the image and start the container, run the command bellow at the root of this project.
+To create the image and start the container, run the command below at the root of this project.
 
 ```bash 
 docker-compose up -d
 ```
 
-If you prefer to run PostgreSQL on natively your machine, you need to create the database, the user and password yourself. The application expects it to be running on localhost on the default port (5432), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
+If you prefer to run Postgres natively on your machine, you need to create the database, the user and password yourself. The application expects it to be running on localhost on the default port (5432), and it expects there to be a database called `shopping_cart`, with a user called `shopping_cart` with password `shopping_cart` that has full access to it. This can be created using the following SQL:
 
 ```sql
 CREATE DATABASE shopping_cart;
@@ -26,7 +26,7 @@ CREATE USER shopping_cart WITH PASSWORD 'shopping_cart';
 GRANT ALL PRIVILEGES ON DATABASE shopping_cart TO shopping_cart;
 ```
 
-Once PostgreSQL is setup, you can start the system by running:
+Once Postgres is setup, you can start the system by running:
 
 ```
 sbt runAll
@@ -40,12 +40,16 @@ mvn lagom:runAll
 
 ## Shopping cart service
 
-The shopping cart service offers three REST endpoints:
+The shopping cart service offers four REST endpoints:
 
 * Get the current contents of the shopping cart:
     ```
     curl http://localhost:9000/shoppingcart/123
     ```
+* Get a report of the shopping cart creation and checkout dates:
+    ```
+    curl http://localhost:9000/shoppingcart/123/report
+    ```    
 * Update the quantity of an item in the shopping cart:
     ```
     curl -H "Content-Type: application/json" -d '{"productId": "456", "quantity": 2}' -X POST http://localhost:9000/shoppingcart/123

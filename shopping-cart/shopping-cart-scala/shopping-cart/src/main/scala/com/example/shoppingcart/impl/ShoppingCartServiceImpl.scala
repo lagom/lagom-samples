@@ -63,7 +63,7 @@ class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry
   override def getReport(cartId: String): ServiceCall[NotUsed, ShoppingCartReport] = ServiceCall { _ =>
     reportRepository.findById(cartId).map {
       case Some(cart) => cart
-      case None => throw NotFound(s"Couldn't find a shopping cart report for $cartId")
+      case None => throw NotFound(s"Couldn't find a shopping cart report for '$cartId'")
     }
   }
 }

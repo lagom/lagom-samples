@@ -29,6 +29,22 @@
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
+            <artifactId>lagom-javadsl-persistence-jpa_${scala.binary.version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-javadsl-kafka-broker_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>

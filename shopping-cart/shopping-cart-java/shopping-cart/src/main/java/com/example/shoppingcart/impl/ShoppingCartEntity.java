@@ -1,15 +1,15 @@
 package com.example.shoppingcart.impl;
 
 import akka.Done;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-
-import java.util.Optional;
-
-import com.example.shoppingcart.impl.ShoppingCartCommand.UpdateItem;
 import com.example.shoppingcart.impl.ShoppingCartCommand.Checkout;
 import com.example.shoppingcart.impl.ShoppingCartCommand.Get;
-import com.example.shoppingcart.impl.ShoppingCartEvent.ItemUpdated;
+import com.example.shoppingcart.impl.ShoppingCartCommand.UpdateItem;
 import com.example.shoppingcart.impl.ShoppingCartEvent.CheckedOut;
+import com.example.shoppingcart.impl.ShoppingCartEvent.ItemUpdated;
+import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
+
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * This is an event sourced entity. It has a state, {@link ShoppingCartState}, which
@@ -63,7 +63,7 @@ public class ShoppingCartEntity extends PersistentEntity<ShoppingCartCommand, Sh
                 ctx.commandFailed(new ShoppingCartException("Cannot delete item that is not already in cart"));
                 return ctx.done();
             } else {
-                return ctx.thenPersist(new ItemUpdated(entityId(), cmd.getProductId(), cmd.getQuantity()), e -> ctx.reply(Done.getInstance()));
+                return ctx.thenPersist(new ItemUpdated(entityId(), cmd.getProductId(), cmd.getQuantity(), Instant.now()), e -> ctx.reply(Done.getInstance()));
             }
         });
 
@@ -73,7 +73,7 @@ public class ShoppingCartEntity extends PersistentEntity<ShoppingCartCommand, Sh
                 ctx.commandFailed(new ShoppingCartException("Cannot checkout empty cart"));
                 return ctx.done();
             } else {
-                return ctx.thenPersist(new CheckedOut(entityId()), e -> ctx.reply(Done.getInstance()));
+                return ctx.thenPersist(new CheckedOut(entityId(), Instant.now()), e -> ctx.reply(Done.getInstance()));
             }
         });
         commonHandlers(b);

@@ -8,8 +8,6 @@ import lombok.Value;
 import org.pcollections.HashTreePMap;
 import org.pcollections.PMap;
 
-import java.util.Map;
-
 /**
  * The state for the {@link ShoppingCartEntity} entity.
  */
