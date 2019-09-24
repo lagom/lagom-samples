@@ -15,6 +15,7 @@ import org.pcollections.PMap;
 @Value
 @JsonDeserialize
 public final class ShoppingCartState implements CompressedJsonable {
+
     public final PMap<String, Integer> items;
     public final boolean checkedOut;
 
@@ -38,5 +39,8 @@ public final class ShoppingCartState implements CompressedJsonable {
         return new ShoppingCartState(items, true);
     }
 
+    public boolean isOpen() {
+        return !this.checkedOut;
+    }
     public static final ShoppingCartState EMPTY = new ShoppingCartState(HashTreePMap.empty(), false);
 }

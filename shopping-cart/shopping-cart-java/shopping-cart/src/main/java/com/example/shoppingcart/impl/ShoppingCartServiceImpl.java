@@ -2,8 +2,12 @@ package com.example.shoppingcart.impl;
 
 import akka.Done;
 import akka.NotUsed;
+import akka.cluster.sharding.typed.javadsl.ClusterSharding;
+import akka.cluster.sharding.typed.javadsl.Entity;
+import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
 import com.example.shoppingcart.api.ShoppingCart;
+import com.example.shoppingcart.api.ShoppingCartItem;
 import com.example.shoppingcart.api.ShoppingCartReportView;
 import com.example.shoppingcart.api.ShoppingCartService;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -11,14 +15,10 @@ import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.broker.TopicProducer;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 
 import javax.inject.Inject;
-
-import com.example.shoppingcart.api.ShoppingCartItem;
-import org.pcollections.TreePVector;
-
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,23 +34,38 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private final ReportRepository reportRepository;
 
+    private final ClusterSharding clusterSharing;
+
     @Inject
-    public ShoppingCartServiceImpl(PersistentEntityRegistry persistentEntityRegistry, ReportRepository reportRepository) {
+    public ShoppingCartServiceImpl(ClusterSharding clusterSharing, 
+                                   PersistentEntityRegistry persistentEntityRegistry, 
+                                   ReportRepository reportRepository) {
+        this.clusterSharing = clusterSharing;
         this.persistentEntityRegistry = persistentEntityRegistry;
         this.reportRepository = reportRepository;
-        persistentEntityRegistry.register(ShoppingCartEntity.class);
+
+        // register entity on shard
+        this.clusterSharing.init(
+                Entity.of(
+                        ShoppingCartEntity.ENTITY_TYPE_KEY,
+                        ShoppingCartEntity::behavior
+                )
+        );
     }
 
-    private PersistentEntityRef<ShoppingCartCommand> entityRef(String id) {
-        return persistentEntityRegistry.refFor(ShoppingCartEntity.class, id);
+    private EntityRef<ShoppingCartCommand> entityRef(String id) {
+        return clusterSharing.entityRefFor(ShoppingCartEntity.ENTITY_TYPE_KEY, id);
     }
+
+
+    private final Duration askTimeout = Duration.ofSeconds(5);
 
     @Override
     public ServiceCall<NotUsed, ShoppingCart> get(String id) {
         return request ->
                 entityRef(id)
-                        .ask(ShoppingCartCommand.Get.INSTANCE)
-                        .thenApply(cart -> convertShoppingCart(id, cart));
+                        .ask(ShoppingCartCommand.Get::new, askTimeout)
+                        .thenApply(cart -> convertShoppingCart(id, cart.getShoppingCartState()));
     }
 
     @Override
@@ -69,7 +84,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return item ->
                 convertErrors(
                         entityRef(id)
-                                .ask(new ShoppingCartCommand.UpdateItem(item.getProductId(), item.getQuantity()))
+                                .<ShoppingCartReply.Confirmation>ask(replyTo -> new ShoppingCartCommand.UpdateItem(item.getProductId(), item.getQuantity(), replyTo), askTimeout)
                 );
     }
 
@@ -78,14 +93,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return request ->
                 convertErrors(
                         entityRef(id)
-                                .ask(ShoppingCartCommand.Checkout.INSTANCE)
+                                .ask(ShoppingCartCommand.Checkout::new, askTimeout)
                 );
     }
 
     @Override
     public Topic<ShoppingCart> shoppingCartTopic() {
         // We want to publish all the shards of the shopping cart events
-        return TopicProducer.taggedStreamWithOffset(TreePVector.singleton(ShoppingCartEvent.TAG), (tag, offset) ->
+        return TopicProducer.taggedStreamWithOffset(ShoppingCartEvent.TAG.allTags(), (tag, offset) ->
                 // Load the event stream for the passed in shard tag
                 persistentEntityRegistry.eventStream(tag, offset)
                         // We only want to publish checkout events
@@ -95,16 +110,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         .mapAsync(4, eventAndOffset -> {
                             ShoppingCartEvent.CheckedOut checkedOut = (ShoppingCartEvent.CheckedOut) eventAndOffset.first();
                             return entityRef(checkedOut.getShoppingCartId())
-                                    .ask(ShoppingCartCommand.Get.INSTANCE)
+                                    .ask(ShoppingCartCommand.Get::new, askTimeout)
                                     .thenApply(cart -> Pair.create(
-                                            convertShoppingCart(checkedOut.getShoppingCartId(), cart),
+                                            convertShoppingCart(checkedOut.getShoppingCartId(), cart.getShoppingCartState()),
                                             eventAndOffset.second()
                                     ));
                         })
         );
     }
 
-    private <T> CompletionStage<T> convertErrors(CompletionStage<T> future) {
+    private <T> CompletionStage<Done> convertErrors(CompletionStage<T> future) {
         return future.exceptionally(ex -> {
             if (ex instanceof ShoppingCartException) {
                 throw new BadRequest(ex.getMessage());
@@ -112,7 +127,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             else {
                 throw new BadRequest("Error updating shopping cart");
             }
-        });
+        }).thenApply(__ -> Done.getInstance());
     }
 
     private ShoppingCart convertShoppingCart(String id, ShoppingCartState cart) {

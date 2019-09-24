@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
 import com.lightbend.lagom.serialization.Jsonable;
@@ -21,7 +22,7 @@ public interface ShoppingCartEvent extends Jsonable, AggregateEvent<ShoppingCart
     /**
      * The tag for shopping cart events, used for consuming the Journal event stream later.
      */
-    AggregateEventTag<ShoppingCartEvent> TAG = AggregateEventTag.of(ShoppingCartEvent.class);
+    AggregateEventShards<ShoppingCartEvent> TAG = AggregateEventTag.sharded(ShoppingCartEvent.class, 10);
 
     /**
      * An event that represents a item updated event.
