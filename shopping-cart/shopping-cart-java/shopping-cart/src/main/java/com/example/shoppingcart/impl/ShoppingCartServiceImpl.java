@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-
 /**
  * Implementation of the {@link ShoppingCartService}.
  */
@@ -35,7 +34,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ReportRepository reportRepository;
 
     @Inject
-    public ShoppingCartServiceImpl(PersistentEntityRegistry persistentEntityRegistry, ReportRepository reportRepository) {
+    public ShoppingCartServiceImpl(PersistentEntityRegistry persistentEntityRegistry,
+            ReportRepository reportRepository) {
         this.persistentEntityRegistry = persistentEntityRegistry;
         this.reportRepository = reportRepository;
         persistentEntityRegistry.register(ShoppingCartEntity.class);
@@ -47,69 +47,54 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ServiceCall<NotUsed, ShoppingCart> get(String id) {
-        return request ->
-                entityRef(id)
-                        .ask(ShoppingCartCommand.Get.INSTANCE)
-                        .thenApply(cart -> convertShoppingCart(id, cart));
+        return request -> entityRef(id).ask(ShoppingCartCommand.Get.INSTANCE)
+                .thenApply(cart -> convertShoppingCart(id, cart));
     }
 
     @Override
     public ServiceCall<NotUsed, ShoppingCartReportView> getReport(String id) {
-        return request ->
-                reportRepository.findById(id).thenApply(report -> {
-                    if (report != null)
-                        return new ShoppingCartReportView(id, report.getCreationDate(), report.getCheckoutDate());
-                    else
-                        throw new NotFound("Couldn't find a shopping cart report for '" + id + "'");
-                });
+        return request -> reportRepository.findById(id).thenApply(report -> {
+            if (report != null)
+                return new ShoppingCartReportView(id, report.getCreationDate(), report.getCheckoutDate());
+            else
+                throw new NotFound("Couldn't find a shopping cart report for '" + id + "'");
+        });
     }
 
     @Override
     public ServiceCall<ShoppingCartItem, Done> updateItem(String id) {
-        return item ->
-                convertErrors(
-                        entityRef(id)
-                                .ask(new ShoppingCartCommand.UpdateItem(item.getProductId(), item.getQuantity()))
-                );
+        return item -> convertErrors(
+                entityRef(id).ask(new ShoppingCartCommand.UpdateItem(item.getProductId(), item.getQuantity())));
     }
 
     @Override
     public ServiceCall<NotUsed, Done> checkout(String id) {
-        return request ->
-                convertErrors(
-                        entityRef(id)
-                                .ask(ShoppingCartCommand.Checkout.INSTANCE)
-                );
+        return request -> convertErrors(entityRef(id).ask(ShoppingCartCommand.Checkout.INSTANCE));
     }
 
     @Override
     public Topic<ShoppingCart> shoppingCartTopic() {
         // We want to publish all the shards of the shopping cart events
-        return TopicProducer.taggedStreamWithOffset(TreePVector.singleton(ShoppingCartEvent.TAG), (tag, offset) ->
-                // Load the event stream for the passed in shard tag
-                persistentEntityRegistry.eventStream(tag, offset)
-                        // We only want to publish checkout events
-                        .filter(pair -> pair.first() instanceof ShoppingCartEvent.CheckedOut)
-                        // Now we want to convert from the persisted event to the published event.
-                        // To do this, we need to load the current shopping cart state.
-                        .mapAsync(4, eventAndOffset -> {
-                            ShoppingCartEvent.CheckedOut checkedOut = (ShoppingCartEvent.CheckedOut) eventAndOffset.first();
-                            return entityRef(checkedOut.getShoppingCartId())
-                                    .ask(ShoppingCartCommand.Get.INSTANCE)
-                                    .thenApply(cart -> Pair.create(
-                                            convertShoppingCart(checkedOut.getShoppingCartId(), cart),
-                                            eventAndOffset.second()
-                                    ));
-                        })
-        );
+        return TopicProducer.taggedStreamWithOffset(ShoppingCartEvent.TAG.allTags(), (tag, offset) ->
+        // Load the event stream for the passed in shard tag
+        persistentEntityRegistry.eventStream(tag, offset)
+                // We only want to publish checkout events
+                .filter(pair -> pair.first() instanceof ShoppingCartEvent.CheckedOut)
+                // Now we want to convert from the persisted event to the published event.
+                // To do this, we need to load the current shopping cart state.
+                .mapAsync(4, eventAndOffset -> {
+                    ShoppingCartEvent.CheckedOut checkedOut = (ShoppingCartEvent.CheckedOut) eventAndOffset.first();
+                    return entityRef(checkedOut.getShoppingCartId()).ask(ShoppingCartCommand.Get.INSTANCE)
+                            .thenApply(cart -> Pair.create(convertShoppingCart(checkedOut.getShoppingCartId(), cart),
+                                    eventAndOffset.second()));
+                }));
     }
 
     private <T> CompletionStage<T> convertErrors(CompletionStage<T> future) {
         return future.exceptionally(ex -> {
             if (ex instanceof ShoppingCartException) {
                 throw new BadRequest(ex.getMessage());
-            }
-            else {
+            } else {
                 throw new BadRequest("Error updating shopping cart");
             }
         });

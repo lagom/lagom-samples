@@ -45,8 +45,8 @@ class ShoppingCartServiceImpl(persistentEntityRegistry: PersistentEntityRegistry
       }
   }
 
-  override def shoppingCartTopic: Topic[ShoppingCart] = TopicProducer.singleStreamWithOffset { fromOffset =>
-    persistentEntityRegistry.eventStream(ShoppingCartEvent.Tag, fromOffset)
+  override def shoppingCartTopic: Topic[ShoppingCart] = TopicProducer.taggedStreamWithOffset(ShoppingCartEvent.Tag) { (tag, fromOffset) =>
+    persistentEntityRegistry.eventStream(tag, fromOffset)
       .filter(_.event.isInstanceOf[CheckedOut])
       .mapAsync(4) {
         case EventStreamElement(id, _, offset) =>
