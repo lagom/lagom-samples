@@ -70,7 +70,7 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
 
     @Override
     public PSequence<AggregateEventTag<ShoppingCartEvent>> aggregateTags() {
-        return TreePVector.singleton(ShoppingCartEvent.TAG);
+        return ShoppingCartEvent.TAG.allTags();
     }
 
 }

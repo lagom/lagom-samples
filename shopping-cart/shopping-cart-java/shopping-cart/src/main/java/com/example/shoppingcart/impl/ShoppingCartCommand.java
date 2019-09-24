@@ -1,10 +1,11 @@
 package com.example.shoppingcart.impl;
 
 import akka.Done;
+import akka.actor.typed.ActorRef;
+import akka.persistence.typed.ExpectingReply;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
@@ -16,7 +17,7 @@ import lombok.Value;
  * makes it simple to get a complete picture of what commands an entity
  * supports.
  */
-public interface ShoppingCartCommand extends Jsonable {
+public interface ShoppingCartCommand<R> extends ExpectingReply<R>, Jsonable {
     /**
      * A command to update an item.
      *
@@ -26,14 +27,21 @@ public interface ShoppingCartCommand extends Jsonable {
     @SuppressWarnings("serial")
     @Value
     @JsonDeserialize
-    final class UpdateItem implements ShoppingCartCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
+    final class UpdateItem implements ShoppingCartCommand<ShoppingCartReply.Confirmation>, CompressedJsonable {
         public final String productId;
         public final int quantity;
+        public final ActorRef<ShoppingCartReply.Confirmation> replyTo;
 
         @JsonCreator
-        UpdateItem(String productId, int quantity) {
+        UpdateItem(String productId, int quantity, ActorRef<ShoppingCartReply.Confirmation> replyTo) {
             this.productId = Preconditions.checkNotNull(productId, "productId");
             this.quantity = quantity;
+            this.replyTo = replyTo;
+        }
+
+        @Override
+        public ActorRef<ShoppingCartReply.Confirmation> replyTo() {
+            return replyTo;
         }
     }
 
@@ -42,8 +50,18 @@ public interface ShoppingCartCommand extends Jsonable {
      *
      * The reply type is the {@link ShoppingCartState}
      */
-    enum Get implements ShoppingCartCommand, PersistentEntity.ReplyType<ShoppingCartState> {
-        INSTANCE
+    final class Get implements ShoppingCartCommand<ShoppingCartReply.CurrentState> {
+
+        private final ActorRef<ShoppingCartReply.CurrentState> replyTo;
+
+        public Get(ActorRef<ShoppingCartReply.CurrentState> replyTo) {
+            this.replyTo = replyTo;
+        }
+
+        @Override
+        public ActorRef<ShoppingCartReply.CurrentState> replyTo() {
+            return replyTo;
+        }
     }
 
     /**
@@ -52,7 +70,17 @@ public interface ShoppingCartCommand extends Jsonable {
      * The reply type is the Done, which will be returned when the events have been
      * emitted.
      */
-    enum Checkout implements ShoppingCartCommand, PersistentEntity.ReplyType<Done> {
-        INSTANCE
+    final class Checkout implements ShoppingCartCommand<ShoppingCartReply.Confirmation> {
+
+        private final ActorRef<ShoppingCartReply.Confirmation> replyTo;
+
+        public Checkout(ActorRef<ShoppingCartReply.Confirmation> replyTo) {
+            this.replyTo = replyTo;
+        }
+
+        @Override
+        public ActorRef<ShoppingCartReply.Confirmation> replyTo() {
+            return replyTo;
+        }
     }
 }

@@ -13,6 +13,17 @@ val hibernateEntityManager = "org.hibernate" % "hibernate-entitymanager" % "5.4.
 val jpaApi  = "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % "1.0.0.Final"
 val validationApi = "javax.validation" % "validation-api" % "1.1.0.Final"
 
+
+lazy val akkaVersion         = "2.6.0-M7"
+val akkaPersistenceTyped     = "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion
+val akkaShardingTyped        = "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion
+val akkaSerializationJackson = "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion
+val akkaDiscovery            = "com.typesafe.akka" %% "akka-discovery" % akkaVersion
+val akkaProtobuf             = "com.typesafe.akka" %% "akka-protobuf" % akkaVersion
+val akkaPersistenceQuery     = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
+val akkaTestkit              = "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion
+
+
 lazy val `shopping-cart-java` = (project in file("."))
   .aggregate(`shopping-cart-api`, `shopping-cart`, `inventory-api`, inventory)
 
@@ -41,6 +52,12 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       hamcrestLibrary,
       lagomJavadslAkkaDiscovery,
       akkaDiscoveryKubernetesApi,
+      akkaShardingTyped,
+      akkaPersistenceTyped,
+      akkaSerializationJackson,
+      akkaDiscovery,
+      akkaProtobuf,
+      akkaPersistenceQuery,
       hibernateEntityManager,
       jpaApi,
       validationApi
