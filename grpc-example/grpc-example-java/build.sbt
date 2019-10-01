@@ -91,5 +91,10 @@ lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http
 
 
 def common = Seq(
-  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation"
+    // Can't enable -Werror until:
+    //  - akka-grpc stops using `ActorMaterializer` on generated code
+    //  - protobuf uses `com.google.protobuf.Descriptors.FileDescriptor` on generated code.
+    //    , "-parameters", "-Werror"
+  )
 )
