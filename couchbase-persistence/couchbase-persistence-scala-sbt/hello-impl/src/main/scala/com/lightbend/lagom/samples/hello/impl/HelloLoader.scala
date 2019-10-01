@@ -28,9 +28,6 @@ abstract class HelloApplication(context: LagomApplicationContext)
     //#couchbase-begin
     with CouchbasePersistenceComponents
     //#couchbase-end
-    // The ProjectionsComponents must be mixed-in after XyzPersistenceComponents
-    // as a workaround for https://github.com/lagom/lagom/issues/2192
-    with ProjectionComponents
     with AhcWSComponents {
 
   override lazy val lagomServer = serverFor[HelloService](wire[HelloServiceImpl])
