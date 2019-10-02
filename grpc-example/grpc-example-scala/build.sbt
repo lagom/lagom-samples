@@ -14,13 +14,14 @@ val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % "
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
+val akkaHttpFamilyOverrides = Seq(
+  "akka-http-spray-json",
+  "akka-parsing",
+  "akka-http2-support",
+  "akka-http",
+  "akka-http-core",
+).map { name => "com.typesafe.akka" %% name % "10.1.10" }
 
-// ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
-def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
-  // Lagom still can't register a service under the gRPC name so we hard-code 
-  // the port and use the value to add the entry on the Service Registry
-  lagomServiceHttpsPort := `hello-impl-HTTPS-port`
-)
 
 lazy val `lagom-scala-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
@@ -43,8 +44,12 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       ),
     akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
   ).settings(
-    workaroundSettings:_*
-  ).settings(
+  // Lagom still can't register a service under the gRPC name so we hard-code
+  // the port and use the value to add the entry on the Service Registry
+  lagomServiceHttpsPort := `hello-impl-HTTPS-port`,
+  dependencyOverrides ++= akkaHttpFamilyOverrides
+
+).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,

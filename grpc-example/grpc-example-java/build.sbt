@@ -12,6 +12,14 @@ scalaVersion in ThisBuild := "2.12.8"
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
+val akkaHttpFamilyOverrides = Seq(
+  "akka-http-spray-json",
+  "akka-parsing",
+  "akka-http2-support",
+  "akka-http",
+  "akka-http-core",
+).map { name => "com.typesafe.akka" %% name % "10.1.10" }
+
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % "0.7.0" % Test
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
@@ -43,7 +51,10 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   // the port and the use the value to add the entry on the Service Registry
   lagomServiceHttpsPort := `hello-impl-HTTPS-port`,
 
-  libraryDependencies ++= Seq(
+    dependencyOverrides ++= akkaHttpFamilyOverrides,
+
+
+      libraryDependencies ++= Seq(
     lagomJavadslTestKit,
     lagomLogback,
     lagomGrpcTestkit
