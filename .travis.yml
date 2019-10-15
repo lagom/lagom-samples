@@ -151,9 +151,9 @@ stages:
   - test
   - test-java11
   - name: deploy
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
+    if: NOT fork # only run the "deploy" stage if the password is present
   - name: deploy-java11
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
+    if: NOT fork # only run the "deploy" stage if the password is present
 
 env:
   global:
