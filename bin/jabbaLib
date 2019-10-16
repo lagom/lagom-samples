@@ -15,10 +15,10 @@ useJdk() {
 }
 
 useAdoptOpenJdk8() {
-    installJdk "adopt@1.8.212-04"
-    useJdk "adopt@1.8.212-04"
+    installJdk "adopt@1.8.0-222"
+    useJdk "adopt@1.8.0-222"
 }
 useAdoptOpenJdk11() {
-    installJdk "adopt@1.11.0-3"
-    useJdk "adopt@1.11.0-3"
+    installJdk "adopt@1.11.0-4"
+    useJdk "adopt@1.11.0-4"
 }
