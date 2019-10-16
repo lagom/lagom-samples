@@ -23,15 +23,15 @@ teams:
     permission: write
 
 branches:
-  - name: "[0-9].*.x"
+  - name: "*"
     protection:
-      # We don't require reviews for sample applications because they are mainly
-      # updated by template-control, which is an automated process
-      required_pull_request_reviews: null
-      # Required. Require status checks to pass before merging. Set to null to disable
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+      # Require status checks to pass before merging
       required_status_checks:
-        # Required. The list of status checks to require in order to merge into this branch
-        contexts: ["Travis CI - Pull Request", "typesafe-cla-validator"]
+        # The list of status checks to require in order to merge into this branch
+        contexts: ["Travis CI - Branch ", "Travis CI - Pull Request", "typesafe-cla-validator"]
 
 # Labels: tailored list of labels to be used by sample applications
 labels:
