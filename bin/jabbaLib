@@ -15,8 +15,8 @@ useJdk() {
 }
 
 useAdoptOpenJdk8() {
-    installJdk "adopt@1.8.222"
-    useJdk "adopt@1.8.222"
+    installJdk "adopt@1.8.0-222"
+    useJdk "adopt@1.8.0-222"
 }
 useAdoptOpenJdk11() {
     installJdk "adopt@1.11.0-4"
