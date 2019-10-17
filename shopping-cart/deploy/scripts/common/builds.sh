@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "$(basename "${0#-}")" = "$(basename "${BASH_SOURCE[0]}")" ]]; then
+  echo "This is a bash source library, not a bash script!" >&2
+  exit 1
+fi
+
 setTag() {
     ## Assuming `docker images` sorts in reverse chronological order (and probably it'll be pointing to an
     ## empty repository anyway) we list all images, filter by non-latest and filter by name. Finally, take
@@ -25,7 +30,7 @@ build() {
     BUILD_TOOL=$2
 
     (
-        cd $SHOPPING_CART_SOURCES || {
+        cd "$SHOPPING_CART_SOURCES" || {
             echo "Failed to cd into $SHOPPING_CART_SOURCES"
             exit 1
         }

@@ -48,7 +48,7 @@ createDatabase $SHOPPING_CART_SOURCES/schemas/shopping-cart.sql
 installKafka $NAMESPACE $DEPLOY_DIR/specs/common/kafka.yaml
 
 # 5. Build the docker images to be deployed
-. $SCRIPTS_DIR/builds.sh
+. $COMMON_SCRIPTS_DIR/builds.sh
 build $SHOPPING_CART_SOURCES $BUILD_TOOL
 setTag
 
