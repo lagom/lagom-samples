@@ -36,7 +36,7 @@ PRODUCT_ID=$(openssl rand -base64 6 | tr -- '+=/' '-_~')
 sleep 3 
 echo "Touch a shopping-cart [$SHOPPING_CART_ID]"
 echo "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" 
-curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" || exit 1
+curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" || exit 1
 echo
 
 echo "Add items on the shopping-cart [$SHOPPING_CART_ID]"
