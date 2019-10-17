@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## TODO: fix this --> schemas/shopping-cart.sql is not found
 ## TODO: parameterize this script
 #    secret     postgresql-admin-password

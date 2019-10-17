@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ## Installs Kafka using Strimzi.
 ## Assumes Strimzi is installed and the user can access/use it
 ##
