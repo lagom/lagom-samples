@@ -23,12 +23,15 @@ buildMvn() {
 build() {
     SHOPPING_CART_SOURCES=$1
     BUILD_TOOL=$2
-    
+
     (
-        cd $SHOPPING_CART_SOURCES
-        
+        cd $SHOPPING_CART_SOURCES || {
+            echo "Failed to cd into $SHOPPING_CART_SOURCES"
+            exit 1
+        }
+
         if [ "$BUILD_TOOL" == "sbt" ]; then
-            buildSbt 
+            buildSbt
         elif [ "$BUILD_TOOL" == "maven" ]; then
             buildMvn
         else
