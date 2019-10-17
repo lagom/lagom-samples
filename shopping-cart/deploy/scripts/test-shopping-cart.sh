@@ -13,10 +13,6 @@ BUILD_TOOL=${1:-sbt}
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
-DEPLOY_DIR=$SCRIPTS_DIR/..
-## BASE_DIR must point to <git_repo_root>/shopping-cart
-BASE_DIR=$DEPLOY_DIR/..
-SHOPPING_CART_SOURCES=$BASE_DIR/$CODE_VARIANT
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
