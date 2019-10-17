@@ -6,7 +6,7 @@ if [[ "$(basename "${0#-}")" = "$(basename "${BASH_SOURCE[0]}")" ]]; then
 fi
 
 installOC() {
-    if [ -z $(command -v oc) -a $TRAVIS ]
+    if [ -z "$(command -v oc)" -a $TRAVIS ]
     then
         (
             mkdir tmp
@@ -27,7 +27,7 @@ installOC() {
 }
 
 installKustomize() {
-    if [ -z $(command -v kustomize) -a $TRAVIS ]
+    if [ -z "$(command -v kustomize)" -a $TRAVIS ]
     then
         (
             mkdir tmp

@@ -67,7 +67,7 @@ echo curl "https://$INVENTORY_HOST/inventory/$PRODUCT_ID"
 echo -n "Waiting for inventory service to process shopping cart message."
 
 count=0
-while [ $(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID") != "-2" ]
+while [ "$(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID")" != "-2" ]
 do
     (( count = count + 1 ))
     if [ $count -gt 30 ]
