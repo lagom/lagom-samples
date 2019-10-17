@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "$(basename "${0#-}")" = "$(basename "${BASH_SOURCE[0]}")" ]]; then
+  echo "This is a bash source library, not a bash script!" >&2
+  exit 1
+fi
+
 ## TODO: fix this --> schemas/shopping-cart.sql is not found
 ## TODO: parameterize this script
 #    secret     postgresql-admin-password

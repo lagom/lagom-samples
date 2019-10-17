@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ "$(basename "${0#-}")" = "$(basename "${BASH_SOURCE[0]}")" ]]; then
+  echo "This is a bash source library, not a bash script!" >&2
+  exit 1
+fi
+
 ## TODO: don't use a hardcoded username and pwd ENV_VAR (e.g. CP2_PLAY_PASSWORD)
 
 # Recognize the environment
