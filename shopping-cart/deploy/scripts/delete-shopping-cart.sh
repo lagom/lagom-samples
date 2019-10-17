@@ -20,8 +20,10 @@ installOC
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
+setupEnv "$CODE_VARIANT" "$BUILD_TOOL"
 echo "Deleting $NAMESPACE"
 . $COMMON_SCRIPTS_DIR/clusterLogin.sh
+clusterLogin "$CODE_VARIANT" "$BUILD_TOOL"
 
 # 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
