@@ -22,7 +22,7 @@ buildSbt() {
 }
 
 buildMvn() {
-    mvn --batch-mode package docker:build
+    mvn --batch-mode -DskipTests package docker:build
 }
 
 build() {
