@@ -21,11 +21,9 @@ class ShoppingCartReportRepository(database: Database) {
   class ShoppingCartReportTable(tag: Tag) extends Table[ShoppingCartReport](tag, "shopping_cart_report") {
     def cartId = column[String]("cart_id", O.PrimaryKey)
 
-    def creationDate = column[Instant]("creation_date")
-
     def checkoutDate = column[Option[Instant]]("checkout_date")
 
-    def * = (cartId, creationDate, checkoutDate) <> ((ShoppingCartReport.apply _).tupled, ShoppingCartReport.unapply)
+    def * = (cartId, checkoutDate) <> ((ShoppingCartReport.apply _).tupled, ShoppingCartReport.unapply)
   }
 
   val reportTable = TableQuery[ShoppingCartReportTable]
@@ -35,24 +33,31 @@ class ShoppingCartReportRepository(database: Database) {
   def findById(id: String): Future[Option[ShoppingCartReport]] =
     database.run(findByIdQuery(id))
 
-  def createReport(cartId: String, creationDate: Instant): DBIO[Done] = {
-    findByIdQuery(cartId).flatMap {
-      case None => reportTable += ShoppingCartReport(cartId, creationDate, None)
-      case _ => DBIO.successful(Done)
-    }.map(_ => Done).transactionally
+  def createReport(cartId: String): DBIO[Done] = {
+    findByIdQuery(cartId)
+      .flatMap {
+        case None => reportTable += ShoppingCartReport(cartId, None)
+        case _    => DBIO.successful(Done)
+      }
+      .map(_ => Done)
+      .transactionally
   }
 
   def addCheckoutTime(cartId: String, checkoutDate: Instant): DBIO[Done] = {
-    findByIdQuery(cartId).flatMap {
-      case Some(cart) => reportTable.insertOrUpdate(cart.copy(checkoutDate = Some(checkoutDate)))
-      // if that happens we have a corrupted system
-      // cart checkout can only happens for a existing cart
-      case None => throw new RuntimeException(s"Didn't find cart for checkout. CartID: $cartId")
-    }.map(_ => Done).transactionally
+    findByIdQuery(cartId)
+      .flatMap {
+        case Some(cart) => reportTable.insertOrUpdate(cart.copy(checkoutDate = Some(checkoutDate)))
+        // if that happens we have a corrupted system
+        // cart checkout can only happens for a existing cart
+        case None => throw new RuntimeException(s"Didn't find cart for checkout. CartID: $cartId")
+      }
+      .map(_ => Done)
+      .transactionally
   }
 
   private def findByIdQuery(cartId: String): DBIO[Option[ShoppingCartReport]] =
     reportTable
       .filter(_.cartId === cartId)
-      .result.headOption
+      .result
+      .headOption
 }

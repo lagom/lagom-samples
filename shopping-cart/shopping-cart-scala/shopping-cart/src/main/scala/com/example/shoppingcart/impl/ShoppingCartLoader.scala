@@ -9,6 +9,8 @@ import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import play.api.db.HikariCPComponents
 import play.api.libs.ws.ahc.AhcWSComponents
+import akka.cluster.sharding.typed.scaladsl.Entity
+import com.lightbend.lagom.scaladsl.playjson.EmptyJsonSerializerRegistry
 
 class ShoppingCartLoader extends LagomApplicationLoader {
 
@@ -22,7 +24,7 @@ class ShoppingCartLoader extends LagomApplicationLoader {
 }
 
 abstract class ShoppingCartApplication(context: LagomApplicationContext)
-  extends LagomApplication(context)
+    extends LagomApplication(context)
     with SlickPersistenceComponents
     with HikariCPComponents
     with LagomKafkaComponents
@@ -34,10 +36,12 @@ abstract class ShoppingCartApplication(context: LagomApplicationContext)
   // Register the JSON serializer registry
   override lazy val jsonSerializerRegistry = ShoppingCartSerializerRegistry
 
-  // Register the ShoppingCart persistent entity
-  persistentEntityRegistry.register(wire[ShoppingCartEntity])
-
   lazy val reportRepository = wire[ShoppingCartReportRepository]
-
   readSide.register(wire[ShoppingCartReportProcessor])
+
+  clusterSharding.init(
+    Entity(ShoppingCart.typeKey) { entityContext => 
+      ShoppingCart.behavior(entityContext)
+    }
+  )
 }
