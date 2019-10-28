@@ -138,14 +138,13 @@ object Quantity {
 final case class ShoppingCartView(id: String, items: Seq[ShoppingCartItem], checkedOut: Boolean)
 
 object ShoppingCartView {
-
   implicit val format: Format[ShoppingCartView] = Json.format
 }
 
 /**
  * A shopping cart report exposes information about a ShoppingCart.
  */
-final case class ShoppingCartReport(cartId: String, checkoutDate: Option[Instant])
+final case class ShoppingCartReport(cartId: String, creationDate: Instant, checkoutDate: Option[Instant])
 
 object ShoppingCartReport {
   implicit val format: Format[ShoppingCartReport] = Json.format

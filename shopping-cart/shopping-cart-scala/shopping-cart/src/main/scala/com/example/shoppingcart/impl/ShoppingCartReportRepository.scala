@@ -21,9 +21,11 @@ class ShoppingCartReportRepository(database: Database) {
   class ShoppingCartReportTable(tag: Tag) extends Table[ShoppingCartReport](tag, "shopping_cart_report") {
     def cartId = column[String]("cart_id", O.PrimaryKey)
 
+    def creationDate = column[Instant]("creation_date")
+
     def checkoutDate = column[Option[Instant]]("checkout_date")
 
-    def * = (cartId, checkoutDate) <> ((ShoppingCartReport.apply _).tupled, ShoppingCartReport.unapply)
+    def * = (cartId, creationDate, checkoutDate) <> ((ShoppingCartReport.apply _).tupled, ShoppingCartReport.unapply)
   }
 
   val reportTable = TableQuery[ShoppingCartReportTable]
@@ -36,7 +38,7 @@ class ShoppingCartReportRepository(database: Database) {
   def createReport(cartId: String): DBIO[Done] = {
     findByIdQuery(cartId)
       .flatMap {
-        case None => reportTable += ShoppingCartReport(cartId, None)
+        case None => reportTable += ShoppingCartReport(cartId, Instant.now(), None)
         case _    => DBIO.successful(Done)
       }
       .map(_ => Done)

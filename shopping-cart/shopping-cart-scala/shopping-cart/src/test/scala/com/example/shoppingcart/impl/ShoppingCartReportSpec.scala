@@ -2,32 +2,34 @@ package com.example.shoppingcart.impl
 
 import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.Done
 import akka.persistence.query.Sequence
+import com.lightbend.lagom.scaladsl.api.ServiceLocator
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.{ReadSideTestDriver, ServiceTest}
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matchers with ScalaFutures with OptionValues {
 
   private val server = ServiceTest.startServer(ServiceTest.defaultSetup.withJdbc(true)) { ctx =>
     new ShoppingCartApplication(ctx) {
-      override def serviceLocator = NoServiceLocator
-      override lazy val readSide: ReadSideTestDriver = new ReadSideTestDriver
+      override def serviceLocator: ServiceLocator = NoServiceLocator
+      override lazy val readSide: ReadSideTestDriver = new ReadSideTestDriver()(materializer, executionContext)
     }
   }
 
-  override def afterAll() = server.stop()
+  override def afterAll(): Unit = server.stop()
 
   private val testDriver = server.application.readSide
   private val reportRepository = server.application.reportRepository
   private val offset = new AtomicInteger()
-  private implicit val  exeCxt = server.actorSystem.dispatcher
+  private implicit val exeCxt: ExecutionContext = server.actorSystem.dispatcher
 
   "The shopping cart report processor" should {
 
@@ -38,18 +40,16 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
         reportRepository.findById(cartId).futureValue shouldBe None
       }
 
-      val eventTime = Instant.now()
-
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemUpdated("test1", 1, eventTime))
+          _ <- feedEvent(cartId, ItemAdded("test1", 1))
           report <- reportRepository.findById(cartId)
         } yield report
 
       withClue("Cart report is created on first event") {
         whenReady(updatedReport) { result =>
           val report = result.value
-          report.creationDate shouldBe eventTime
+          report.creationDate should not be null
           report.checkoutDate shouldBe None
         }
       }
@@ -62,20 +62,33 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
         reportRepository.findById(cartId).futureValue shouldBe None
       }
 
-      val eventTime = Instant.now()
+      // Create a report to check against it later
+      var reportCreatedDate: Instant = Instant.now()
+      val createdReport = for {
+        _ <- feedEvent(cartId, ItemAdded("test2", 1))
+        report <- reportRepository.findById(cartId)
+      } yield report
+
+      withClue("Cart report created on first event") {
+        whenReady(createdReport) { r =>
+          reportCreatedDate = r.value.creationDate
+        }
+      }
+
+      // To ensure that events have a different instant
+      SECONDS.sleep(2);
 
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemUpdated("test2", 1, eventTime))
-          _ <- feedEvent(cartId, ItemUpdated("test2", 2, eventTime.plusSeconds(5)))
-          _ <- feedEvent(cartId, ItemUpdated("test2", 3, eventTime.plusSeconds(10)))
+          _ <- feedEvent(cartId, ItemAdded("test2", 2))
+          _ <- feedEvent(cartId, ItemAdded("test2", 3))
           report <- reportRepository.findById(cartId)
         } yield report
 
       withClue("Cart report's creationDate should not change") {
         whenReady(updatedReport) { result =>
           val report = result.value
-          report.creationDate shouldBe eventTime
+          report.creationDate shouldBe reportCreatedDate
           report.checkoutDate shouldBe None
         }
       }
@@ -93,8 +106,8 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemUpdated("test3", 1, eventTime))
-          _ <- feedEvent(cartId, CheckedOut(checkedOutTime))
+          _ <- feedEvent(cartId, ItemAdded("test3", 1))
+          _ <- feedEvent(cartId, CartCheckedOut(checkedOutTime))
           report <- reportRepository.findById(cartId)
         } yield report
 
