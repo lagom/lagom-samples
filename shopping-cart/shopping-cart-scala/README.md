@@ -14,7 +14,7 @@ We provide a `docker-compose.yml` file that you can use to run a Postgres databa
 
 To create the image and start the container, run the command below at the root of this project.
 
-```bash 
+```bash
 docker-compose up -d
 ```
 
