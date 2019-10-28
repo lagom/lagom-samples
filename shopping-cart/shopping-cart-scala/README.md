@@ -55,7 +55,7 @@ The shopping cart service offers four REST endpoints:
 
 For simplicity, no authentication is implemented, shopping cart IDs are arbitrary and whoever makes the request can use whatever ID they want, and product IDs are also arbitrary and trusted. An a real world application, the shopping cart IDs would likely be random UUIDs to ensure uniqueness, and product IDs would be validated against a product database.
 
-When the shopping cart is checked out, an event is published to the Kafka called `shopping-cart` by the shopping cart service, such events look like this:
+When the shopping cart is checked out, an event is published to the Kafka topic called `shopping-cart` by the shopping cart service, such events look like this:
 
 ```json
 {
