@@ -1,8 +1,5 @@
 package com.example.shoppingcart.impl
 
-import java.time.OffsetDateTime
-
-import akka.Done
 import akka.NotUsed
 import com.example.shoppingcart.api.ShoppingCartView
 import com.example.shoppingcart.api.ShoppingCartItem
@@ -10,11 +7,12 @@ import com.example.shoppingcart.api.Quantity
 import com.example.shoppingcart.api.ShoppingCartReport
 import com.example.shoppingcart.api.ShoppingCartService
 
+import com.example.shoppingcart.impl.ShoppingCart._
+
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
 import com.lightbend.lagom.scaladsl.api.transport.BadRequest
 import com.lightbend.lagom.scaladsl.api.transport.NotFound
-import com.lightbend.lagom.scaladsl.api.transport.TransportException
 import com.lightbend.lagom.scaladsl.broker.TopicProducer
 import com.lightbend.lagom.scaladsl.persistence.EventStreamElement
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
@@ -38,7 +36,7 @@ class ShoppingCartServiceImpl(
   /**
    * Looks up the shopping cart entity for the given ID.
    */
-  private def entityRef(id: String): EntityRef[ShoppingCartCommand] =
+  private def entityRef(id: String): EntityRef[Command] =
     clusterSharding.entityRefFor(ShoppingCart.typeKey, id)
 
   implicit val timeout = Timeout(5.seconds)
@@ -80,7 +78,7 @@ class ShoppingCartServiceImpl(
     }
 
 
-  override def shoppingCartTopic: Topic[ShoppingCartView] = TopicProducer.taggedStreamWithOffset(ShoppingCartEvent.Tag) {
+  override def shoppingCartTopic: Topic[ShoppingCartView] = TopicProducer.taggedStreamWithOffset(Event.Tag) {
     (tag, fromOffset) =>
       persistentEntityRegistry
         .eventStream(tag, fromOffset)
@@ -93,7 +91,7 @@ class ShoppingCartServiceImpl(
         }
   }
 
-  private def convertShoppingCart(id: String, cartSummary: ShoppingCartSummary) = {
+  private def convertShoppingCart(id: String, cartSummary: Summary) = {
     ShoppingCartView(
       id,
       cartSummary.items.map((ShoppingCartItem.apply _).tupled).toSeq,

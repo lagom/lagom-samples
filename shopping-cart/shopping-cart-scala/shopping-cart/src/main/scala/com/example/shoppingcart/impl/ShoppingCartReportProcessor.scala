@@ -1,17 +1,17 @@
 package com.example.shoppingcart.impl
 
-import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
+import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
 import com.lightbend.lagom.scaladsl.persistence.slick.SlickReadSide
-import java.time.Instant
 import slick.dbio.DBIOAction
 import akka.Done
+import com.example.shoppingcart.impl.ShoppingCart._
 
 class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingCartReportRepository)
-    extends ReadSideProcessor[ShoppingCartEvent] {
+    extends ReadSideProcessor[Event] {
 
-  override def buildHandler() =
+  override def buildHandler(): ReadSideProcessor.ReadSideHandler[Event] =
     readSide
-      .builder[ShoppingCartEvent]("shopping-cart-report")
+      .builder[Event]("shopping-cart-report")
       .setGlobalPrepare(repository.createTable())
       .setEventHandler[ItemAdded] { envelope =>
         repository.createReport(envelope.entityId) 
@@ -27,5 +27,5 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingC
       }
       .build()
 
-  override def aggregateTags = ShoppingCartEvent.Tag.allTags
+  override def aggregateTags: Set[AggregateEventTag[Event]] = Event.Tag.allTags
 }
