@@ -39,6 +39,8 @@ abstract class ShoppingCartApplication(context: LagomApplicationContext)
   lazy val reportRepository = wire[ShoppingCartReportRepository]
   readSide.register(wire[ShoppingCartReportProcessor])
 
+  // Initialize ShoppingCart persistent entity.
+  // See https://doc.akka.io/docs/akka/2.6/typed/cluster-sharding.html
   clusterSharding.init(
     Entity(ShoppingCart.typeKey) { entityContext => 
       ShoppingCart.behavior(entityContext)
