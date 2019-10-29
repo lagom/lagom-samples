@@ -46,30 +46,6 @@ object ShoppingCart {
 
   final case class Get(replyTo: ActorRef[Summary]) extends Command
 
-  // SHOPPING CART EVENTS
-  sealed trait Event extends AggregateEvent[Event] {
-    override def aggregateTag: AggregateEventTagger[Event] = Event.Tag
-  }
-
-  object Event {
-    val Tag: AggregateEventShards[Event] = AggregateEventTag.sharded[Event](numShards = 10)
-  }
-
-  final case class ItemAdded(itemId: String, quantity: Int) extends Event
-
-  final case class ItemRemoved(itemId: String) extends Event
-
-  final case class ItemQuantityAdjusted(itemId: String, newQuantity: Int) extends Event
-
-  final case class CartCheckedOut(eventTime: Instant) extends Event
-
-  // Events get stored and loaded from the database, hence a JSON format
-  //  needs to be declared so that they can be serialized and deserialized.
-  implicit val itemAddedFormat: Format[ItemAdded]                       = Json.format
-  implicit val itemRemovedFormat: Format[ItemRemoved]                   = Json.format
-  implicit val itemQuantityAdjustedFormat: Format[ItemQuantityAdjusted] = Json.format
-  implicit val cartCheckedOutFormat: Format[CartCheckedOut]             = Json.format
-
   // SHOPPING CART REPLIES
   final case class Summary(items: Map[String, Int], checkedOut: Boolean)
 
@@ -98,13 +74,37 @@ object ShoppingCart {
     }
   }
 
+  // SHOPPING CART EVENTS
+  sealed trait Event extends AggregateEvent[Event] {
+    override def aggregateTag: AggregateEventTagger[Event] = Event.Tag
+  }
+
+  object Event {
+    val Tag: AggregateEventShards[Event] = AggregateEventTag.sharded[Event](numShards = 10)
+  }
+
+  final case class ItemAdded(itemId: String, quantity: Int) extends Event
+
+  final case class ItemRemoved(itemId: String) extends Event
+
+  final case class ItemQuantityAdjusted(itemId: String, newQuantity: Int) extends Event
+
+  final case class CartCheckedOut(eventTime: Instant) extends Event
+
+  // Events get stored and loaded from the database, hence a JSON format
+  //  needs to be declared so that they can be serialized and deserialized.
+  implicit val itemAddedFormat: Format[ItemAdded]                       = Json.format
+  implicit val itemRemovedFormat: Format[ItemRemoved]                   = Json.format
+  implicit val itemQuantityAdjustedFormat: Format[ItemQuantityAdjusted] = Json.format
+  implicit val cartCheckedOutFormat: Format[CartCheckedOut]             = Json.format
+
   val empty = ShoppingCart(Map.empty, checkedOut = false)
 
   val typeKey: EntityTypeKey[Command] = EntityTypeKey[Command]("ShoppingCart")
 
   // We can then access the entity behavior in our test tests, without the need to tag
   // or retain events.
-  def behavior(persistenceId: PersistenceId): EventSourcedBehavior[Command, Event, ShoppingCart] = {
+  def apply(persistenceId: PersistenceId): EventSourcedBehavior[Command, Event, ShoppingCart] = {
     EventSourcedBehavior
       .withEnforcedReplies[Command, Event, ShoppingCart](
         persistenceId = persistenceId,
