@@ -8,6 +8,7 @@ import akka.cluster.sharding.typed.scaladsl._
 import akka.persistence.typed.PersistenceId
 import akka.persistence.typed.scaladsl.RetentionCriteria
 import akka.persistence.typed.scaladsl.Effect
+import akka.persistence.typed.scaladsl.Effect.reply
 import akka.persistence.typed.scaladsl.EventSourcedBehavior
 import akka.persistence.typed.scaladsl.ReplyEffect
 import com.lightbend.lagom.scaladsl.persistence.AggregateEvent
@@ -129,7 +130,7 @@ object ShoppingCart {
   implicit val format: Format[ShoppingCart] = Json.format
 }
 
-final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
+final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, checkedOutTime: Option[Instant] = None) {
 
   import ShoppingCart._
 
@@ -137,14 +138,11 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
   def applyCommand(cmd: Command): ReplyEffect[Event, ShoppingCart] =
     if (checkedOut) {
       cmd match {
-        // it is allowed to read it's state of a checked-out cart
-        case Get(replyTo) => Effect.reply(replyTo)(toSummary(this))
-        // CheckedOut is a final state, no mutations allowed
-        case AddItem(_, _, replyTo) => Effect.reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
-        case RemoveItem(_, replyTo) => Effect.reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
-        case AdjustItemQuantity(_, _, replyTo) =>
-          Effect.reply(replyTo)(Rejected("Cannot adjust an item quantity on a checked-out cart"))
-        case Checkout(replyTo) => Effect.reply(replyTo)(Rejected("Cannot checkout a checked-out cart"))
+        case Get(replyTo)                      => reply(replyTo)(toSummary(this))
+        case AddItem(_, _, replyTo)            => reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
+        case RemoveItem(_, replyTo)            => reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
+        case AdjustItemQuantity(_, _, replyTo) => reply(replyTo)(Rejected("Cannot adjust item on a checked-out cart"))
+        case Checkout(replyTo)                 => reply(replyTo)(Rejected("Cannot checkout a checked-out cart"))
       }
     } else {
       cmd match {
@@ -152,7 +150,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
         case RemoveItem(itemId, replyTo)                   => removeItem(itemId, replyTo)
         case AdjustItemQuantity(itemId, quantity, replyTo) => adjustItemQuantity(itemId, quantity, replyTo)
         case Checkout(replyTo)                             => checkout(replyTo)
-        case Get(replyTo)                                  => Effect.reply(replyTo)(toSummary(this))
+        case Get(replyTo)                                  => reply(replyTo)(toSummary(this))
       }
     }
 
@@ -209,16 +207,20 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
   // because a checked-out cart will never persist any new event
   def applyEvent(evt: Event): ShoppingCart =
     evt match {
-      case ItemAdded(itemId, quantity)            => addOrUpdateItem(itemId, quantity)
-      case ItemRemoved(itemId)                    => removeItem(itemId)
-      case ItemQuantityAdjusted(itemId, quantity) => addOrUpdateItem(itemId, quantity)
-      case CartCheckedOut(checkedOutTime)         => copy(checkedOut = true)
+      case ItemAdded(itemId, quantity)            => onItemAddedOrUpdated(itemId, quantity)
+      case ItemRemoved(itemId)                    => onItemRemoved(itemId)
+      case ItemQuantityAdjusted(itemId, quantity) => onItemAddedOrUpdated(itemId, quantity)
+      case CartCheckedOut(checkedOutTime)         => onCartCheckedOut(checkedOutTime)
     }
 
-  private def removeItem(itemId: String): ShoppingCart = copy(items = items - itemId)
+  private def onItemRemoved(itemId: String): ShoppingCart = copy(items = items - itemId)
 
-  private def addOrUpdateItem(itemId: String, quantity: Int): ShoppingCart =
+  private def onItemAddedOrUpdated(itemId: String, quantity: Int): ShoppingCart =
     copy(items = items + (itemId -> quantity))
+
+  private def onCartCheckedOut(checkedOutTime: Instant): ShoppingCart = {
+    copy(checkedOut = true, checkedOutTime = Option(checkedOutTime))
+  }
 }
 
 /**
