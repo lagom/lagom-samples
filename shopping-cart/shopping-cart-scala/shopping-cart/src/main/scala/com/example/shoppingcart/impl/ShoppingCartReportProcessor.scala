@@ -1,6 +1,7 @@
 package com.example.shoppingcart.impl
 
-import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
+import com.lightbend.lagom.scaladsl.persistence.AggregateEventTag
+import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
 import com.lightbend.lagom.scaladsl.persistence.slick.SlickReadSide
 import slick.dbio.DBIOAction
 import akka.Done
@@ -14,7 +15,7 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingC
       .builder[Event]("shopping-cart-report")
       .setGlobalPrepare(repository.createTable())
       .setEventHandler[ItemAdded] { envelope =>
-        repository.createReport(envelope.entityId) 
+        repository.createReport(envelope.entityId)
       }
       .setEventHandler[ItemRemoved] { envelope =>
         DBIOAction.successful(Done) // not used in report

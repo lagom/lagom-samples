@@ -4,3 +4,5 @@ addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.6.0-M7+60-a7fd677e"
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "3.3.0")
 // Not needed once upgraded to Play 2.7.1
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.3.19")
+
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.2.0")

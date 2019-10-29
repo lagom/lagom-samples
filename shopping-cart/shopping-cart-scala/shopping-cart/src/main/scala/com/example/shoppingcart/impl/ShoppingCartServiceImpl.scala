@@ -50,33 +50,41 @@ class ShoppingCartServiceImpl(
   override def addItem(id: String): ServiceCall[ShoppingCartItem, ShoppingCartView] = ServiceCall { update =>
     entityRef(id)
       .ask(reply => AddItem(update.itemId, update.quantity, reply))
-      .map { confirmation => confirmationToResult(id, confirmation) }
+      .map { confirmation =>
+        confirmationToResult(id, confirmation)
+      }
   }
-  
+
   override def removeItem(id: String, itemId: String): ServiceCall[NotUsed, ShoppingCartView] = ServiceCall { update =>
     entityRef(id)
       .ask(reply => RemoveItem(itemId, reply))
-      .map { confirmation => confirmationToResult(id, confirmation) }
+      .map { confirmation =>
+        confirmationToResult(id, confirmation)
+      }
   }
 
-  override def adjustItemQuantity(id: String, itemId: String): ServiceCall[Quantity, ShoppingCartView] = ServiceCall { update =>
-    entityRef(id)
-      .ask(reply => AdjustItemQuantity(itemId, update.quantity, reply))
-      .map { confirmation => confirmationToResult(id, confirmation) }
+  override def adjustItemQuantity(id: String, itemId: String): ServiceCall[Quantity, ShoppingCartView] = ServiceCall {
+    update =>
+      entityRef(id)
+        .ask(reply => AdjustItemQuantity(itemId, update.quantity, reply))
+        .map { confirmation =>
+          confirmationToResult(id, confirmation)
+        }
   }
 
   override def checkout(id: String): ServiceCall[NotUsed, ShoppingCartView] = ServiceCall { _ =>
     entityRef(id)
       .ask(replyTo => Checkout(replyTo))
-      .map { confirmation => confirmationToResult(id, confirmation) }
+      .map { confirmation =>
+        confirmationToResult(id, confirmation)
+      }
   }
 
-  private def confirmationToResult(id: String, confirmation: Confirmation): ShoppingCartView = 
+  private def confirmationToResult(id: String, confirmation: Confirmation): ShoppingCartView =
     confirmation match {
-      case Accepted(cartSummary)  => convertShoppingCart(id, cartSummary)
-      case Rejected(reason) => throw BadRequest(reason)
+      case Accepted(cartSummary) => convertShoppingCart(id, cartSummary)
+      case Rejected(reason)      => throw BadRequest(reason)
     }
-
 
   override def shoppingCartTopic: Topic[ShoppingCartView] = TopicProducer.taggedStreamWithOffset(Event.Tag) {
     (tag, fromOffset) =>

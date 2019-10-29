@@ -9,11 +9,13 @@ import akka.Done
 import akka.persistence.query.Sequence
 import com.lightbend.lagom.scaladsl.api.ServiceLocator
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
-import com.lightbend.lagom.scaladsl.testkit.{ReadSideTestDriver, ServiceTest}
+import com.lightbend.lagom.scaladsl.testkit.ReadSideTestDriver
+import com.lightbend.lagom.scaladsl.testkit.ServiceTest
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matchers with ScalaFutures with OptionValues {
 
@@ -21,16 +23,16 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
   private val server = ServiceTest.startServer(ServiceTest.defaultSetup.withJdbc(true)) { ctx =>
     new ShoppingCartApplication(ctx) {
-      override def serviceLocator: ServiceLocator = NoServiceLocator
+      override def serviceLocator: ServiceLocator    = NoServiceLocator
       override lazy val readSide: ReadSideTestDriver = new ReadSideTestDriver()(materializer, executionContext)
     }
   }
 
   override def afterAll(): Unit = server.stop()
 
-  private val testDriver = server.application.readSide
-  private val reportRepository = server.application.reportRepository
-  private val offset = new AtomicInteger()
+  private val testDriver                        = server.application.readSide
+  private val reportRepository                  = server.application.reportRepository
+  private val offset                            = new AtomicInteger()
   private implicit val exeCxt: ExecutionContext = server.actorSystem.dispatcher
 
   "The shopping cart report processor" should {
@@ -44,7 +46,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemAdded("test1", 1))
+          _      <- feedEvent(cartId, ItemAdded("test1", 1))
           report <- reportRepository.findById(cartId)
         } yield report
 
@@ -67,7 +69,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
       // Create a report to check against it later
       var reportCreatedDate: Instant = Instant.now()
       val createdReport = for {
-        _ <- feedEvent(cartId, ItemAdded("test2", 1))
+        _      <- feedEvent(cartId, ItemAdded("test2", 1))
         report <- reportRepository.findById(cartId)
       } yield report
 
@@ -82,8 +84,8 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemAdded("test2", 2))
-          _ <- feedEvent(cartId, ItemAdded("test2", 3))
+          _      <- feedEvent(cartId, ItemAdded("test2", 2))
+          _      <- feedEvent(cartId, ItemAdded("test2", 3))
           report <- reportRepository.findById(cartId)
         } yield report
 
@@ -106,7 +108,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
       // Create a report to check against it later
       var reportCreatedDate: Instant = Instant.now()
       val createdReport = for {
-        _ <- feedEvent(cartId, ItemAdded("test2", 1))
+        _      <- feedEvent(cartId, ItemAdded("test2", 1))
         report <- reportRepository.findById(cartId)
       } yield report
 
@@ -123,8 +125,8 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
       val updatedReport =
         for {
-          _ <- feedEvent(cartId, ItemAdded("test3", 1))
-          _ <- feedEvent(cartId, CartCheckedOut(checkedOutTime))
+          _      <- feedEvent(cartId, ItemAdded("test3", 1))
+          _      <- feedEvent(cartId, CartCheckedOut(checkedOutTime))
           report <- reportRepository.findById(cartId)
         } yield report
 

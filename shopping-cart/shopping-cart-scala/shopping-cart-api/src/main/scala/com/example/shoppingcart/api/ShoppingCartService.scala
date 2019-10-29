@@ -61,7 +61,6 @@ trait ShoppingCartService extends Service {
    */
   def adjustItemQuantity(id: String, itemId: String): ServiceCall[Quantity, ShoppingCartView]
 
-
   /**
    * Checkout the shopping cart.
    *
@@ -126,7 +125,6 @@ final case class Quantity(quantity: Int)
 object Quantity {
   implicit val format: Format[Quantity] = Json.format
 }
-
 
 /**
  * A shopping cart.

@@ -2,14 +2,23 @@ package com.example.shoppingcart.impl
 
 import java.time.Instant
 
-import akka.actor.typed.{ActorRef, Behavior}
+import akka.actor.typed.ActorRef
+import akka.actor.typed.Behavior
 import akka.cluster.sharding.typed.scaladsl._
 import akka.persistence.typed.PersistenceId
 import akka.persistence.typed.scaladsl.RetentionCriteria
-import akka.persistence.typed.scaladsl.{Effect, EventSourcedBehavior, ReplyEffect}
-import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventShards, AggregateEventTag, AggregateEventTagger, AkkaTaggerAdapter}
-import com.lightbend.lagom.scaladsl.playjson.{JsonSerializer, JsonSerializerRegistry}
-import play.api.libs.json.{Format, _}
+import akka.persistence.typed.scaladsl.Effect
+import akka.persistence.typed.scaladsl.EventSourcedBehavior
+import akka.persistence.typed.scaladsl.ReplyEffect
+import com.lightbend.lagom.scaladsl.persistence.AggregateEvent
+import com.lightbend.lagom.scaladsl.persistence.AggregateEventShards
+import com.lightbend.lagom.scaladsl.persistence.AggregateEventTag
+import com.lightbend.lagom.scaladsl.persistence.AggregateEventTagger
+import com.lightbend.lagom.scaladsl.persistence.AkkaTaggerAdapter
+import com.lightbend.lagom.scaladsl.playjson.JsonSerializer
+import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
+import play.api.libs.json.Format
+import play.api.libs.json._
 
 import scala.collection.immutable.Seq
 
@@ -56,10 +65,10 @@ object ShoppingCart {
 
   // Events get stored and loaded from the database, hence a JSON format
   //  needs to be declared so that they can be serialized and deserialized.
-  implicit val itemAddedFormat: Format[ItemAdded] = Json.format
-  implicit val itemRemovedFormat: Format[ItemRemoved] = Json.format
+  implicit val itemAddedFormat: Format[ItemAdded]                       = Json.format
+  implicit val itemRemovedFormat: Format[ItemRemoved]                   = Json.format
   implicit val itemQuantityAdjustedFormat: Format[ItemQuantityAdjusted] = Json.format
-  implicit val cartCheckedOutFormat: Format[CartCheckedOut] = Json.format
+  implicit val cartCheckedOutFormat: Format[CartCheckedOut]             = Json.format
 
   // SHOPPING CART REPLIES
   final case class Summary(items: Map[String, Int], checkedOut: Boolean)
@@ -70,7 +79,7 @@ object ShoppingCart {
 
   final case class Rejected(reason: String) extends Confirmation
 
-  implicit val summaryFormat: Format[Summary] = Json.format
+  implicit val summaryFormat: Format[Summary]               = Json.format
   implicit val confirmationAcceptedFormat: Format[Accepted] = Json.format
   implicit val confirmationRejectedFormat: Format[Rejected] = Json.format
   implicit val confirmationFormat: Format[Confirmation] = new Format[Confirmation] {
@@ -133,18 +142,17 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
         // CheckedOut is a final state, no mutations allowed
         case AddItem(_, _, replyTo) => Effect.reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
         case RemoveItem(_, replyTo) => Effect.reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
-        case AdjustItemQuantity(_, _, replyTo) => Effect.reply(replyTo)(Rejected("Cannot adjust an item quantity on a checked-out cart"))
+        case AdjustItemQuantity(_, _, replyTo) =>
+          Effect.reply(replyTo)(Rejected("Cannot adjust an item quantity on a checked-out cart"))
         case Checkout(replyTo) => Effect.reply(replyTo)(Rejected("Cannot checkout a checked-out cart"))
       }
-    }
-    else {
+    } else {
       cmd match {
         case AddItem(itemId, quantity, replyTo)            => addItem(itemId, quantity, replyTo)
         case RemoveItem(itemId, replyTo)                   => removeItem(itemId, replyTo)
         case AdjustItemQuantity(itemId, quantity, replyTo) => adjustItemQuantity(itemId, quantity, replyTo)
-        case Checkout(replyTo) => checkout(replyTo)
-        case Get(replyTo) =>
-          Effect.reply(replyTo)(toSummary(this))
+        case Checkout(replyTo)                             => checkout(replyTo)
+        case Get(replyTo)                                  => Effect.reply(replyTo)(toSummary(this))
       }
     }
 
@@ -157,7 +165,11 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
   }
 
-  private def addItem(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def addItem(
+      itemId: String,
+      quantity: Int,
+      replyTo: ActorRef[Confirmation]
+  ): ReplyEffect[Event, ShoppingCart] = {
     if (items.contains(itemId))
       Effect.reply(replyTo)(Rejected(s"Item '$itemId' was already added to this shopping cart"))
     else if (quantity <= 0)
@@ -177,7 +189,11 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
       Effect.reply(replyTo)(Accepted(toSummary(this))) // removing an item is idempotent
   }
 
-  private def adjustItemQuantity(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def adjustItemQuantity(
+      itemId: String,
+      quantity: Int,
+      replyTo: ActorRef[Confirmation]
+  ): ReplyEffect[Event, ShoppingCart] = {
     if (items.contains(itemId))
       Effect
         .persist(ItemQuantityAdjusted(itemId, quantity))
@@ -193,10 +209,10 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
   // because a checked-out cart will never persist any new event
   def applyEvent(evt: Event): ShoppingCart =
     evt match {
-      case ItemAdded(itemId, quantity) => addOrUpdateItem(itemId, quantity)
-      case ItemRemoved(itemId) => removeItem(itemId)
+      case ItemAdded(itemId, quantity)            => addOrUpdateItem(itemId, quantity)
+      case ItemRemoved(itemId)                    => removeItem(itemId)
       case ItemQuantityAdjusted(itemId, quantity) => addOrUpdateItem(itemId, quantity)
-      case CartCheckedOut(checkedOutTime) => copy(checkedOut = true)
+      case CartCheckedOut(checkedOutTime)         => copy(checkedOut = true)
     }
 
   private def removeItem(itemId: String): ShoppingCart = copy(items = items - itemId)
