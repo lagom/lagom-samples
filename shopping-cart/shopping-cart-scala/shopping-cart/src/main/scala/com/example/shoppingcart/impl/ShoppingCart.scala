@@ -192,7 +192,9 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
       quantity: Int,
       replyTo: ActorRef[Confirmation]
   ): ReplyEffect[Event, ShoppingCart] = {
-    if (items.contains(itemId))
+    if (quantity <= 0)
+      Effect.reply(replyTo)(Rejected("Quantity must be greater than zero"))
+    else if (items.contains(itemId))
       Effect
         .persist(ItemQuantityAdjusted(itemId, quantity))
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))

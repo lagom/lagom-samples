@@ -41,7 +41,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
       }
     }
 
-    "update multiple items" in {
+    "update item quantity" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
       val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
@@ -114,6 +114,29 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
       val quantity = -2
       shoppingCart ! ShoppingCart.AddItem(randomId(), quantity, probe.ref)
       probe.expectMessage(ShoppingCart.Rejected("Quantity must be greater than zero"))
+    }
+
+    "fail when adjusting item quantity to negative number" in {
+      val probe        = createTestProbe[ShoppingCart.Confirmation]()
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
+
+      // First add a item so it is possible to checkout
+      val itemId = randomId()
+      shoppingCart ! ShoppingCart.AddItem(itemId, 2, probe.ref)
+      probe.expectMessageType[ShoppingCart.Accepted]
+
+      val quantity = -2
+      shoppingCart ! ShoppingCart.AdjustItemQuantity(itemId, quantity, probe.ref)
+      probe.expectMessage(ShoppingCart.Rejected("Quantity must be greater than zero"))
+    }
+
+    "fail when adjusting quantity for an item that isn't added" in {
+      val probe        = createTestProbe[ShoppingCart.Confirmation]()
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
+
+      val itemId = randomId()
+      shoppingCart ! ShoppingCart.AdjustItemQuantity(itemId, 2, probe.ref)
+      probe.expectMessage(ShoppingCart.Rejected(s"Cannot adjust quantity for item '$itemId'. Item not present on cart"))
     }
 
     "fail when adding an item to a checked out cart" in {
