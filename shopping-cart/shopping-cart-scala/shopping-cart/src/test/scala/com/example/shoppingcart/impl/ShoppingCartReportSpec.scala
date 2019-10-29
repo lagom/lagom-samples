@@ -17,6 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matchers with ScalaFutures with OptionValues {
 
+  import ShoppingCart._
+
   private val server = ServiceTest.startServer(ServiceTest.defaultSetup.withJdbc(true)) { ctx =>
     new ShoppingCartApplication(ctx) {
       override def serviceLocator: ServiceLocator = NoServiceLocator
@@ -122,7 +124,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
   }
 
-  private def feedEvent(cartId: String, event: ShoppingCartEvent): Future[Done] = {
+  private def feedEvent(cartId: String, event: ShoppingCart.Event): Future[Done] = {
     testDriver.feed(cartId, event, Sequence(offset.getAndIncrement))
   }
 }

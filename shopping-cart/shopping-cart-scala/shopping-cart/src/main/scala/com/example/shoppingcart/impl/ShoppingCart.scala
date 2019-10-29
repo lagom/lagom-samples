@@ -149,9 +149,12 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean) {
     }
 
   private def checkout(replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
-    Effect
-      .persist(CartCheckedOut(Instant.now()))
-      .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
+    if (items.isEmpty)
+      Effect.reply(replyTo)(Rejected("Cannot checkout an empty shopping cart"))
+    else
+      Effect
+        .persist(CartCheckedOut(Instant.now()))
+        .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
   }
 
   private def addItem(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
