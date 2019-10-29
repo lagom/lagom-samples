@@ -114,8 +114,8 @@ object ShoppingCart {
       )
   }
 
-  def behavior(entityContext: EntityContext[Command]): Behavior[Command] =
-    behavior(PersistenceId(entityContext.entityTypeKey.name, entityContext.entityId))
+  def apply(entityContext: EntityContext[Command]): Behavior[Command] =
+    apply(PersistenceId(entityContext.entityTypeKey.name, entityContext.entityId))
       .withTagger(AkkaTaggerAdapter.fromLagom(entityContext, Event.Tag))
       .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 100, keepNSnapshots = 2))
 

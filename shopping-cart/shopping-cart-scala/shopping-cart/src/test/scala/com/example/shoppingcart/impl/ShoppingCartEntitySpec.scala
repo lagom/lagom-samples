@@ -18,7 +18,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
   "ShoppingCart" must {
     "add an item" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
       shoppingCart ! ShoppingCart.AddItem(UUID.randomUUID().toString, 2, probe.ref)
 
       probe.expectMessageType[ShoppingCart.Accepted]
@@ -26,7 +26,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "remove an item" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item
       val itemId = randomId()
@@ -43,7 +43,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "update multiple items" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item
       val itemId = randomId()
@@ -60,7 +60,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "allow checking out" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item
       shoppingCart ! ShoppingCart.AddItem(randomId(), 2, probe.ref)
@@ -76,7 +76,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "allow getting shopping cart summary" in {
       val probeAdd     = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item
       val itemId = randomId()
@@ -91,7 +91,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "fail when removing an item that isn't added" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item
       val itemId = randomId()
@@ -109,7 +109,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "fail when adding a negative number of items" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       val quantity = -2
       shoppingCart ! ShoppingCart.AddItem(randomId(), quantity, probe.ref)
@@ -118,7 +118,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "fail when adding an item to a checked out cart" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item so it is possible to checkout
       val itemId = randomId()
@@ -136,7 +136,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "fail when checking out twice" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // First add a item so it is possible to checkout
       val itemId = randomId()
@@ -154,7 +154,7 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
 
     "fail when checking out an empty cart" in {
       val probe        = createTestProbe[ShoppingCart.Confirmation]()
-      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+      val shoppingCart = spawn(ShoppingCart(PersistenceId("ShoppingCart", randomId())))
 
       // Fail to checkout empty shopping cart
       shoppingCart ! ShoppingCart.Checkout(probe.ref)
