@@ -103,8 +103,23 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
         reportRepository.findById(cartId).futureValue shouldBe None
       }
 
-      val eventTime = Instant.now()
-      val checkedOutTime = eventTime.plusSeconds(30)
+      // Create a report to check against it later
+      var reportCreatedDate: Instant = Instant.now()
+      val createdReport = for {
+        _ <- feedEvent(cartId, ItemAdded("test2", 1))
+        report <- reportRepository.findById(cartId)
+      } yield report
+
+      withClue("Cart report created on first event") {
+        whenReady(createdReport) { r =>
+          reportCreatedDate = r.value.creationDate
+        }
+      }
+
+      // To ensure that events have a different instant
+      SECONDS.sleep(2);
+
+      val checkedOutTime = reportCreatedDate.plusSeconds(30)
 
       val updatedReport =
         for {
@@ -116,7 +131,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
       withClue("Cart report is marked as checked-out") {
         whenReady(updatedReport) { result =>
           val report = result.value
-          report.creationDate shouldBe eventTime
+          report.creationDate shouldBe reportCreatedDate
           report.checkoutDate shouldBe Some(checkedOutTime)
         }
       }
