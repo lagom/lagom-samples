@@ -74,10 +74,19 @@ class ShoppingCartEntitySpec extends ScalaTestWithActorTestKit(s"""
       }
     }
 
-    "allow getting the state" in {
-      // ShoppingCart.Get returns a Summary which is not a Confirmation.
-      // The test is pending until this modeling issue is fixed.
-      pending
+    "allow getting shopping cart summary" in {
+      val probeAdd     = createTestProbe[ShoppingCart.Confirmation]()
+      val shoppingCart = spawn(ShoppingCart.behavior(PersistenceId("ShoppingCart", randomId())))
+
+      // First add a item
+      val itemId = randomId()
+      shoppingCart ! ShoppingCart.AddItem(itemId, 2, probeAdd.ref)
+
+      // Get the summary
+      // Use another probe since ShoppingCart.Get does not return a ShoppingCart.Confirmation
+      val probeGet = createTestProbe[ShoppingCart.Summary]()
+      shoppingCart ! ShoppingCart.Get(probeGet.ref)
+      probeGet.receiveMessage().items.get(itemId) shouldBe Some(2)
     }
 
     "fail when removing an item that isn't added" in {
