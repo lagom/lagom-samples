@@ -47,14 +47,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         // register entity on shard
         this.clusterSharing.init(
                 Entity.of(
-                        ShoppingCartEntity.ENTITY_TYPE_KEY,
-                        ShoppingCartEntity::create
+                        ShoppingCart.ENTITY_TYPE_KEY,
+                        ShoppingCart::create
                 )
         );
     }
 
-    private EntityRef<ShoppingCartEntity.Command> entityRef(String id) {
-        return clusterSharing.entityRefFor(ShoppingCartEntity.ENTITY_TYPE_KEY, id);
+    private EntityRef<ShoppingCart.Command> entityRef(String id) {
+        return clusterSharing.entityRefFor(ShoppingCart.ENTITY_TYPE_KEY, id);
     }
 
     private final Duration askTimeout = Duration.ofSeconds(5);
@@ -63,7 +63,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ServiceCall<NotUsed, ShoppingCartView> get(String id) {
         return request ->
                 entityRef(id)
-                        .ask(ShoppingCartEntity.Get::new, askTimeout)
+                        .ask(ShoppingCart.Get::new, askTimeout)
                         .thenApply(summary -> asShoppingCartView(id, summary));
     }
 
@@ -83,7 +83,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return item ->
                 convertErrors(
                         entityRef(id)
-                                .<ShoppingCartEntity.Confirmation>ask(replyTo -> new ShoppingCartEntity.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
+                                .<ShoppingCart.Confirmation>ask(replyTo -> new ShoppingCart.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
                 );
     }
 
@@ -92,24 +92,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return request ->
                 convertErrors(
                         entityRef(id)
-                                .ask(ShoppingCartEntity.Checkout::new, askTimeout)
+                                .ask(ShoppingCart.Checkout::new, askTimeout)
                 );
     }
 
     @Override
     public Topic<ShoppingCartView> shoppingCartTopic() {
         // We want to publish all the shards of the shopping cart events
-        return TopicProducer.taggedStreamWithOffset(ShoppingCartEntity.Event.TAG.allTags(), (tag, offset) ->
+        return TopicProducer.taggedStreamWithOffset(ShoppingCart.Event.TAG.allTags(), (tag, offset) ->
                 // Load the event stream for the passed in shard tag
                 persistentEntityRegistry.eventStream(tag, offset)
                         // We only want to publish checkout events
-                        .filter(pair -> pair.first() instanceof ShoppingCartEntity.CheckedOut)
+                        .filter(pair -> pair.first() instanceof ShoppingCart.CheckedOut)
                         // Now we want to convert from the persisted event to the published event.
                         // To do this, we need to load the current shopping cart state.
                         .mapAsync(4, eventAndOffset -> {
-                            ShoppingCartEntity.CheckedOut checkedOut = (ShoppingCartEntity.CheckedOut) eventAndOffset.first();
+                            ShoppingCart.CheckedOut checkedOut = (ShoppingCart.CheckedOut) eventAndOffset.first();
                             return entityRef(checkedOut.getShoppingCartId())
-                                    .ask(ShoppingCartEntity.Get::new, askTimeout)
+                                    .ask(ShoppingCart.Get::new, askTimeout)
                                     .thenApply(summary -> Pair.create(
                                             asShoppingCartView(checkedOut.getShoppingCartId(), summary),
                                             eventAndOffset.second()
@@ -129,7 +129,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }).thenApply(__ -> Done.getInstance());
     }
 
-    private ShoppingCartView asShoppingCartView(String id, ShoppingCartEntity.Summary summary) {
+    private ShoppingCartView asShoppingCartView(String id, ShoppingCart.Summary summary) {
         List<ShoppingCartItem> items = new ArrayList<>();
         for (Map.Entry<String, Integer> item : summary.getItems().entrySet()) {
             items.add(new ShoppingCartItem(item.getKey(), item.getValue()));

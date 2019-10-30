@@ -57,7 +57,7 @@ public class ShoppingCartReportTest {
 
         String cartId = UUID.randomUUID().toString();
         Instant eventTime = Instant.now();
-        feed(new ShoppingCartEntity.ItemAdded(cartId, "abc", 2, eventTime));
+        feed(new ShoppingCart.ItemAdded(cartId, "abc", 2, eventTime));
 
         ShoppingCartReport report = Await.result(reportRepository.findById(cartId));
         assertEquals("creation date is same as event time", eventTime, report.getCreationDate());
@@ -68,14 +68,14 @@ public class ShoppingCartReportTest {
     public void creationDateDoesNotChangeOnNewEvents() throws InterruptedException, ExecutionException, TimeoutException {
         String cartId = UUID.randomUUID().toString();
         Instant eventTime = Instant.now();
-        feed(new ShoppingCartEntity.ItemAdded(cartId, "abc", 1, eventTime));
+        feed(new ShoppingCart.ItemAdded(cartId, "abc", 1, eventTime));
 
         ShoppingCartReport report = Await.result(reportRepository.findById(cartId));
         assertEquals("creation date is same as event time", eventTime, report.getCreationDate());
         assertNull("checkout date is not set", report.getCheckoutDate());
 
         // emit one more event and it should not affect the report
-        feed(new ShoppingCartEntity.ItemAdded(cartId, "abc", 2, eventTime.plusSeconds(30)));
+        feed(new ShoppingCart.ItemAdded(cartId, "abc", 2, eventTime.plusSeconds(30)));
 
         ShoppingCartReport updatedReport = Await.result(reportRepository.findById(cartId));
         assertEquals("creation date is same as first event time", eventTime, updatedReport.getCreationDate());
@@ -87,10 +87,10 @@ public class ShoppingCartReportTest {
 
         String cartId = UUID.randomUUID().toString();
         Instant eventTime = Instant.now();
-        feed(new ShoppingCartEntity.ItemAdded(cartId, "abc", 1, eventTime));
+        feed(new ShoppingCart.ItemAdded(cartId, "abc", 1, eventTime));
 
         Instant checkeoutTime = Instant.now().plusSeconds(30);
-        feed(new ShoppingCartEntity.CheckedOut(cartId, checkeoutTime));
+        feed(new ShoppingCart.CheckedOut(cartId, checkeoutTime));
 
         ShoppingCartReport report = Await.result(reportRepository.findById(cartId));
         assertEquals("creation date is same as event time", eventTime, report.getCreationDate());
@@ -98,7 +98,7 @@ public class ShoppingCartReportTest {
     }
 
 
-    private void feed(ShoppingCartEntity.Event event) throws InterruptedException, ExecutionException, TimeoutException {
+    private void feed(ShoppingCart.Event event) throws InterruptedException, ExecutionException, TimeoutException {
         Await.result(testDriver.feed(event, Offset.sequence(offset.getAndIncrement())));
     }
 }

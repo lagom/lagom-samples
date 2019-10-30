@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartEntity.Event> {
+public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCart.Event> {
 
     private final JpaReadSide jpaReadSide;
     final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -24,12 +24,12 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
 
 
     @Override
-    public ReadSideHandler<ShoppingCartEntity.Event> buildHandler() {
+    public ReadSideHandler<ShoppingCart.Event> buildHandler() {
         return jpaReadSide
-                .<ShoppingCartEntity.Event>builder("shopping-cart-report")
+                .<ShoppingCart.Event>builder("shopping-cart-report")
                 .setGlobalPrepare(this::createSchema)
-                .setEventHandler(ShoppingCartEntity.ItemAdded.class, this::createReport)
-                .setEventHandler(ShoppingCartEntity.CheckedOut.class, this::addCheckoutTime)
+                .setEventHandler(ShoppingCart.ItemAdded.class, this::createReport)
+                .setEventHandler(ShoppingCart.CheckedOut.class, this::addCheckoutTime)
                 .build();
     }
 
@@ -37,7 +37,7 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
         Persistence.generateSchema("default", ImmutableMap.of("hibernate.hbm2ddl.auto", "update"));
     }
 
-    private void createReport(EntityManager entityManager, ShoppingCartEntity.ItemAdded evt) {
+    private void createReport(EntityManager entityManager, ShoppingCart.ItemAdded evt) {
 
         logger.debug("Received ItemUpdate event: " + evt);
         if (findReport(entityManager, evt.shoppingCartId) == null) {
@@ -49,7 +49,7 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
         }
     }
 
-    private void addCheckoutTime(EntityManager entityManager, ShoppingCartEntity.CheckedOut evt) {
+    private void addCheckoutTime(EntityManager entityManager, ShoppingCart.CheckedOut evt) {
         ShoppingCartReport report = findReport(entityManager, evt.shoppingCartId);
 
         logger.debug("Received CheckedOut event: " + evt);
@@ -67,8 +67,8 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
     }
 
     @Override
-    public PSequence<AggregateEventTag<ShoppingCartEntity.Event>> aggregateTags() {
-        return ShoppingCartEntity.Event.TAG.allTags();
+    public PSequence<AggregateEventTag<ShoppingCart.Event>> aggregateTags() {
+        return ShoppingCart.Event.TAG.allTags();
     }
 
 }

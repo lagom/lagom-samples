@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-public class ShoppingCartEntity extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCartEntity.Command, ShoppingCartEntity.Event, ShoppingCartEntity.State> {
+public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCart.Command, ShoppingCart.Event, ShoppingCart.State> {
 
     // We need to keep the original business id because that's the one we should
     // use when tagging. If we use the PersistenceId, we will change the tag shard
@@ -35,21 +35,21 @@ public class ShoppingCartEntity extends EventSourcedBehaviorWithEnforcedReplies<
 
     public static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
 
-    public ShoppingCartEntity(String cartId) {
+    public ShoppingCart(String cartId) {
         this(cartId, PersistenceId.of(ENTITY_TYPE_HINT, cartId, PERSISTENCE_ID_SEPARATOR));
     }
 
-    private ShoppingCartEntity(String cartId, PersistenceId persistenceId) {
+    private ShoppingCart(String cartId, PersistenceId persistenceId) {
         super(persistenceId);
         this.cartId = cartId;
     }
 
-    public static ShoppingCartEntity create(String businessId, PersistenceId persistenceId) {
-        return new ShoppingCartEntity(businessId, persistenceId);
+    public static ShoppingCart create(String businessId, PersistenceId persistenceId) {
+        return new ShoppingCart(businessId, persistenceId);
     }
 
-    public static ShoppingCartEntity create(EntityContext<Command> entityContext) {
-        return new ShoppingCartEntity(entityContext.getEntityId());
+    public static ShoppingCart create(EntityContext<Command> entityContext) {
+        return new ShoppingCart(entityContext.getEntityId());
     }
 
     //
