@@ -1,156 +1,254 @@
 package com.example.shoppingcart.impl;
 
-import akka.Done;
-import akka.actor.ActorSystem;
-import akka.testkit.javadsl.TestKit;
-import com.example.shoppingcart.impl.ShoppingCartCommand.Checkout;
-import com.example.shoppingcart.impl.ShoppingCartCommand.Get;
-import com.example.shoppingcart.impl.ShoppingCartCommand.UpdateItem;
-import com.example.shoppingcart.impl.ShoppingCartEvent.CheckedOut;
-import com.example.shoppingcart.impl.ShoppingCartEvent.ItemUpdated;
-import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
-import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver.Outcome;
-import org.junit.*;
+import akka.actor.testkit.typed.javadsl.LogCapturing;
+import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
+import akka.actor.testkit.typed.javadsl.TestProbe;
+import akka.actor.typed.ActorRef;
+import akka.persistence.typed.PersistenceId;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import java.util.UUID;
 
 public class ShoppingCartEntityTest {
-    private static ActorSystem system;
-    private static final String ENTITY_ID = "shopping-cart-1";
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("ShoppingCartEntityTest");
-    }
+    private static final String inmemConfig =
+            "akka.persistence.journal.plugin = \"akka.persistence.journal.inmem\" \n";
 
-    @AfterClass
-    public static void teardown() {
-        TestKit.shutdownActorSystem(system);
-        system = null;
-    }
+    private static final String snapshotConfig =
+            "akka.persistence.snapshot-store.plugin = \"akka.persistence.snapshot-store.local\" \n"
+                    + "akka.persistence.snapshot-store.local.dir = \"target/snapshot-"
+                    + UUID.randomUUID().toString()
+                    + "\" \n";
 
-    private PersistentEntityTestDriver<ShoppingCartCommand, ShoppingCartEvent, ShoppingCartState> driver;
+    private static final String config = inmemConfig + snapshotConfig;
 
-    @Before
-    public void setupDriver() {
-        driver = new PersistentEntityTestDriver<>(system, new ShoppingCartEntity(), ENTITY_ID);
-    }
+    @ClassRule
+    public static final TestKitJunitResource testKit = new TestKitJunitResource(config);
 
-    @After
-    public void verifyNoIssues() {
-        assertThat(driver.getAllIssues(), empty());
+    @Rule
+    public final LogCapturing logCapturing = new LogCapturing();
+
+    private String randomId() {
+        return UUID.randomUUID().toString();
     }
 
     @Test
-    public void shoppingCartShouldAllowAddingAnItem() {
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", 2));
+    public void shouldAddAnItem() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(Done.getInstance()));
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
 
-        assertEquals(outcome.events().size(), 1);
-        ItemUpdated itemUpdated = (ItemUpdated) outcome.events().get(0);
-        assertEquals(itemUpdated.shoppingCartId, ENTITY_ID);
-        assertEquals(itemUpdated.productId, "123");
-        assertEquals(itemUpdated.quantity, 2);
-
-        assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY.updateItem("123", 2)));
+        ShoppingCartEntity.Accepted accepted = (ShoppingCartEntity.Accepted) probe.receiveMessage();
+        Assert.assertTrue(accepted.getSummary().getItems().containsKey(itemId));
     }
 
     @Test
-    public void shoppingCartShouldAllowRemovingAnItem() {
-        driver.run(new UpdateItem("123", 2));
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", 0));
+    public void shouldRemoveAnItem() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(Done.getInstance()));
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
 
-        assertEquals(outcome.events().size(), 1);
-        ItemUpdated itemUpdated = (ItemUpdated) outcome.events().get(0);
-        assertEquals(itemUpdated.shoppingCartId, ENTITY_ID);
-        assertEquals(itemUpdated.productId, "123");
-        assertEquals(itemUpdated.quantity, 0);
+        // Let's then remove the item
+        shoppingCart.tell(new ShoppingCartEntity.RemoveItem(itemId, probe.ref()));
 
-        assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY));
+        // And check it is not there anymore
+        ShoppingCartEntity.Accepted accepted = (ShoppingCartEntity.Accepted) probe.receiveMessage();
+        Assert.assertFalse(accepted.getSummary().getItems().containsKey(itemId));
     }
 
     @Test
-    public void shoppingCartShouldAllowUpdatingMultipleItems() {
-        assertThat(driver.run(new UpdateItem("123", 2)).state(),
-            equalTo(ShoppingCartState.EMPTY.updateItem("123", 2)));
-        assertThat(driver.run(new UpdateItem("456", 3)).state(),
-            equalTo(ShoppingCartState.EMPTY.updateItem("123", 2).updateItem("456", 3)));
-        assertThat(driver.run(new UpdateItem("123", 1)).state(),
-            equalTo(ShoppingCartState.EMPTY.updateItem("123", 1).updateItem("456", 3)));
-        assertThat(driver.run(new UpdateItem("456", 0)).state(),
-            equalTo(ShoppingCartState.EMPTY.updateItem("123", 1)));
+    public void shouldUpdateItemQuantity() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
+
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // Let's then adjust its quantity
+        int newQuantity = 10;
+        shoppingCart.tell(new ShoppingCartEntity.AdjustItemQuantity(itemId, newQuantity, probe.ref()));
+
+        // And check the item quantity changed
+        ShoppingCartEntity.Accepted accepted = (ShoppingCartEntity.Accepted) probe.receiveMessage();
+        int itemQuantity = accepted.getSummary().getItems().get(itemId);
+        Assert.assertEquals(itemQuantity, newQuantity);
     }
 
     @Test
-    public void shoppingCartShouldAllowCheckingOut() {
-        driver.run(new UpdateItem("123", 2));
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(Checkout.INSTANCE);
+    public void shouldAllowCheckingOut() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(Done.getInstance()));
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
 
-        assertEquals(outcome.events().size(), 1);
-        CheckedOut checkedOut = (CheckedOut) outcome.events().get(0);
-        assertEquals(checkedOut.shoppingCartId, ENTITY_ID);
+        // And then checkout the cart
+        shoppingCart.tell(new ShoppingCartEntity.Checkout(probe.ref()));
 
-        assertThat(outcome.state(), equalTo(ShoppingCartState.EMPTY.updateItem("123", 2).checkout()));
+        // Verify the cart is checked out
+        ShoppingCartEntity.Accepted accepted = (ShoppingCartEntity.Accepted) probe.receiveMessage();
+        Assert.assertTrue(accepted.getSummary().isCheckedOut());
     }
 
     @Test
-    public void shoppingCartShouldAllowGettingTheState() {
-        driver.run(new UpdateItem("123", 2));
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(Get.INSTANCE);
+    public void shouldAllowGettingShoppingCartSummary() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(ShoppingCartState.EMPTY.updateItem("123", 2)));
-        assertThat(outcome.events(), empty());
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // Get summary
+        TestProbe<ShoppingCartEntity.Summary> getProbe = testKit.createTestProbe(ShoppingCartEntity.Summary.class);
+        shoppingCart.tell(new ShoppingCartEntity.Get(getProbe.ref()));
+
+        // And then check the summary
+        ShoppingCartEntity.Summary summary = getProbe.receiveMessage();
+        Assert.assertFalse(summary.isCheckedOut());
+        Assert.assertTrue(summary.getItems().containsKey(itemId));
     }
 
     @Test
-    public void shoppingCartShouldFailWhenRemovingAnItemThatIsntAdded() {
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", 0));
+    public void shouldNotChangeTheCartWhenRemovingItemThatIsNotThere() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(instanceOf(ShoppingCartException.class)));
-        assertThat(outcome.events(), empty());
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // Trying to remove item that is not there
+        String anotherItemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.RemoveItem(anotherItemId, probe.ref()));
+
+        // And check the cart was not changed
+        ShoppingCartEntity.Accepted accepted = (ShoppingCartEntity.Accepted) probe.receiveMessage();
+        Assert.assertFalse(accepted.getSummary().isCheckedOut());
+        Assert.assertTrue(accepted.getSummary().getItems().containsKey(itemId));
     }
 
     @Test
-    public void shoppingCartShouldFailWhenAddingNegativeItems() {
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("123", -1));
+    public void shouldFailWhenAddingANegativeNumberOfItems() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(instanceOf(ShoppingCartException.class)));
-        assertThat(outcome.events(), empty());
+        String itemId = randomId();
+        int negativeQuantity = -10;
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, negativeQuantity, probe.ref()));
+
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
     }
 
     @Test
-    public void shoppingCartShouldFailWhenRemovingAnItemToACheckedOutCart() {
-        driver.run(new UpdateItem("123", 2), Checkout.INSTANCE);
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(new UpdateItem("456", 2));
+    public void shouldFailWhenAdjustingItemQuantityToNegativeNumber() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(instanceOf(ShoppingCartException.class)));
-        assertThat(outcome.events(), empty());
+        // Add an item that will be adjusted
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // Trying to adjust to a negative quantity
+        int negativeQuantity = -10;
+        shoppingCart.tell(new ShoppingCartEntity.AdjustItemQuantity(itemId, negativeQuantity, probe.ref()));
+
+        // Command should fail
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
     }
 
     @Test
-    public void shoppingCartShouldFailWhenCheckingOutTwice() {
-        driver.run(new UpdateItem("123", 2), Checkout.INSTANCE);
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(Checkout.INSTANCE);
+    public void shouldFailWhenAdjustingItemQuantityForAnItemThatIsNotInTheCart() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(instanceOf(ShoppingCartException.class)));
-        assertThat(outcome.events(), empty());
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // But let's adjust the quantity for an item that is not there
+        String anotherItemId = randomId();
+        int newQuantity = 10;
+        shoppingCart.tell(new ShoppingCartEntity.AdjustItemQuantity(anotherItemId, newQuantity, probe.ref()));
+
+        // And check that the command failed
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
     }
 
     @Test
-    public void shoppingCartShouldFailWhenCheckingOutEmptyCart() {
-        Outcome<ShoppingCartEvent, ShoppingCartState> outcome = driver.run(Checkout.INSTANCE);
+    public void shouldFailWhenAddingItemToCheckedOutCart() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
 
-        assertThat(outcome.getReplies(), contains(instanceOf(ShoppingCartException.class)));
-        assertThat(outcome.events(), empty());
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // And then checkout the cart
+        shoppingCart.tell(new ShoppingCartEntity.Checkout(probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // And try to add new items should fail
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(randomId(), 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
+    }
+
+    @Test
+    public void shouldFailWhenTryingToCheckOutAShoppingCartThatIsCheckedOutAlready() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
+
+        // First add the item
+        String itemId = randomId();
+        shoppingCart.tell(new ShoppingCartEntity.AddItem(itemId, 10, probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // Then check out the cart
+        shoppingCart.tell(new ShoppingCartEntity.Checkout(probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Accepted.class);
+
+        // And try to check out the cart again should fail
+        shoppingCart.tell(new ShoppingCartEntity.Checkout(probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
+    }
+
+    @Test
+    public void shouldFailWhenTryingToCheckOutAnEmptyCart() {
+        String cartId = randomId();
+        ActorRef<ShoppingCartEntity.Command> shoppingCart = testKit.spawn(ShoppingCartEntity.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        TestProbe<ShoppingCartEntity.Confirmation> probe = testKit.createTestProbe(ShoppingCartEntity.Confirmation.class);
+
+        // Cart is empty so it should fail to checkout
+        shoppingCart.tell(new ShoppingCartEntity.Checkout(probe.ref()));
+        probe.expectMessageClass(ShoppingCartEntity.Rejected.class);
     }
 }

@@ -36,7 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
                 // Create a flow that emits a Done for each message it processes
                 Flow.<ShoppingCart>create().map(cart -> {
                     cart.getItems().forEach(item ->
-                        getInventory(item.getProductId()).addAndGet(-item.getQuantity())
+                        getInventory(item.getItemId()).addAndGet(-item.getQuantity())
                     );
                     return Done.getInstance();
                 })

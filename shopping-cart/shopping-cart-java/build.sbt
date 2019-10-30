@@ -14,7 +14,8 @@ val jpaApi  = "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % "1.0
 val validationApi = "javax.validation" % "validation-api" % "1.1.0.Final"
 
 
-lazy val akkaVersion         = "2.6.0-M7"
+val akkaVersion         = "2.6.0-M8"
+
 val akkaPersistenceTyped     = "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion
 val akkaShardingTyped        = "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion
 val akkaSerializationJackson = "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion
