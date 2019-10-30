@@ -26,8 +26,7 @@ public interface ShoppingCartService extends Service {
      * <p>
      * Example: curl http://localhost:9000/shoppingcart/123
      */
-    ServiceCall<NotUsed, ShoppingCart> get(String id);
-
+    ServiceCall<NotUsed, ShoppingCartView> get(String id);
 
     /**
      * Get a shopping cart report (view model).
@@ -53,7 +52,7 @@ public interface ShoppingCartService extends Service {
     /**
      * This gets published to Kafka.
      */
-    Topic<ShoppingCart> shoppingCartTopic();
+    Topic<ShoppingCartView> shoppingCartTopic();
 
     @Override
     default Descriptor descriptor() {
@@ -71,7 +70,7 @@ public interface ShoppingCartService extends Service {
                     // go to the same partition (and hence are delivered in order with respect
                     // to that user), we configure a partition key strategy that extracts the
                     // name as the partition key.
-                    .withProperty(KafkaProperties.partitionKeyStrategy(), ShoppingCart::getId)
+                    .withProperty(KafkaProperties.partitionKeyStrategy(), ShoppingCartView::getId)
             )
             .withAutoAcl(true);
     }

@@ -6,7 +6,7 @@ import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
-import com.example.shoppingcart.api.ShoppingCart;
+import com.example.shoppingcart.api.ShoppingCartView;
 import com.example.shoppingcart.api.ShoppingCartItem;
 import com.example.shoppingcart.api.ShoppingCartReportView;
 import com.example.shoppingcart.api.ShoppingCartService;
@@ -60,11 +60,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final Duration askTimeout = Duration.ofSeconds(5);
 
     @Override
-    public ServiceCall<NotUsed, ShoppingCart> get(String id) {
+    public ServiceCall<NotUsed, ShoppingCartView> get(String id) {
         return request ->
                 entityRef(id)
                         .ask(ShoppingCartEntity.Get::new, askTimeout)
-                        .thenApply(summary -> convertShoppingCart(id, summary));
+                        .thenApply(summary -> asShoppingCartView(id, summary));
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public Topic<ShoppingCart> shoppingCartTopic() {
+    public Topic<ShoppingCartView> shoppingCartTopic() {
         // We want to publish all the shards of the shopping cart events
         return TopicProducer.taggedStreamWithOffset(ShoppingCartEntity.Event.TAG.allTags(), (tag, offset) ->
                 // Load the event stream for the passed in shard tag
@@ -111,7 +111,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                             return entityRef(checkedOut.getShoppingCartId())
                                     .ask(ShoppingCartEntity.Get::new, askTimeout)
                                     .thenApply(summary -> Pair.create(
-                                            convertShoppingCart(checkedOut.getShoppingCartId(), summary),
+                                            asShoppingCartView(checkedOut.getShoppingCartId(), summary),
                                             eventAndOffset.second()
                                     ));
                         })
@@ -129,12 +129,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }).thenApply(__ -> Done.getInstance());
     }
 
-    private ShoppingCart convertShoppingCart(String id, ShoppingCartEntity.Summary summary) {
+    private ShoppingCartView asShoppingCartView(String id, ShoppingCartEntity.Summary summary) {
         List<ShoppingCartItem> items = new ArrayList<>();
         for (Map.Entry<String, Integer> item : summary.getItems().entrySet()) {
             items.add(new ShoppingCartItem(item.getKey(), item.getValue()));
         }
-        return new ShoppingCart(id, items, summary.isCheckedOut());
+        return new ShoppingCartView(id, items, summary.getCheckoutDate());
     }
 
 }

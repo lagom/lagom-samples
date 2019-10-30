@@ -7,7 +7,7 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
- * A shopping cart report
+ * A shopping cart report.
  */
 @Value
 @JsonDeserialize
@@ -23,11 +23,6 @@ public class ShoppingCartReportView {
     public final Instant creationDate;
 
     public final Instant checkoutDate;
-
-    @JsonCreator
-    public ShoppingCartReportView(String id, Instant creationDate) {
-        this(id, creationDate, null);
-    }
 
     @JsonCreator
     public ShoppingCartReportView(String id, Instant creationDate, Instant checkoutDate) {

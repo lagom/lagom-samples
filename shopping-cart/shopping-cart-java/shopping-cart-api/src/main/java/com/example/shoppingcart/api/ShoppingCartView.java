@@ -5,14 +5,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Preconditions;
 import lombok.Value;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A shopping cart.
  */
 @Value
 @JsonDeserialize
-public final class ShoppingCart {
+public final class ShoppingCartView {
     /**
      * The ID of the shopping cart.
      */
@@ -28,10 +30,16 @@ public final class ShoppingCart {
      */
     public final boolean checkedOut;
 
+    /**
+     * When this cart was checked out.
+     */
+    public final Optional<Instant> checkoutDate;
+
     @JsonCreator
-    public ShoppingCart(String id, List<ShoppingCartItem> items, boolean checkedOut) {
+    public ShoppingCartView(String id, List<ShoppingCartItem> items, Optional<Instant> checkoutDate) {
         this.id = Preconditions.checkNotNull(id, "id");
         this.items = Preconditions.checkNotNull(items, "items");
-        this.checkedOut = checkedOut;
+        this.checkoutDate = checkoutDate;
+        this.checkedOut = checkoutDate.isPresent();
     }
 }
