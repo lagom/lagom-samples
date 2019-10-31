@@ -31,9 +31,9 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     private static final String ENTITY_TYPE_HINT = "ShoppingCartEntity";
 
 
-    public static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
+    static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
 
-    public ShoppingCart(String cartId) {
+    private ShoppingCart(String cartId) {
         this(cartId, PersistenceId.of(ENTITY_TYPE_HINT, cartId));
     }
 
@@ -42,19 +42,18 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         this.cartId = cartId;
     }
 
-    public static ShoppingCart create(String businessId, PersistenceId persistenceId) {
+    static ShoppingCart create(String businessId, PersistenceId persistenceId) {
         return new ShoppingCart(businessId, persistenceId);
     }
 
-    public static ShoppingCart create(EntityContext<Command> entityContext) {
+    static ShoppingCart create(EntityContext<Command> entityContext) {
         return new ShoppingCart(entityContext.getEntityId());
     }
 
     //
     // SHOPPING CART COMMANDS
     //
-    public interface Command<R> extends Jsonable {
-    }
+    interface Command<R> extends Jsonable {}
 
     @Value
     @JsonDeserialize
@@ -103,7 +102,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         private final ActorRef<Summary> replyTo;
 
         @JsonCreator
-        public Get(ActorRef<Summary> replyTo) {
+        Get(ActorRef<Summary> replyTo) {
             this.replyTo = replyTo;
         }
     }
@@ -112,7 +111,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         private final ActorRef<Confirmation> replyTo;
 
         @JsonCreator
-        public Checkout(ActorRef<Confirmation> replyTo) {
+        Checkout(ActorRef<Confirmation> replyTo) {
             this.replyTo = replyTo;
         }
     }
@@ -120,11 +119,9 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     //
     // SHOPPING CART REPLIES
     //
-    public interface Reply extends Jsonable {
-    }
+    interface Reply extends Jsonable {}
 
-    public interface Confirmation extends Reply {
-    }
+    interface Confirmation extends Reply {}
 
     @Value
     @JsonDeserialize
@@ -135,7 +132,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         public final Optional<Instant> checkoutDate;
 
         @JsonCreator
-        public Summary(Map<String, Integer> items, boolean checkedOut, Optional<Instant> checkoutDate) {
+        Summary(Map<String, Integer> items, boolean checkedOut, Optional<Instant> checkoutDate) {
             this.items = items;
             this.checkedOut = checkedOut;
             this.checkoutDate = checkoutDate;
@@ -148,7 +145,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         public final Summary summary;
 
         @JsonCreator
-        public Accepted(Summary summary) {
+        Accepted(Summary summary) {
             this.summary = summary;
         }
     }
@@ -159,7 +156,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         public final String reason;
 
         @JsonCreator
-        public Rejected(String reason) {
+        Rejected(String reason) {
             this.reason = reason;
         }
     }
@@ -253,38 +250,38 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         public final Optional<Instant> checkoutDate;
 
         @JsonCreator
-        public State(PMap<String, Integer> items, Instant checkoutDate) {
+        State(PMap<String, Integer> items, Instant checkoutDate) {
             this.items = Preconditions.checkNotNull(items, "items");
             this.checkoutDate = Optional.ofNullable(checkoutDate);
         }
 
-        public State removeItem(String itemId) {
+        State removeItem(String itemId) {
             PMap<String, Integer> newItems = items.minus(itemId);
             return new State(newItems, null);
         }
 
-        public State updateItem(String itemId, int quantity) {
+        State updateItem(String itemId, int quantity) {
             PMap<String, Integer> newItems = items.plus(itemId, quantity);
             return new State(newItems, null);
         }
 
-        public boolean isEmpty() {
+        boolean isEmpty() {
             return items.isEmpty();
         }
 
-        public boolean hasItem(String itemId) {
+        boolean hasItem(String itemId) {
             return items.containsKey(itemId);
         }
 
-        public State checkout(Instant when) {
+        State checkout(Instant when) {
             return new State(items, when);
         }
 
-        public boolean isOpen() {
+        boolean isOpen() {
             return !this.isCheckedOut();
         }
 
-        public boolean isCheckedOut() {
+        boolean isCheckedOut() {
             return this.checkoutDate.isPresent();
         }
 
