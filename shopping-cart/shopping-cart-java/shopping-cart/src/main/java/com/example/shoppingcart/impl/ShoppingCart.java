@@ -21,6 +21,8 @@ import org.pcollections.PMap;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 
 public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCart.Command, ShoppingCart.Event, ShoppingCart.State> {
 
@@ -28,8 +30,9 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     // use when tagging. If we use the PersistenceId, we will change the tag shard
     private final String cartId;
 
-    private static final String ENTITY_TYPE_HINT = "ShoppingCartEntity";
+    private final Function <Event, Set<String>> tagger;
 
+    private static final String ENTITY_TYPE_HINT = "ShoppingCartEntity";
 
     static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
 
@@ -40,6 +43,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     private ShoppingCart(String cartId, PersistenceId persistenceId) {
         super(persistenceId);
         this.cartId = cartId;
+        this.tagger = LagomTaggerAdapter.adapt(cartId, Event.TAG);
     }
 
     static ShoppingCart create(String businessId, PersistenceId persistenceId) {
@@ -296,6 +300,11 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     @Override
     public RetentionCriteria retentionCriteria() {
        return RetentionCriteria.snapshotEvery(100, 2);
+    }
+
+    @Override
+    public Set<String> tagsFor(Event event) {
+        return tagger.apply(event);
     }
 
     @Override
