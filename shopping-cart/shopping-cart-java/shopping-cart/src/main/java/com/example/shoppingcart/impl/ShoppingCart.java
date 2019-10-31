@@ -30,13 +30,11 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
 
     private static final String ENTITY_TYPE_HINT = "ShoppingCartEntity";
 
-    // This is important for LagomJava, separator must be an empty String
-    private static final String PERSISTENCE_ID_SEPARATOR = "";
 
     public static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
 
     public ShoppingCart(String cartId) {
-        this(cartId, PersistenceId.of(ENTITY_TYPE_HINT, cartId, PERSISTENCE_ID_SEPARATOR));
+        this(cartId, PersistenceId.of(ENTITY_TYPE_HINT, cartId));
     }
 
     private ShoppingCart(String cartId, PersistenceId persistenceId) {
