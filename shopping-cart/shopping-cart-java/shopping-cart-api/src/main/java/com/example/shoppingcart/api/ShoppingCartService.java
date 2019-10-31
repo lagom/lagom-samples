@@ -38,14 +38,14 @@ public interface ShoppingCartService extends Service {
     /**
      * Update an items quantity in the shopping cart.
      * <p>
-     * Example: curl -H "Content-Type: application/json" -X POST -d '{"productId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
+     * Example: curl -H "Content-Type: application/json" -X POST -d '{"itemId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
      */
     ServiceCall<ShoppingCartItem, Done> addItem(String id);
 
     /**
      * Remove an item in the shopping cart.
      *
-     * Example: curl -H "Content-Type: application/json" -X DELETE -d '{"itemId": 456 }' http://localhost:9000/shoppingcart/123/item/456
+     * Example: curl -X DELETE http://localhost:9000/shoppingcart/123/item/456
      */
     ServiceCall<NotUsed, ShoppingCartView> removeItem(String cartId, String itemId);
 
