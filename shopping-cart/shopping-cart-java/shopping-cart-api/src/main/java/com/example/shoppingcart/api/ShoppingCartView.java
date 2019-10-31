@@ -8,6 +8,7 @@ import lombok.Value;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * A shopping cart.
@@ -41,5 +42,13 @@ public final class ShoppingCartView {
         this.items = Preconditions.checkNotNull(items, "items");
         this.checkoutDate = checkoutDate;
         this.checkedOut = checkoutDate.isPresent();
+    }
+
+    public boolean hasItem(String itemId) {
+        return items.stream().anyMatch(item -> item.getItemId().equals(itemId));
+    }
+
+    public Optional<ShoppingCartItem> get(String itemId) {
+        return items.stream().filter(item -> item.getItemId().equals(itemId)).findFirst();
     }
 }
