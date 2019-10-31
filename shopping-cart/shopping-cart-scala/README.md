@@ -14,7 +14,7 @@ We provide a `docker-compose.yml` file that you can use to run a Postgres databa
 
 To create the image and start the container, run the command below at the root of this project.
 
-```bash 
+```bash
 docker-compose up -d
 ```
 
@@ -28,7 +28,7 @@ GRANT ALL PRIVILEGES ON DATABASE shopping_cart TO shopping_cart;
 
 Once Postgres is setup, you can start the system by running:
 
-```
+```bash
 sbt runAll
 ```
 
@@ -37,23 +37,42 @@ sbt runAll
 The shopping cart service offers four REST endpoints:
 
 * Get the current contents of the shopping cart:
-    ```
-    curl http://localhost:9000/shoppingcart/123
-    ```
-* Get a report of the shopping cart creation and checkout dates:
-    ```
-    curl http://localhost:9000/shoppingcart/123/report
-    ```
-* Update the quantity of an item in the shopping cart:
-    ```
-    curl -H "Content-Type: application/json" -d '{"productId": "456", "quantity": 2}' -X POST http://localhost:9000/shoppingcart/123
-    ```
-* Checkout the shopping cart (ie, complete the transaction)
-    ```
-    curl -X POST http://localhost:9000/shoppingcart/123/checkout
-    ```
 
-For simplicity, no authentication is implemented, shopping cart IDs are arbitrary and whoever makes the request can use whatever ID they want, and product IDs are also arbitrary and trusted. An a real world application, the shopping cart IDs would likely be random UUIDs to ensure uniqueness, and product IDs would be validated against a product database.
+```bash
+curl http://localhost:9000/shoppingcart/123
+```
+
+* Get a report of the shopping cart creation and checkout dates:
+
+```bash
+curl http://localhost:9000/shoppingcart/123/report
+```
+
+* Add an item in the shopping cart:
+
+```bash
+curl -H "Content-Type: application/json" -d '{"itemId": "456", "quantity": 2}' -X POST http://localhost:9000/shoppingcart/123
+```
+
+* Remove an item in the shopping cart:
+
+```bash
+curl -X DELETE http://localhost:9000/shoppingcart/123/item/456
+```
+
+* Adjust an item's quantity in the shopping cart:
+
+```bash
+curl -H "Content-Type: application/json" -X PATCH -d '{"quantity": 2}' http://localhost:9000/shoppingcart/123/item/456
+```
+
+* Checkout the shopping cart (ie, complete the transaction)
+
+```bash
+curl -X POST http://localhost:9000/shoppingcart/123/checkout
+```
+
+For simplicity, no authentication is implemented, shopping cart IDs are arbitrary and whoever makes the request can use whatever ID they want, and item IDs are also arbitrary and trusted. An a real world application, the shopping cart IDs would likely be random UUIDs to ensure uniqueness, and item IDs would be validated against a item database.
 
 When the shopping cart is checked out, an event is published to the Kafka called `shopping-cart` by the shopping cart service, such events look like this:
 
@@ -61,8 +80,8 @@ When the shopping cart is checked out, an event is published to the Kafka called
 {
   "id": "123",
   "items": [
-    {"productId": "456", "quantity": 2},
-    {"productId": "789", "quantity": 1}
+    {"itemId": "456", "quantity": 2},
+    {"itemId": "789", "quantity": 1}
   ],
   "checkedOut": true
 }
@@ -73,12 +92,15 @@ When the shopping cart is checked out, an event is published to the Kafka called
 The inventory service offers two REST endpoints:
 
 * Get the inventory of an item:
-    ```
-    curl http://localhost:9000/inventory/456
-    ```
+
+```bash
+curl http://localhost:9000/inventory/456
+```
+
 * Add to the inventory of an item:
-    ```
-    curl -H "Content-Type: application/json" -d 4 -X POST http://localhost:9000/inventory/456
-    ```
+
+```bash
+curl -H "Content-Type: application/json" -d 4 -X POST http://localhost:9000/inventory/456
+```
 
 The inventory service consumes the `shopping-cart` topic from Kafka, and decrements the inventory according to the events.

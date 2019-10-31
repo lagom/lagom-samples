@@ -20,7 +20,7 @@ class InventoryLoader extends LagomApplicationLoader {
 }
 
 abstract class InventoryApplication(context: LagomApplicationContext)
-  extends LagomApplication(context)
+    extends LagomApplication(context)
     with LagomKafkaClientComponents
     with AhcWSComponents {
 

@@ -9,6 +9,8 @@ import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import play.api.db.HikariCPComponents
 import play.api.libs.ws.ahc.AhcWSComponents
+import akka.cluster.sharding.typed.scaladsl.Entity
+import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 
 class ShoppingCartLoader extends LagomApplicationLoader {
 
@@ -22,22 +24,26 @@ class ShoppingCartLoader extends LagomApplicationLoader {
 }
 
 abstract class ShoppingCartApplication(context: LagomApplicationContext)
-  extends LagomApplication(context)
+    extends LagomApplication(context)
     with SlickPersistenceComponents
     with HikariCPComponents
     with LagomKafkaComponents
     with AhcWSComponents {
 
   // Bind the service that this server provides
-  override lazy val lagomServer = serverFor[ShoppingCartService](wire[ShoppingCartServiceImpl])
+  override lazy val lagomServer: LagomServer = serverFor[ShoppingCartService](wire[ShoppingCartServiceImpl])
 
   // Register the JSON serializer registry
-  override lazy val jsonSerializerRegistry = ShoppingCartSerializerRegistry
+  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = ShoppingCartSerializerRegistry
 
-  // Register the ShoppingCart persistent entity
-  persistentEntityRegistry.register(wire[ShoppingCartEntity])
-
-  lazy val reportRepository = wire[ShoppingCartReportRepository]
-
+  lazy val reportRepository: ShoppingCartReportRepository = wire[ShoppingCartReportRepository]
   readSide.register(wire[ShoppingCartReportProcessor])
+
+  // Initialize the sharding for the ShoppingCart aggregate.
+  // See https://doc.akka.io/docs/akka/2.6/typed/cluster-sharding.html
+  clusterSharding.init(
+    Entity(ShoppingCart.typeKey) { entityContext =>
+      ShoppingCart(entityContext)
+    }
+  )
 }
