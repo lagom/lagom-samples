@@ -7,6 +7,12 @@
         </encoder>
     </appender>
 
+    <appender name="CapturingAppender" class="akka.actor.testkit.typed.internal.CapturingAppender" />
+
+    <logger name="akka.actor.testkit.typed.internal.CapturingAppenderDelegate" >
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
     <logger name="org.apache.cassandra" level="ERROR" />
     <logger name="com.datastax.driver" level="WARN" />
 
@@ -14,6 +20,7 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="CapturingAppender"/>
     </root>
 
 </configuration>
