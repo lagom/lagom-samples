@@ -6,10 +6,7 @@ import akka.cluster.sharding.typed.javadsl.ClusterSharding;
 import akka.cluster.sharding.typed.javadsl.Entity;
 import akka.cluster.sharding.typed.javadsl.EntityRef;
 import akka.japi.Pair;
-import com.example.shoppingcart.api.ShoppingCartView;
-import com.example.shoppingcart.api.ShoppingCartItem;
-import com.example.shoppingcart.api.ShoppingCartReportView;
-import com.example.shoppingcart.api.ShoppingCartService;
+import com.example.shoppingcart.api.*;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.broker.Topic;
 import com.lightbend.lagom.javadsl.api.transport.BadRequest;
@@ -95,6 +92,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     new ShoppingCart.RemoveItem(itemId, replyTo), askTimeout).thenApply(
                         confirmation -> confirmationToResult(cartId, confirmation)
                     );
+    }
+
+    @Override
+    public ServiceCall<Quantity, ShoppingCartView> adjustItemQuantity(String cartId, String itemId) {
+        return quantity ->
+            entityRef(cartId)
+            .<ShoppingCart.Confirmation>ask(replyTo ->
+                new ShoppingCart.AdjustItemQuantity(itemId, quantity.getQuantity(), replyTo), askTimeout
+            )
+            .thenApply(confirmation -> confirmationToResult(cartId, confirmation));
     }
 
     @Override

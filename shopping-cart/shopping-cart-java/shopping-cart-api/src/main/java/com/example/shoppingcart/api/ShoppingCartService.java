@@ -50,6 +50,13 @@ public interface ShoppingCartService extends Service {
     ServiceCall<NotUsed, ShoppingCartView> removeItem(String cartId, String itemId);
 
     /**
+     * Adjust the quantity of an item in the shopping cart.
+     *
+     * Example: curl -H "Content-Type: application/json" -X PATCH -d '{"quantity": 2}' http://localhost:9000/shoppingcart/123/item/456
+     */
+    ServiceCall<Quantity, ShoppingCartView> adjustItemQuantity(String cartId, String itemId);
+
+    /**
      * Checkout the shopping cart.
      * <p>
      * Example: curl -X POST http://localhost:9000/shoppingcart/123/checkout
@@ -69,6 +76,7 @@ public interface ShoppingCartService extends Service {
                 restCall(Method.GET, "/shoppingcart/:id/report", this::getReport),
                 restCall(Method.POST, "/shoppingcart/:id", this::addItem),
                 restCall(Method.DELETE, "/shoppingcart/:cartId/item/:itemId", this::removeItem),
+                restCall(Method.PATCH, "/shoppingcart/:cartId/item/:itemId", this::adjustItemQuantity),
                 restCall(Method.POST, "/shoppingcart/:id/checkout", this::checkout)
             )
             .withTopics(
