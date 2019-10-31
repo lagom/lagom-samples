@@ -294,6 +294,11 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     }
 
     @Override
+    public RetentionCriteria retentionCriteria() {
+       return RetentionCriteria.snapshotEvery(100, 2);
+    }
+
+    @Override
     public CommandHandlerWithReply<Command, Event, State> commandHandler() {
         CommandHandlerWithReplyBuilder<Command, Event, State> builder = newCommandHandlerWithReplyBuilder();
         builder.forState(State::isOpen)
