@@ -5,7 +5,6 @@ import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.ReadSideProcessor;
 import com.lightbend.lagom.javadsl.persistence.jpa.JpaReadSide;
 import org.pcollections.PSequence;
-import org.pcollections.TreePVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartEvent> {
+public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCart.Event> {
 
     private final JpaReadSide jpaReadSide;
     final private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -25,12 +24,12 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
 
 
     @Override
-    public ReadSideHandler<ShoppingCartEvent> buildHandler() {
+    public ReadSideHandler<ShoppingCart.Event> buildHandler() {
         return jpaReadSide
-                .<ShoppingCartEvent>builder("shopping-cart-report")
+                .<ShoppingCart.Event>builder("shopping-cart-report")
                 .setGlobalPrepare(this::createSchema)
-                .setEventHandler(ShoppingCartEvent.ItemUpdated.class, this::createReport)
-                .setEventHandler(ShoppingCartEvent.CheckedOut.class, this::addCheckoutTime)
+                .setEventHandler(ShoppingCart.ItemAdded.class, this::createReport)
+                .setEventHandler(ShoppingCart.CheckedOut.class, this::addCheckoutTime)
                 .build();
     }
 
@@ -38,8 +37,7 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
         Persistence.generateSchema("default", ImmutableMap.of("hibernate.hbm2ddl.auto", "update"));
     }
 
-    
-    private void createReport(EntityManager entityManager, ShoppingCartEvent.ItemUpdated evt) {
+    private void createReport(EntityManager entityManager, ShoppingCart.ItemAdded evt) {
 
         logger.debug("Received ItemUpdate event: " + evt);
         if (findReport(entityManager, evt.shoppingCartId) == null) {
@@ -51,7 +49,7 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
         }
     }
 
-    private void addCheckoutTime(EntityManager entityManager, ShoppingCartEvent.CheckedOut evt) {
+    private void addCheckoutTime(EntityManager entityManager, ShoppingCart.CheckedOut evt) {
         ShoppingCartReport report = findReport(entityManager, evt.shoppingCartId);
 
         logger.debug("Received CheckedOut event: " + evt);
@@ -63,14 +61,14 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCartE
             throw new RuntimeException("Didn't find cart for checkout. CartID: " + evt.shoppingCartId);
         }
     }
+
     private ShoppingCartReport findReport(EntityManager entityManager, String cartId) {
         return entityManager.find(ShoppingCartReport.class, cartId);
     }
 
-
     @Override
-    public PSequence<AggregateEventTag<ShoppingCartEvent>> aggregateTags() {
-        return TreePVector.singleton(ShoppingCartEvent.TAG);
+    public PSequence<AggregateEventTag<ShoppingCart.Event>> aggregateTags() {
+        return ShoppingCart.Event.TAG.allTags();
     }
 
 }

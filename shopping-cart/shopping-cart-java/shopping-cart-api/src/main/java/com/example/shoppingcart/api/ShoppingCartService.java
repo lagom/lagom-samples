@@ -26,8 +26,7 @@ public interface ShoppingCartService extends Service {
      * <p>
      * Example: curl http://localhost:9000/shoppingcart/123
      */
-    ServiceCall<NotUsed, ShoppingCart> get(String id);
-
+    ServiceCall<NotUsed, ShoppingCartView> get(String id);
 
     /**
      * Get a shopping cart report (view model).
@@ -39,9 +38,23 @@ public interface ShoppingCartService extends Service {
     /**
      * Update an items quantity in the shopping cart.
      * <p>
-     * Example: curl -H "Content-Type: application/json" -X POST -d '{"productId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
+     * Example: curl -H "Content-Type: application/json" -X POST -d '{"itemId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
      */
-    ServiceCall<ShoppingCartItem, Done> updateItem(String id);
+    ServiceCall<ShoppingCartItem, Done> addItem(String id);
+
+    /**
+     * Remove an item in the shopping cart.
+     *
+     * Example: curl -X DELETE http://localhost:9000/shoppingcart/123/item/456
+     */
+    ServiceCall<NotUsed, ShoppingCartView> removeItem(String cartId, String itemId);
+
+    /**
+     * Adjust the quantity of an item in the shopping cart.
+     *
+     * Example: curl -H "Content-Type: application/json" -X PATCH -d '{"quantity": 2}' http://localhost:9000/shoppingcart/123/item/456
+     */
+    ServiceCall<Quantity, ShoppingCartView> adjustItemQuantity(String cartId, String itemId);
 
     /**
      * Checkout the shopping cart.
@@ -53,7 +66,7 @@ public interface ShoppingCartService extends Service {
     /**
      * This gets published to Kafka.
      */
-    Topic<ShoppingCart> shoppingCartTopic();
+    Topic<ShoppingCartView> shoppingCartTopic();
 
     @Override
     default Descriptor descriptor() {
@@ -61,7 +74,9 @@ public interface ShoppingCartService extends Service {
             .withCalls(
                 restCall(Method.GET, "/shoppingcart/:id", this::get),
                 restCall(Method.GET, "/shoppingcart/:id/report", this::getReport),
-                restCall(Method.POST, "/shoppingcart/:id", this::updateItem),
+                restCall(Method.POST, "/shoppingcart/:id", this::addItem),
+                restCall(Method.DELETE, "/shoppingcart/:cartId/item/:itemId", this::removeItem),
+                restCall(Method.PATCH, "/shoppingcart/:cartId/item/:itemId", this::adjustItemQuantity),
                 restCall(Method.POST, "/shoppingcart/:id/checkout", this::checkout)
             )
             .withTopics(
@@ -71,7 +86,7 @@ public interface ShoppingCartService extends Service {
                     // go to the same partition (and hence are delivered in order with respect
                     // to that user), we configure a partition key strategy that extracts the
                     // name as the partition key.
-                    .withProperty(KafkaProperties.partitionKeyStrategy(), ShoppingCart::getId)
+                    .withProperty(KafkaProperties.partitionKeyStrategy(), ShoppingCartView::getId)
             )
             .withAutoAcl(true);
     }

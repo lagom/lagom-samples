@@ -3,7 +3,7 @@ package com.example.inventory.impl;
 import akka.Done;
 import akka.NotUsed;
 import akka.stream.javadsl.Flow;
-import com.example.shoppingcart.api.ShoppingCart;
+import com.example.shoppingcart.api.ShoppingCartView;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 
 import com.example.shoppingcart.api.ShoppingCartService;
@@ -34,9 +34,9 @@ public class InventoryServiceImpl implements InventoryService {
             // inventory tracker anyway, so no need to be that careful.
             .atLeastOnce(
                 // Create a flow that emits a Done for each message it processes
-                Flow.<ShoppingCart>create().map(cart -> {
+                Flow.<ShoppingCartView>create().map(cart -> {
                     cart.getItems().forEach(item ->
-                        getInventory(item.getProductId()).addAndGet(-item.getQuantity())
+                        getInventory(item.getItemId()).addAndGet(-item.getQuantity())
                     );
                     return Done.getInstance();
                 })
