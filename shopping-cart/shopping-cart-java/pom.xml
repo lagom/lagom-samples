@@ -216,8 +216,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.6.0-M7+60-a7fd677e</lagom.version>
-        <akka.version>2.6.0-M8</akka.version>
+        <lagom.version>1.6.0-RC1</lagom.version>
+        <akka.version>2.6.0-RC2</akka.version>
         <scala.binary.version>2.13</scala.binary.version>
         <akka.management.version>1.0.3</akka.management.version>
         <akka.http.version>10.1.10</akka.http.version>

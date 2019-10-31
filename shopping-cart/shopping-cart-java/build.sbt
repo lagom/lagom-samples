@@ -22,7 +22,7 @@ val akkaProtobuf         = "com.typesafe.akka" %% "akka-protobuf"          % akk
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
 val akkaStreamTestkit    = "com.typesafe.akka" %% "akka-stream-testkit"    % akkaVersion
 
-val akkaManagementVersion = "1.0.1"
+val akkaManagementVersion = "1.0.3"
 val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api"                % akkaManagementVersion
 val lagomJavadslAkkaDiscovery  = "com.lightbend.lagom"          %% "lagom-javadsl-akka-discovery-service-locator" % LagomVersion.current
 
