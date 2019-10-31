@@ -40,7 +40,14 @@ public interface ShoppingCartService extends Service {
      * <p>
      * Example: curl -H "Content-Type: application/json" -X POST -d '{"productId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
      */
-    ServiceCall<ShoppingCartItem, Done> updateItem(String id);
+    ServiceCall<ShoppingCartItem, Done> addItem(String id);
+
+    /**
+     * Remove an item in the shopping cart.
+     *
+     * Example: curl -H "Content-Type: application/json" -X DELETE -d '{"itemId": 456 }' http://localhost:9000/shoppingcart/123/item/456
+     */
+    ServiceCall<NotUsed, ShoppingCartView> removeItem(String cartId, String itemId);
 
     /**
      * Checkout the shopping cart.
@@ -60,7 +67,8 @@ public interface ShoppingCartService extends Service {
             .withCalls(
                 restCall(Method.GET, "/shoppingcart/:id", this::get),
                 restCall(Method.GET, "/shoppingcart/:id/report", this::getReport),
-                restCall(Method.POST, "/shoppingcart/:id", this::updateItem),
+                restCall(Method.POST, "/shoppingcart/:id", this::addItem),
+                restCall(Method.DELETE, "/shoppingcart/:cartId/item/:itemId", this::removeItem),
                 restCall(Method.POST, "/shoppingcart/:id/checkout", this::checkout)
             )
             .withTopics(

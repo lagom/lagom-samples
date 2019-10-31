@@ -37,8 +37,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ClusterSharding clusterSharing;
 
     @Inject
-    public ShoppingCartServiceImpl(ClusterSharding clusterSharing, 
-                                   PersistentEntityRegistry persistentEntityRegistry, 
+    public ShoppingCartServiceImpl(ClusterSharding clusterSharing,
+                                   PersistentEntityRegistry persistentEntityRegistry,
                                    ReportRepository reportRepository) {
         this.clusterSharing = clusterSharing;
         this.persistentEntityRegistry = persistentEntityRegistry;
@@ -79,12 +79,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ServiceCall<ShoppingCartItem, Done> updateItem(String id) {
+    public ServiceCall<ShoppingCartItem, Done> addItem(String id) {
         return item ->
                 convertErrors(
                         entityRef(id)
                                 .<ShoppingCart.Confirmation>ask(replyTo -> new ShoppingCart.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
                 );
+    }
+
+    @Override
+    public ServiceCall<NotUsed, ShoppingCartView> removeItem(String cartId, String itemId) {
+        return request ->
+            entityRef(cartId)
+                .<ShoppingCart.Confirmation>ask(replyTo ->
+                    new ShoppingCart.RemoveItem(itemId, replyTo), askTimeout).thenApply(
+                        confirmation -> confirmationToResult(cartId, confirmation)
+                    );
     }
 
     @Override
@@ -122,11 +132,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return future.exceptionally(ex -> {
             if (ex instanceof ShoppingCartException) {
                 throw new BadRequest(ex.getMessage());
-            }
-            else {
+            } else {
                 throw new BadRequest("Error updating shopping cart");
             }
         }).thenApply(__ -> Done.getInstance());
+    }
+
+    private ShoppingCartView confirmationToResult(String cartId, ShoppingCart.Confirmation confirmation) {
+        if (confirmation instanceof ShoppingCart.Accepted) {
+            ShoppingCart.Accepted accepted = (ShoppingCart.Accepted) confirmation;
+            return asShoppingCartView(cartId, accepted.getSummary());
+        }
+
+        ShoppingCart.Rejected rejected = (ShoppingCart.Rejected) confirmation;
+        throw new BadRequest(rejected.getReason());
     }
 
     private ShoppingCartView asShoppingCartView(String id, ShoppingCart.Summary summary) {
