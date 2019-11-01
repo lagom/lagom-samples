@@ -99,7 +99,7 @@ object ShoppingCart {
   implicit val itemQuantityAdjustedFormat: Format[ItemQuantityAdjusted] = Json.format
   implicit val cartCheckedOutFormat: Format[CartCheckedOut]             = Json.format
 
-  val empty = ShoppingCart(Map.empty, checkedOut = false)
+  val empty: ShoppingCart = ShoppingCart(items = Map.empty)
 
   val typeKey: EntityTypeKey[Command] = EntityTypeKey[Command]("ShoppingCart")
 
@@ -130,9 +130,11 @@ object ShoppingCart {
   implicit val format: Format[ShoppingCart] = Json.format
 }
 
-final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, checkedOutTime: Option[Instant] = None) {
+final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[Instant] = None) {
 
   import ShoppingCart._
+
+  def checkedOut: Boolean = checkedOutTime.nonEmpty
 
   //The shopping cart behavior changes if it's checked out or not. The command handles are different for each case.
   def applyCommand(cmd: Command): ReplyEffect[Event, ShoppingCart] =
@@ -225,7 +227,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
     copy(items = items + (itemId -> quantity))
 
   private def onCartCheckedOut(checkedOutTime: Instant): ShoppingCart = {
-    copy(checkedOut = true, checkedOutTime = Option(checkedOutTime))
+    copy(checkedOutTime = Option(checkedOutTime))
   }
 }
 
