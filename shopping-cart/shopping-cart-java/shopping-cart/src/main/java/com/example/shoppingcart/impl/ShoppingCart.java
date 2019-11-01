@@ -311,10 +311,10 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     public CommandHandlerWithReply<Command, Event, State> commandHandler() {
         CommandHandlerWithReplyBuilder<Command, Event, State> builder = newCommandHandlerWithReplyBuilder();
         builder.forState(State::isOpen)
-                .onCommand(AddItem.class, this::addItem)
-                .onCommand(RemoveItem.class, this::removeItem)
-                .onCommand(AdjustItemQuantity.class, this::adjustItemQuantity)
-                .onCommand(Checkout.class, this::checkout);
+                .onCommand(AddItem.class, this::onAddItem)
+                .onCommand(RemoveItem.class, this::onRemoveItem)
+                .onCommand(AdjustItemQuantity.class, this::onAdjustItemQuantity)
+                .onCommand(Checkout.class, this::onCheckout);
 
         builder.forState(State::isCheckedOut)
                 .onCommand(AddItem.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot add an item to a checked-out cart")))
@@ -322,11 +322,11 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
                 .onCommand(AdjustItemQuantity.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot adjust item quantity in a checked-out cart")))
                 .onCommand(Checkout.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot checkout a checked-out cart")));
 
-        builder.forAnyState().onCommand(Get.class, this::get);
+        builder.forAnyState().onCommand(Get.class, this::onGet);
         return builder.build();
     }
 
-    private ReplyEffect<Event, State> addItem(State state, AddItem cmd) {
+    private ReplyEffect<Event, State> onAddItem(State state, AddItem cmd) {
         if (state.hasItem(cmd.getItemId())) {
             return Effect().reply(cmd.replyTo, new Rejected("Item was already added to this shopping cart"));
         } else if (cmd.getQuantity() <= 0) {
@@ -338,7 +338,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         }
     }
 
-    private ReplyEffect<Event, State> removeItem(State state, RemoveItem cmd) {
+    private ReplyEffect<Event, State> onRemoveItem(State state, RemoveItem cmd) {
         if (state.hasItem(cmd.getItemId())) {
             return Effect()
                     .persist(new ItemRemoved(cartId, cmd.getItemId(), Instant.now()))
@@ -349,7 +349,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         }
     }
 
-    private ReplyEffect<Event, State> adjustItemQuantity(State state, AdjustItemQuantity cmd) {
+    private ReplyEffect<Event, State> onAdjustItemQuantity(State state, AdjustItemQuantity cmd) {
         if (cmd.getQuantity() <= 0) {
             return Effect().reply(cmd.replyTo, new Rejected("Quantity must be greater than zero"));
         } else if (state.hasItem(cmd.getItemId())) {
@@ -361,11 +361,11 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         }
     }
 
-    private ReplyEffect<Event, State> get(State state, Get cmd) {
+    private ReplyEffect<Event, State> onGet(State state, Get cmd) {
         return Effect().reply(cmd.replyTo, toSummary(state));
     }
 
-    private ReplyEffect<Event, State> checkout(State state, Checkout cmd) {
+    private ReplyEffect<Event, State> onCheckout(State state, Checkout cmd) {
         if (state.isEmpty()) {
             return Effect().reply(cmd.replyTo, new Rejected("Cannot checkout empty shopping cart"));
         } else {
