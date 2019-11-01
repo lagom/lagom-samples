@@ -7,7 +7,6 @@ import com.lightbend.lagom.scaladsl.persistence.couchbase.CouchbasePersistenceCo
 import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import com.lightbend.lagom.sampleshello.api.HelloService
-import com.lightbend.lagom.scaladsl.projection.ProjectionComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 
 class HelloLoader extends LagomApplicationLoader {
