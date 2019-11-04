@@ -13,15 +13,13 @@ BUILD_TOOL=${1:-sbt}
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
-DEPLOY_DIR=$SCRIPTS_DIR/..
-## BASE_DIR must point to <git_repo_root>/shopping-cart
-BASE_DIR=$DEPLOY_DIR/..
-SHOPPING_CART_SOURCES=$BASE_DIR/$CODE_VARIANT
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
+setupEnv "$CODE_VARIANT" "$BUILD_TOOL"
 echo "Testing deployment $NAMESPACE"
 . $COMMON_SCRIPTS_DIR/clusterLogin.sh
+clusterLogin "$CODE_VARIANT" "$BUILD_TOOL"
 
 # 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
@@ -36,7 +34,7 @@ PRODUCT_ID=$(openssl rand -base64 6 | tr -- '+=/' '-_~')
 sleep 3 
 echo "Touch a shopping-cart [$SHOPPING_CART_ID]"
 echo "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" 
-curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" || exit 1
+curl "https://$SHOPPING_CART_HOST/shoppingcart/$SHOPPING_CART_ID" || exit 1
 echo
 
 echo "Add items on the shopping-cart [$SHOPPING_CART_ID]"
@@ -67,7 +65,7 @@ echo curl "https://$INVENTORY_HOST/inventory/$PRODUCT_ID"
 echo -n "Waiting for inventory service to process shopping cart message."
 
 count=0
-while [ $(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID") != "-2" ]
+while [ "$(curl -s "https://$INVENTORY_HOST/inventory/$PRODUCT_ID")" != "-2" ]
 do
     (( count = count + 1 ))
     if [ $count -gt 30 ]

@@ -14,8 +14,23 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 lazy val `couchbase-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
 
+val akkaVersion = "2.6.0-RC2"
+
 lazy val `hello-api` = (project in file("hello-api"))
-  .settings(libraryDependencies ++= Seq(lagomScaladslApi))
+  .settings(libraryDependencies ++= Seq(
+    lagomScaladslApi,
+    "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion,
+    "com.typesafe.akka" %% "akka-coordination" % akkaVersion,
+    "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
+    "com.typesafe.akka" %% "akka-distributed-data" % akkaVersion,
+    "com.typesafe.akka" %% "akka-remote" % akkaVersion,
+    "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
+    "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  ))
 
 lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomScala)
@@ -26,7 +41,10 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       //#couchbase-end
       lagomScaladslTestKit,
       macwire,
-      scalaTest
+      scalaTest,
+      "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion,
+      "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
     )
   )
   .settings(lagomForkedTestSettings: _*)

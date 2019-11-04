@@ -22,15 +22,11 @@ public class ShoppingCartReportProcessor extends ReadSideProcessor<ShoppingCart.
         this.jpaReadSide = jpaReadSide;
     }
 
-
     @Override
     public ReadSideHandler<ShoppingCart.Event> buildHandler() {
-        return jpaReadSide
-                .<ShoppingCart.Event>builder("shopping-cart-report")
-                .setGlobalPrepare(this::createSchema)
+        return jpaReadSide.<ShoppingCart.Event>builder("shopping-cart-report").setGlobalPrepare(this::createSchema)
                 .setEventHandler(ShoppingCart.ItemAdded.class, this::createReport)
-                .setEventHandler(ShoppingCart.CheckedOut.class, this::addCheckoutTime)
-                .build();
+                .setEventHandler(ShoppingCart.CheckedOut.class, this::addCheckoutTime).build();
     }
 
     private void createSchema(@SuppressWarnings("unused") EntityManager ignored) {

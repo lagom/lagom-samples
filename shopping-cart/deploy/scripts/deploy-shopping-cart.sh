@@ -24,8 +24,10 @@ installOC
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
+setupEnv "$CODE_VARIANT" "$BUILD_TOOL"
 echo "Deploying to $NAMESPACE"
 . $COMMON_SCRIPTS_DIR/clusterLogin.sh
+clusterLogin "$CODE_VARIANT" "$BUILD_TOOL"
 
 # 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh
@@ -46,7 +48,7 @@ createDatabase $SHOPPING_CART_SOURCES/schemas/shopping-cart.sql
 installKafka $NAMESPACE $DEPLOY_DIR/specs/common/kafka.yaml
 
 # 5. Build the docker images to be deployed
-. $SCRIPTS_DIR/builds.sh
+. $COMMON_SCRIPTS_DIR/builds.sh
 build $SHOPPING_CART_SOURCES $BUILD_TOOL
 setTag
 

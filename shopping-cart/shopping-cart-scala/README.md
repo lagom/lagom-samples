@@ -74,7 +74,7 @@ curl -X POST http://localhost:9000/shoppingcart/123/checkout
 
 For simplicity, no authentication is implemented, shopping cart IDs are arbitrary and whoever makes the request can use whatever ID they want, and item IDs are also arbitrary and trusted. An a real world application, the shopping cart IDs would likely be random UUIDs to ensure uniqueness, and item IDs would be validated against a item database.
 
-When the shopping cart is checked out, an event is published to the Kafka called `shopping-cart` by the shopping cart service, such events look like this:
+When the shopping cart is checked out, an event is published to the Kafka topic called `shopping-cart` by the shopping cart service, such events look like this:
 
 ```json
 {
