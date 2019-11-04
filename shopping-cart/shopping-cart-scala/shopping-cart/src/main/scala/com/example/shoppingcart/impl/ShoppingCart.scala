@@ -99,7 +99,7 @@ object ShoppingCart {
   implicit val itemQuantityAdjustedFormat: Format[ItemQuantityAdjusted] = Json.format
   implicit val cartCheckedOutFormat: Format[CartCheckedOut]             = Json.format
 
-  val empty = ShoppingCart(Map.empty, checkedOut = false)
+  val empty: ShoppingCart = ShoppingCart(items = Map.empty)
 
   val typeKey: EntityTypeKey[Command] = EntityTypeKey[Command]("ShoppingCart")
 
@@ -130,15 +130,17 @@ object ShoppingCart {
   implicit val format: Format[ShoppingCart] = Json.format
 }
 
-final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, checkedOutTime: Option[Instant] = None) {
+final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[Instant] = None) {
 
   import ShoppingCart._
+
+  def checkedOut: Boolean = checkedOutTime.nonEmpty
 
   //The shopping cart behavior changes if it's checked out or not. The command handles are different for each case.
   def applyCommand(cmd: Command): ReplyEffect[Event, ShoppingCart] =
     if (checkedOut) {
       cmd match {
-        case Get(replyTo)                      => reply(replyTo)(toSummary(this))
+        case Get(replyTo)                      => onGet(replyTo)
         case AddItem(_, _, replyTo)            => reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
         case RemoveItem(_, replyTo)            => reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
         case AdjustItemQuantity(_, _, replyTo) => reply(replyTo)(Rejected("Cannot adjust item on a checked-out cart"))
@@ -146,15 +148,15 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
       }
     } else {
       cmd match {
-        case AddItem(itemId, quantity, replyTo)            => addItem(itemId, quantity, replyTo)
-        case RemoveItem(itemId, replyTo)                   => removeItem(itemId, replyTo)
-        case AdjustItemQuantity(itemId, quantity, replyTo) => adjustItemQuantity(itemId, quantity, replyTo)
-        case Checkout(replyTo)                             => checkout(replyTo)
-        case Get(replyTo)                                  => reply(replyTo)(toSummary(this))
+        case AddItem(itemId, quantity, replyTo)            => onAddItem(itemId, quantity, replyTo)
+        case RemoveItem(itemId, replyTo)                   => onRemoveItem(itemId, replyTo)
+        case AdjustItemQuantity(itemId, quantity, replyTo) => onAdjustItemQuantity(itemId, quantity, replyTo)
+        case Checkout(replyTo)                             => onCheckout(replyTo)
+        case Get(replyTo)                                  => onGet(replyTo)
       }
     }
 
-  private def checkout(replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def onCheckout(replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
     if (items.isEmpty)
       Effect.reply(replyTo)(Rejected("Cannot checkout an empty shopping cart"))
     else
@@ -163,7 +165,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
   }
 
-  private def addItem(
+  private def onAddItem(
       itemId: String,
       quantity: Int,
       replyTo: ActorRef[Confirmation]
@@ -178,7 +180,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
   }
 
-  private def removeItem(itemId: String, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def onRemoveItem(itemId: String, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
     if (items.contains(itemId))
       Effect
         .persist(ItemRemoved(itemId))
@@ -187,7 +189,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
       Effect.reply(replyTo)(Accepted(toSummary(this))) // removing an item is idempotent
   }
 
-  private def adjustItemQuantity(
+  private def onAdjustItemQuantity(
       itemId: String,
       quantity: Int,
       replyTo: ActorRef[Confirmation]
@@ -200,6 +202,10 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
     else
       Effect.reply(replyTo)(Rejected(s"Cannot adjust quantity for item '$itemId'. Item not present on cart"))
+  }
+
+  private def onGet(replyTo: ActorRef[Summary]): ReplyEffect[Event, ShoppingCart] = {
+    reply(replyTo)(toSummary(this))
   }
 
   private def toSummary(shoppingCart: ShoppingCart): Summary =
@@ -221,7 +227,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOut: Boolean, chec
     copy(items = items + (itemId -> quantity))
 
   private def onCartCheckedOut(checkedOutTime: Instant): ShoppingCart = {
-    copy(checkedOut = true, checkedOutTime = Option(checkedOutTime))
+    copy(checkedOutTime = Option(checkedOutTime))
   }
 }
 
