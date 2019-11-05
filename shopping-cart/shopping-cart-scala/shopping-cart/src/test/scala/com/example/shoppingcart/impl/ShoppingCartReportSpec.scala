@@ -9,8 +9,10 @@ import akka.Done
 import akka.persistence.query.Sequence
 import com.lightbend.lagom.scaladsl.api.ServiceLocator
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
+import com.lightbend.lagom.scaladsl.server.LagomApplication
 import com.lightbend.lagom.scaladsl.testkit.ReadSideTestDriver
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
+import com.lightbend.lagom.scaladsl.testkit.TestTopicComponents
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 
@@ -22,7 +24,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
   import ShoppingCart._
 
   private val server = ServiceTest.startServer(ServiceTest.defaultSetup.withJdbc(true)) { ctx =>
-    new ShoppingCartApplication(ctx) {
+    new LagomApplication(ctx) with ShoppingCartComponents with TestTopicComponents {
       override def serviceLocator: ServiceLocator    = NoServiceLocator
       override lazy val readSide: ReadSideTestDriver = new ReadSideTestDriver()(materializer, executionContext)
     }

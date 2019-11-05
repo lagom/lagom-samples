@@ -12,6 +12,8 @@ import play.api.libs.ws.ahc.AhcWSComponents
 import akka.cluster.sharding.typed.scaladsl.Entity
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 
+import scala.concurrent.ExecutionContext
+
 class ShoppingCartLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
@@ -23,20 +25,24 @@ class ShoppingCartLoader extends LagomApplicationLoader {
   override def describeService = Some(readDescriptor[ShoppingCartService])
 }
 
-abstract class ShoppingCartApplication(context: LagomApplicationContext)
-    extends LagomApplication(context)
+trait ShoppingCartComponents
+    extends LagomServerComponents
     with SlickPersistenceComponents
     with HikariCPComponents
-    with LagomKafkaComponents
     with AhcWSComponents {
 
+  implicit def executionContext: ExecutionContext
+
   // Bind the service that this server provides
-  override lazy val lagomServer: LagomServer = serverFor[ShoppingCartService](wire[ShoppingCartServiceImpl])
+  override lazy val lagomServer: LagomServer =
+    serverFor[ShoppingCartService](wire[ShoppingCartServiceImpl])
 
   // Register the JSON serializer registry
-  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = ShoppingCartSerializerRegistry
+  override lazy val jsonSerializerRegistry: JsonSerializerRegistry =
+    ShoppingCartSerializerRegistry
 
-  lazy val reportRepository: ShoppingCartReportRepository = wire[ShoppingCartReportRepository]
+  lazy val reportRepository: ShoppingCartReportRepository =
+    wire[ShoppingCartReportRepository]
   readSide.register(wire[ShoppingCartReportProcessor])
 
   // Initialize the sharding for the ShoppingCart aggregate.
@@ -46,4 +52,11 @@ abstract class ShoppingCartApplication(context: LagomApplicationContext)
       ShoppingCart(entityContext)
     }
   )
+}
+
+abstract class ShoppingCartApplication(context: LagomApplicationContext)
+  extends LagomApplication(context)
+  with ShoppingCartComponents
+  with LagomKafkaComponents {
+
 }
