@@ -13,10 +13,6 @@ BUILD_TOOL=${1:-sbt}
 # Recognize the environment
 SCRIPTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 COMMON_SCRIPTS_DIR=$SCRIPTS_DIR/common
-DEPLOY_DIR=$SCRIPTS_DIR/..
-## BASE_DIR must point to <git_repo_root>/shopping-cart
-BASE_DIR=$DEPLOY_DIR/..
-SHOPPING_CART_SOURCES=$BASE_DIR/$CODE_VARIANT
 
 
 . $COMMON_SCRIPTS_DIR/installers.sh
@@ -24,8 +20,10 @@ installOC
 
 # 1. Setup session and load some helping functions
 . $COMMON_SCRIPTS_DIR/setupEnv.sh
+setupEnv "$CODE_VARIANT" "$BUILD_TOOL"
 echo "Deleting $NAMESPACE"
 . $COMMON_SCRIPTS_DIR/clusterLogin.sh
+clusterLogin "$CODE_VARIANT" "$BUILD_TOOL"
 
 # 2. Load extra tools to manage the deployment
 . $COMMON_SCRIPTS_DIR/deployment-tools.sh

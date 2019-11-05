@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-
 /**
  * Implementation of the {@link ShoppingCartService}.
  */
@@ -66,13 +65,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ServiceCall<NotUsed, ShoppingCartReportView> getReport(String id) {
-        return request ->
-                reportRepository.findById(id).thenApply(report -> {
-                    if (report != null)
-                        return new ShoppingCartReportView(id, report.getCreationDate(), report.getCheckoutDate());
-                    else
-                        throw new NotFound("Couldn't find a shopping cart report for '" + id + "'");
-                });
+        return request -> reportRepository.findById(id).thenApply(report -> {
+            if (report != null)
+                return new ShoppingCartReportView(id, report.getCreationDate(), report.getCheckoutDate());
+            else
+                throw new NotFound("Couldn't find a shopping cart report for '" + id + "'");
+        });
     }
 
     @Override
@@ -106,11 +104,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ServiceCall<NotUsed, Done> checkout(String id) {
-        return request ->
-                convertErrors(
-                        entityRef(id)
-                                .ask(ShoppingCart.Checkout::new, askTimeout)
-                );
+        return request -> convertErrors(entityRef(id).ask(ShoppingCart.Checkout::new, askTimeout));
     }
 
     @Override
@@ -125,14 +119,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         // To do this, we need to load the current shopping cart state.
                         .mapAsync(4, eventAndOffset -> {
                             ShoppingCart.CheckedOut checkedOut = (ShoppingCart.CheckedOut) eventAndOffset.first();
-                            return entityRef(checkedOut.getShoppingCartId())
-                                    .ask(ShoppingCart.Get::new, askTimeout)
-                                    .thenApply(summary -> Pair.create(
-                                            asShoppingCartView(checkedOut.getShoppingCartId(), summary),
-                                            eventAndOffset.second()
-                                    ));
-                        })
-        );
+                            return entityRef(checkedOut.getShoppingCartId()).ask(ShoppingCart.Get::new, askTimeout)
+                                    .thenApply(summary -> Pair.create(asShoppingCartView(checkedOut.getShoppingCartId(), summary),
+                                            eventAndOffset.second()));
+                        }));
     }
 
     private <T> CompletionStage<Done> convertErrors(CompletionStage<T> future) {
