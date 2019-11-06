@@ -1,8 +1,8 @@
 language: scala
 
-# Only build non-pushes (so PRs, API requests & cron jobs) OR main branch builds
+# Only build non-pushes (so PRs, API requests & cron jobs) OR forks OR main branch builds
 # https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
-if: type != push OR branch IN (1.5.x, 1.6.x)
+if: type != push OR repo != lagom/lagom-samples OR branch IN (1.5.x, 1.6.x)
 
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
