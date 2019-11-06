@@ -1,5 +1,6 @@
 package com.example.shoppingcart.impl;
 
+import akka.actor.testkit.typed.javadsl.LogCapturing;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
@@ -7,6 +8,7 @@ import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.persistence.typed.PersistenceId;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -26,6 +28,9 @@ public class ShoppingCartTest {
 
     @ClassRule
     public static final TestKitJunitResource testKit = new TestKitJunitResource(config);
+
+    @Rule
+    public final LogCapturing logCapturing = new LogCapturing();
 
     private String randomId() {
         return UUID.randomUUID().toString();
