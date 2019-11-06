@@ -12,6 +12,7 @@ import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
+import com.lightbend.lagom.javadsl.persistence.AkkaTaggerAdapter;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 import lombok.Value;
@@ -26,32 +27,23 @@ import java.util.function.Function;
 
 public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCart.Command, ShoppingCart.Event, ShoppingCart.State> {
 
-    // We need to keep the original business id because that's the one we should
-    // use when tagging. If we use the PersistenceId, we will change the tag shard
     private final String cartId;
-
+    
     private final Function <Event, Set<String>> tagger;
-
-    private static final String ENTITY_TYPE_HINT = "ShoppingCartEntity";
-
-    static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, ENTITY_TYPE_HINT);
-
-    private ShoppingCart(String cartId) {
-        this(cartId, PersistenceId.of(ENTITY_TYPE_HINT, cartId));
-    }
-
-    private ShoppingCart(String cartId, PersistenceId persistenceId) {
-        super(persistenceId);
-        this.cartId = cartId;
-        this.tagger = LagomTaggerAdapter.adapt(cartId, Event.TAG);
-    }
-
-    static ShoppingCart create(String businessId, PersistenceId persistenceId) {
-        return new ShoppingCart(businessId, persistenceId);
+    
+    static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, "ShoppingCart");
+    
+    private ShoppingCart(EntityContext<Command> entityContext) {
+        // PersistenceId needs a typeHint (or namespace) and entityId, we take then from the EntityContext
+        super(PersistenceId.of(entityContext.getEntityTypeKey().name(), entityContext.getEntityId()));
+        // we keep a copy of cartId because it's used in the events
+        this.cartId = entityContext.getEntityId();
+        // tagger is constructed from adapter and needs EntityContext
+        this.tagger = AkkaTaggerAdapter.fromLagom(entityContext, Event.TAG);
     }
 
     static ShoppingCart create(EntityContext<Command> entityContext) {
-        return new ShoppingCart(entityContext.getEntityId());
+        return new ShoppingCart(entityContext);
     }
 
     //

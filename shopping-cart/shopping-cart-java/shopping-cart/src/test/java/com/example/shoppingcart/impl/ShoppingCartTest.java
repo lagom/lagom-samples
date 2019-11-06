@@ -4,6 +4,7 @@ import akka.actor.testkit.typed.javadsl.LogCapturing;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
+import akka.cluster.sharding.typed.javadsl.EntityContext;
 import akka.persistence.typed.PersistenceId;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -35,10 +36,17 @@ public class ShoppingCartTest {
         return UUID.randomUUID().toString();
     }
 
+    private ActorRef<ShoppingCart.Command> createTestCart(String cartId) {
+        // Unit testing the Aggregate requires an EntityContext but starting
+        // a complete Akka Cluster or sharding the actors is not requried.
+        // The actorRef to the shard can be null as it won't be used.
+        return testKit.spawn(ShoppingCart.create(new EntityContext<>(ShoppingCart.ENTITY_TYPE_KEY, cartId, null)));
+    }
+    
     @Test
     public void shouldAddAnItem() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         String itemId = randomId();
@@ -51,7 +59,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldRemoveAnItem() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -70,7 +78,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldUpdateItemQuantity() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -91,7 +99,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldAllowCheckingOut() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -110,7 +118,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldAllowGettingShoppingCartSummary() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -131,7 +139,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldNotChangeTheCartWhenRemovingItemThatIsNotThere() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -152,7 +160,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenAddingANegativeNumberOfItems() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         String itemId = randomId();
@@ -165,7 +173,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenAdjustingItemQuantityToNegativeNumber() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // Add an item that will be adjusted
@@ -184,7 +192,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenAdjustingItemQuantityForAnItemThatIsNotInTheCart() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -204,7 +212,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenAddingItemToCheckedOutCart() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -224,7 +232,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenTryingToCheckOutAShoppingCartThatIsCheckedOutAlready() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // First add the item
@@ -244,7 +252,7 @@ public class ShoppingCartTest {
     @Test
     public void shouldFailWhenTryingToCheckOutAnEmptyCart() {
         String cartId = randomId();
-        ActorRef<ShoppingCart.Command> shoppingCart = testKit.spawn(ShoppingCart.create(cartId, PersistenceId.of("ShoppingCart", cartId)));
+        ActorRef<ShoppingCart.Command> shoppingCart = createTestCart(cartId);
         TestProbe<ShoppingCart.Confirmation> probe = testKit.createTestProbe(ShoppingCart.Confirmation.class);
 
         // Cart is empty so it should fail to checkout
