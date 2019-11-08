@@ -192,6 +192,11 @@
                 <version>${akka.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.lightbend.akka.discovery</groupId>
                 <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
                 <version>${akka.management.version}</version>
