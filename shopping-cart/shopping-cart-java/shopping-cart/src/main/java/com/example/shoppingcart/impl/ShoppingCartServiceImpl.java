@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Implementation of the {@link ShoppingCartService}.
@@ -74,12 +73,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ServiceCall<ShoppingCartItem, Done> addItem(String id) {
+    public ServiceCall<ShoppingCartItem, Done> addItem(String cartId) {
         return item ->
-                convertErrors(
-                        entityRef(id)
-                                .<ShoppingCart.Confirmation>ask(replyTo -> new ShoppingCart.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
-                );
+                entityRef(cartId)
+                .<ShoppingCart.Confirmation>ask(replyTo ->
+                        new ShoppingCart.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
+                .thenApply(this::handleConfirmation)
+                .thenApply(accepted -> Done.getInstance());
     }
 
     @Override
@@ -87,24 +87,26 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return request ->
             entityRef(cartId)
                 .<ShoppingCart.Confirmation>ask(replyTo ->
-                    new ShoppingCart.RemoveItem(itemId, replyTo), askTimeout).thenApply(
-                        confirmation -> confirmationToResult(cartId, confirmation)
-                    );
+                    new ShoppingCart.RemoveItem(itemId, replyTo), askTimeout)
+                    .thenApply(this::handleConfirmation)
+                    .thenApply(accepted -> asShoppingCartView(cartId, accepted.getSummary()));
     }
 
     @Override
     public ServiceCall<Quantity, ShoppingCartView> adjustItemQuantity(String cartId, String itemId) {
         return quantity ->
             entityRef(cartId)
-            .<ShoppingCart.Confirmation>ask(replyTo ->
-                new ShoppingCart.AdjustItemQuantity(itemId, quantity.getQuantity(), replyTo), askTimeout
-            )
-            .thenApply(confirmation -> confirmationToResult(cartId, confirmation));
+                .<ShoppingCart.Confirmation>ask(replyTo ->
+                        new ShoppingCart.AdjustItemQuantity(itemId, quantity.getQuantity(), replyTo), askTimeout)
+                .thenApply(this::handleConfirmation)
+                .thenApply(accepted -> asShoppingCartView(cartId, accepted.getSummary()));
     }
 
     @Override
-    public ServiceCall<NotUsed, Done> checkout(String id) {
-        return request -> convertErrors(entityRef(id).ask(ShoppingCart.Checkout::new, askTimeout));
+    public ServiceCall<NotUsed, Done> checkout(String cartId) {
+        return request -> entityRef(cartId).ask(ShoppingCart.Checkout::new, askTimeout)
+                .thenApply(this::handleConfirmation)
+                .thenApply(accepted -> Done.getInstance());
     }
 
     @Override
@@ -125,20 +127,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         }));
     }
 
-    private <T> CompletionStage<Done> convertErrors(CompletionStage<T> future) {
-        return future.exceptionally(ex -> {
-            if (ex instanceof ShoppingCartException) {
-                throw new BadRequest(ex.getMessage());
-            } else {
-                throw new BadRequest("Error updating shopping cart");
-            }
-        }).thenApply(__ -> Done.getInstance());
-    }
 
-    private ShoppingCartView confirmationToResult(String cartId, ShoppingCart.Confirmation confirmation) {
+    /**
+     * Try to converts Confirmation to a Accepted
+     *
+     * @throws BadRequest if Confirmation is a Rejected
+     */
+    private ShoppingCart.Accepted handleConfirmation(ShoppingCart.Confirmation confirmation) {
         if (confirmation instanceof ShoppingCart.Accepted) {
             ShoppingCart.Accepted accepted = (ShoppingCart.Accepted) confirmation;
-            return asShoppingCartView(cartId, accepted.getSummary());
+            return accepted;
         }
 
         ShoppingCart.Rejected rejected = (ShoppingCart.Rejected) confirmation;
