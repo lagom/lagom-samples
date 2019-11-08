@@ -192,6 +192,11 @@
                 <version>${akka.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
+                <version>${akka.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.lightbend.akka.discovery</groupId>
                 <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
                 <version>${akka.management.version}</version>
@@ -216,7 +221,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.6.0-RC1</lagom.version>
+        <lagom.version>1.6.0-RC2</lagom.version>
         <akka.version>2.6.0-RC2</akka.version>
         <scala.binary.version>2.13</scala.binary.version>
         <akka.management.version>1.0.3</akka.management.version>
