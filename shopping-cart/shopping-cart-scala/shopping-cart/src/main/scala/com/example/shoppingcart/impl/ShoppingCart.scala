@@ -127,32 +127,33 @@ object ShoppingCart {
    * snapshot. Hence, a JSON format needs to be declared so that it can be
    * serialized and deserialized when storing to and from the database.
    */
-  implicit val format: Format[ShoppingCart] = Json.format
+  implicit val shoppingCartFormat: Format[ShoppingCart] = Json.format
 }
 
 final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[Instant] = None) {
 
   import ShoppingCart._
 
-  def checkedOut: Boolean = checkedOutTime.nonEmpty
+  def isOpen: Boolean = checkedOutTime.isEmpty
+  def checkedOut: Boolean = !isOpen
 
   //The shopping cart behavior changes if it's checked out or not. The command handles are different for each case.
   def applyCommand(cmd: Command): ReplyEffect[Event, ShoppingCart] =
-    if (checkedOut) {
-      cmd match {
-        case Get(replyTo)                      => onGet(replyTo)
-        case AddItem(_, _, replyTo)            => reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
-        case RemoveItem(_, replyTo)            => reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
-        case AdjustItemQuantity(_, _, replyTo) => reply(replyTo)(Rejected("Cannot adjust item on a checked-out cart"))
-        case Checkout(replyTo)                 => reply(replyTo)(Rejected("Cannot checkout a checked-out cart"))
-      }
-    } else {
+    if (isOpen) {
       cmd match {
         case AddItem(itemId, quantity, replyTo)            => onAddItem(itemId, quantity, replyTo)
         case RemoveItem(itemId, replyTo)                   => onRemoveItem(itemId, replyTo)
         case AdjustItemQuantity(itemId, quantity, replyTo) => onAdjustItemQuantity(itemId, quantity, replyTo)
         case Checkout(replyTo)                             => onCheckout(replyTo)
         case Get(replyTo)                                  => onGet(replyTo)
+      }
+    } else {
+      cmd match {
+        case Get(replyTo)                      => onGet(replyTo)
+        case AddItem(_, _, replyTo)            => reply(replyTo)(Rejected("Cannot add an item to a checked-out cart"))
+        case RemoveItem(_, replyTo)            => reply(replyTo)(Rejected("Cannot remove an item from a checked-out cart"))
+        case AdjustItemQuantity(_, _, replyTo) => reply(replyTo)(Rejected("Cannot adjust item on a checked-out cart"))
+        case Checkout(replyTo)                 => reply(replyTo)(Rejected("Cannot checkout a checked-out cart"))
       }
     }
 
