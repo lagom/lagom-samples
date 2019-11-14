@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCart.Command, ShoppingCart.Event, ShoppingCart.State> {
+public class ShoppingCartEntity extends EventSourcedBehaviorWithEnforcedReplies<ShoppingCartEntity.Command, ShoppingCartEntity.Event, ShoppingCartEntity.ShoppingCart> {
 
     private final String cartId;
     
@@ -33,7 +33,7 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     
     static EntityTypeKey<Command> ENTITY_TYPE_KEY = EntityTypeKey.create(Command.class, "ShoppingCart");
     
-    private ShoppingCart(EntityContext<Command> entityContext) {
+    private ShoppingCartEntity(EntityContext<Command> entityContext) {
         // PersistenceId needs a typeHint (or namespace) and entityId, we take then from the EntityContext
         super(PersistenceId.of(entityContext.getEntityTypeKey().name(), entityContext.getEntityId()));
         // we keep a copy of cartId because it's used in the events
@@ -42,8 +42,8 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         this.tagger = AkkaTaggerAdapter.fromLagom(entityContext, Event.TAG);
     }
 
-    static ShoppingCart create(EntityContext<Command> entityContext) {
-        return new ShoppingCart(entityContext);
+    static ShoppingCartEntity create(EntityContext<Command> entityContext) {
+        return new ShoppingCartEntity(entityContext);
     }
 
     //
@@ -240,25 +240,25 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     //
     @Value
     @JsonDeserialize
-    static final class State implements CompressedJsonable {
+    static final class ShoppingCart implements CompressedJsonable {
 
         public final PMap<String, Integer> items;
         public final Optional<Instant> checkoutDate;
 
         @JsonCreator
-        State(PMap<String, Integer> items, Instant checkoutDate) {
+        ShoppingCart(PMap<String, Integer> items, Instant checkoutDate) {
             this.items = Preconditions.checkNotNull(items, "items");
             this.checkoutDate = Optional.ofNullable(checkoutDate);
         }
 
-        State removeItem(String itemId) {
+        ShoppingCart removeItem(String itemId) {
             PMap<String, Integer> newItems = items.minus(itemId);
-            return new State(newItems, null);
+            return new ShoppingCart(newItems, null);
         }
 
-        State updateItem(String itemId, int quantity) {
+        ShoppingCart updateItem(String itemId, int quantity) {
             PMap<String, Integer> newItems = items.plus(itemId, quantity);
-            return new State(newItems, null);
+            return new ShoppingCart(newItems, null);
         }
 
         boolean isEmpty() {
@@ -269,8 +269,8 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
             return items.containsKey(itemId);
         }
 
-        State checkout(Instant when) {
-            return new State(items, when);
+        ShoppingCart checkout(Instant when) {
+            return new ShoppingCart(items, when);
         }
 
         boolean isOpen() {
@@ -281,12 +281,12 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
             return this.checkoutDate.isPresent();
         }
 
-        public static final State EMPTY = new State(HashTreePMap.empty(), null);
+        public static final ShoppingCart EMPTY = new ShoppingCart(HashTreePMap.empty(), null);
     }
 
     @Override
-    public State emptyState() {
-        return State.EMPTY;
+    public ShoppingCart emptyState() {
+        return ShoppingCart.EMPTY;
     }
 
     @Override
@@ -300,15 +300,15 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     }
 
     @Override
-    public CommandHandlerWithReply<Command, Event, State> commandHandler() {
-        CommandHandlerWithReplyBuilder<Command, Event, State> builder = newCommandHandlerWithReplyBuilder();
-        builder.forState(State::isOpen)
+    public CommandHandlerWithReply<Command, Event, ShoppingCart> commandHandler() {
+        CommandHandlerWithReplyBuilder<Command, Event, ShoppingCart> builder = newCommandHandlerWithReplyBuilder();
+        builder.forState(ShoppingCart::isOpen)
                 .onCommand(AddItem.class, this::onAddItem)
                 .onCommand(RemoveItem.class, this::onRemoveItem)
                 .onCommand(AdjustItemQuantity.class, this::onAdjustItemQuantity)
                 .onCommand(Checkout.class, this::onCheckout);
 
-        builder.forState(State::isCheckedOut)
+        builder.forState(ShoppingCart::isCheckedOut)
                 .onCommand(AddItem.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot add an item to a checked-out cart")))
                 .onCommand(RemoveItem.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot remove an item to a checked-out cart")))
                 .onCommand(AdjustItemQuantity.class, cmd -> Effect().reply(cmd.replyTo, new Rejected("Cannot adjust item quantity in a checked-out cart")))
@@ -318,8 +318,8 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         return builder.build();
     }
 
-    private ReplyEffect<Event, State> onAddItem(State state, AddItem cmd) {
-        if (state.hasItem(cmd.getItemId())) {
+    private ReplyEffect<Event, ShoppingCart> onAddItem(ShoppingCart shoppingCart, AddItem cmd) {
+        if (shoppingCart.hasItem(cmd.getItemId())) {
             return Effect().reply(cmd.replyTo, new Rejected("Item was already added to this shopping cart"));
         } else if (cmd.getQuantity() <= 0) {
             return Effect().reply(cmd.replyTo, new Rejected("Quantity must be greater than zero"));
@@ -330,21 +330,21 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         }
     }
 
-    private ReplyEffect<Event, State> onRemoveItem(State state, RemoveItem cmd) {
-        if (state.hasItem(cmd.getItemId())) {
+    private ReplyEffect<Event, ShoppingCart> onRemoveItem(ShoppingCart shoppingCart, RemoveItem cmd) {
+        if (shoppingCart.hasItem(cmd.getItemId())) {
             return Effect()
                     .persist(new ItemRemoved(cartId, cmd.getItemId(), Instant.now()))
-                    .thenReply(cmd.replyTo, updatedState -> new Accepted(toSummary(updatedState)));
+                    .thenReply(cmd.replyTo, updatedShoppingCart -> new Accepted(toSummary(updatedShoppingCart)));
         } else {
             // Remove is idempotent, so we can just return the summary here
-            return Effect().reply(cmd.replyTo, new Accepted(toSummary(state)));
+            return Effect().reply(cmd.replyTo, new Accepted(toSummary(shoppingCart)));
         }
     }
 
-    private ReplyEffect<Event, State> onAdjustItemQuantity(State state, AdjustItemQuantity cmd) {
+    private ReplyEffect<Event, ShoppingCart> onAdjustItemQuantity(ShoppingCart shoppingCart, AdjustItemQuantity cmd) {
         if (cmd.getQuantity() <= 0) {
             return Effect().reply(cmd.replyTo, new Rejected("Quantity must be greater than zero"));
-        } else if (state.hasItem(cmd.getItemId())) {
+        } else if (shoppingCart.hasItem(cmd.getItemId())) {
             return Effect()
                     .persist(new ItemQuantityAdjusted(cartId, cmd.getItemId(), cmd.getQuantity(), Instant.now()))
                     .thenReply(cmd.replyTo, s -> new Accepted(toSummary(s)));
@@ -353,12 +353,12 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
         }
     }
 
-    private ReplyEffect<Event, State> onGet(State state, Get cmd) {
-        return Effect().reply(cmd.replyTo, toSummary(state));
+    private ReplyEffect<Event, ShoppingCart> onGet(ShoppingCart shoppingCart, Get cmd) {
+        return Effect().reply(cmd.replyTo, toSummary(shoppingCart));
     }
 
-    private ReplyEffect<Event, State> onCheckout(State state, Checkout cmd) {
-        if (state.isEmpty()) {
+    private ReplyEffect<Event, ShoppingCart> onCheckout(ShoppingCart shoppingCart, Checkout cmd) {
+        if (shoppingCart.isEmpty()) {
             return Effect().reply(cmd.replyTo, new Rejected("Cannot checkout empty shopping cart"));
         } else {
             return Effect().persist(new CheckedOut(cartId, Instant.now())).thenReply(cmd.replyTo, s -> new Accepted(toSummary(s)));
@@ -366,17 +366,17 @@ public class ShoppingCart extends EventSourcedBehaviorWithEnforcedReplies<Shoppi
     }
 
     @Override
-    public EventHandler<State, Event> eventHandler() {
+    public EventHandler<ShoppingCart, Event> eventHandler() {
         return newEventHandlerBuilder()
                 .forAnyState()
-                .onEvent(ItemAdded.class, (state, evt) -> state.updateItem(evt.getItemId(), evt.getQuantity()))
-                .onEvent(ItemRemoved.class, (state, evt) -> state.removeItem(evt.getItemId()))
-                .onEvent(ItemQuantityAdjusted.class, (state, evt) -> state.updateItem(evt.getItemId(), evt.getQuantity()))
-                .onEvent(CheckedOut.class, (state, evt) -> state.checkout(evt.getEventTime()))
+                .onEvent(ItemAdded.class, (shoppingCart, evt) -> shoppingCart.updateItem(evt.getItemId(), evt.getQuantity()))
+                .onEvent(ItemRemoved.class, (shoppingCart, evt) -> shoppingCart.removeItem(evt.getItemId()))
+                .onEvent(ItemQuantityAdjusted.class, (shoppingCart, evt) -> shoppingCart.updateItem(evt.getItemId(), evt.getQuantity()))
+                .onEvent(CheckedOut.class, (shoppingCart, evt) -> shoppingCart.checkout(evt.getEventTime()))
                 .build();
     }
 
-    private Summary toSummary(State state) {
-        return new Summary(state.getItems(), state.isCheckedOut(), state.getCheckoutDate());
+    private Summary toSummary(ShoppingCart shoppingCart) {
+        return new Summary(shoppingCart.getItems(), shoppingCart.isCheckedOut(), shoppingCart.getCheckoutDate());
     }
 }
