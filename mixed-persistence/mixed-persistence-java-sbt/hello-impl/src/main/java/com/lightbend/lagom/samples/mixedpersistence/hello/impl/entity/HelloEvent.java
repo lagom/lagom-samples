@@ -1,15 +1,17 @@
 package com.lightbend.lagom.samples.mixedpersistence.hello.impl.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventShards;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.AggregateEventTagger;
 import com.lightbend.lagom.serialization.Jsonable;
-import lombok.NonNull;
 import lombok.Value;
 
 /**
- * This interface defines all the events that the HelloEntity supports.
+ * This interface defines all the events that the HelloAggregate emits.
  * <p>
  * By convention, the events should be inner classes of the interface, which
  * makes it simple to get a complete picture of what events an entity has.
@@ -26,10 +28,18 @@ public interface HelloEvent extends Jsonable, AggregateEvent<HelloEvent> {
     /**
      * An event that represents a change in greeting message.
      */
+    @SuppressWarnings("serial")
     @Value
+    @JsonDeserialize
     final class GreetingMessageChanged implements HelloEvent {
-        @NonNull String name;
-        @NonNull String message;
+        public final String name;
+        public final String message;
+
+        @JsonCreator
+        GreetingMessageChanged(String name, String message) {
+            this.name = Preconditions.checkNotNull(name, "name");
+            this.message = Preconditions.checkNotNull(message, "message");
+        }
     }
 
     @Override
