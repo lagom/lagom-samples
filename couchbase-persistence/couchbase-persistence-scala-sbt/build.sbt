@@ -28,8 +28,14 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       //#couchbase-begin
       "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0",
       //#couchbase-end
-      "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion,
-      lagomScaladslPersistence,
+
+      // lagom-scaladsl-persistence-couchbase doesn't depend on the latest versions for Lagom and Akka
+      // so explicit dependencies must be added to ensure versions align.
+      // Also, akka-persistence-typed is not a transitive dependency in lagom-scaladsl-persistence-couchbase
+      // so it must be added explicitly.
+      lagomScaladslPersistence, // align versions
+      "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion, // align versions and add it in scope
+
       lagomScaladslTestKit,
       macwire,
       scalaTest,
