@@ -73,13 +73,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ServiceCall<ShoppingCartItem, Done> addItem(String cartId) {
+    public ServiceCall<ShoppingCartItem, ShoppingCartView> addItem(String cartId) {
         return item ->
                 entityRef(cartId)
                 .<ShoppingCartEntity.Confirmation>ask(replyTo ->
                         new ShoppingCartEntity.AddItem(item.getItemId(), item.getQuantity(), replyTo), askTimeout)
                 .thenApply(this::handleConfirmation)
-                .thenApply(accepted -> Done.getInstance());
+                .thenApply(accepted -> asShoppingCartView(cartId, accepted.getSummary()));
     }
 
     @Override
@@ -103,10 +103,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ServiceCall<NotUsed, Done> checkout(String cartId) {
+    public ServiceCall<NotUsed, ShoppingCartView> checkout(String cartId) {
         return request -> entityRef(cartId).ask(ShoppingCartEntity.Checkout::new, askTimeout)
                 .thenApply(this::handleConfirmation)
-                .thenApply(accepted -> Done.getInstance());
+                .thenApply(accepted -> asShoppingCartView(cartId, accepted.getSummary()));
     }
 
     @Override

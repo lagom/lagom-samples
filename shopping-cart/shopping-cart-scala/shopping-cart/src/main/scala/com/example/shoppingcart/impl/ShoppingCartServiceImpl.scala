@@ -44,7 +44,7 @@ class ShoppingCartServiceImpl(
   override def get(id: String): ServiceCall[NotUsed, ShoppingCartView] = ServiceCall { _ =>
     entityRef(id)
       .ask(reply => Get(reply))
-      .map(cartSummary => convertShoppingCart(id, cartSummary))
+      .map(cartSummary => asShoppingCartView(id, cartSummary))
   }
 
   override def addItem(id: String): ServiceCall[ShoppingCartItem, ShoppingCartView] = ServiceCall { update =>
@@ -82,7 +82,7 @@ class ShoppingCartServiceImpl(
 
   private def confirmationToResult(id: String, confirmation: Confirmation): ShoppingCartView =
     confirmation match {
-      case Accepted(cartSummary) => convertShoppingCart(id, cartSummary)
+      case Accepted(cartSummary) => asShoppingCartView(id, cartSummary)
       case Rejected(reason)      => throw BadRequest(reason)
     }
 
@@ -95,11 +95,11 @@ class ShoppingCartServiceImpl(
           case EventStreamElement(id, _, offset) =>
             entityRef(id)
               .ask(reply => Get(reply))
-              .map(cart => convertShoppingCart(id, cart) -> offset)
+              .map(cart => asShoppingCartView(id, cart) -> offset)
         }
   }
 
-  private def convertShoppingCart(id: String, cartSummary: Summary) = {
+  private def asShoppingCartView(id: String, cartSummary: Summary) = {
     ShoppingCartView(
       id,
       cartSummary.items.map((ShoppingCartItem.apply _).tupled).toSeq,

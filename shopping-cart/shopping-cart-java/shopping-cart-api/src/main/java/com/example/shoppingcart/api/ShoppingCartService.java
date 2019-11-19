@@ -40,7 +40,7 @@ public interface ShoppingCartService extends Service {
      * <p>
      * Example: curl -H "Content-Type: application/json" -X POST -d '{"itemId": 456, "quantity": 2}' http://localhost:9000/shoppingcart/123
      */
-    ServiceCall<ShoppingCartItem, Done> addItem(String id);
+    ServiceCall<ShoppingCartItem, ShoppingCartView> addItem(String id);
 
     /**
      * Remove an item in the shopping cart.
@@ -61,7 +61,7 @@ public interface ShoppingCartService extends Service {
      * <p>
      * Example: curl -X POST http://localhost:9000/shoppingcart/123/checkout
      */
-    ServiceCall<NotUsed, Done> checkout(String id);
+    ServiceCall<NotUsed, ShoppingCartView> checkout(String id);
 
     /**
      * This gets published to Kafka.
