@@ -36,7 +36,7 @@ class ShoppingCartServiceImpl(
   /**
    * Looks up the shopping cart entity for the given ID.
    */
-  private def entityRef(id: String): EntityRef[Command] =
+  private def entityRef(id: String): EntityRef[ShoppingCartCommand] =
     clusterSharding.entityRefFor(ShoppingCart.typeKey, id)
 
   implicit val timeout = Timeout(5.seconds)
@@ -86,7 +86,7 @@ class ShoppingCartServiceImpl(
       case Rejected(reason)      => throw BadRequest(reason)
     }
 
-  override def shoppingCartTopic: Topic[ShoppingCartView] = TopicProducer.taggedStreamWithOffset(Event.Tag) {
+  override def shoppingCartTopic: Topic[ShoppingCartView] = TopicProducer.taggedStreamWithOffset(ShoppingCartEvent.Tag) {
     (tag, fromOffset) =>
       persistentEntityRegistry
         .eventStream(tag, fromOffset)

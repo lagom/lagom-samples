@@ -35,17 +35,17 @@ object ShoppingCart {
   // Note the "$".
   trait CommandSerializable
 
-  sealed trait Command extends CommandSerializable
+  sealed trait ShoppingCartCommand extends CommandSerializable
 
-  final case class AddItem(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]) extends Command
+  final case class AddItem(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]) extends ShoppingCartCommand
 
-  final case class RemoveItem(itemId: String, replyTo: ActorRef[Confirmation]) extends Command
+  final case class RemoveItem(itemId: String, replyTo: ActorRef[Confirmation]) extends ShoppingCartCommand
 
-  final case class AdjustItemQuantity(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]) extends Command
+  final case class AdjustItemQuantity(itemId: String, quantity: Int, replyTo: ActorRef[Confirmation]) extends ShoppingCartCommand
 
-  final case class Checkout(replyTo: ActorRef[Confirmation]) extends Command
+  final case class Checkout(replyTo: ActorRef[Confirmation]) extends ShoppingCartCommand
 
-  final case class Get(replyTo: ActorRef[Summary]) extends Command
+  final case class Get(replyTo: ActorRef[Summary]) extends ShoppingCartCommand
 
   // SHOPPING CART REPLIES
   final case class Summary(items: Map[String, Int], checkedOut: Boolean)
@@ -76,21 +76,21 @@ object ShoppingCart {
   }
 
   // SHOPPING CART EVENTS
-  sealed trait Event extends AggregateEvent[Event] {
-    override def aggregateTag: AggregateEventTagger[Event] = Event.Tag
+  sealed trait ShoppingCartEvent extends AggregateEvent[ShoppingCartEvent] {
+    override def aggregateTag: AggregateEventTagger[ShoppingCartEvent] = ShoppingCartEvent.Tag
   }
 
-  object Event {
-    val Tag: AggregateEventShards[Event] = AggregateEventTag.sharded[Event](numShards = 10)
+  object ShoppingCartEvent {
+    val Tag: AggregateEventShards[ShoppingCartEvent] = AggregateEventTag.sharded[ShoppingCartEvent](numShards = 10)
   }
 
-  final case class ItemAdded(itemId: String, quantity: Int) extends Event
+  final case class ItemAdded(itemId: String, quantity: Int) extends ShoppingCartEvent
 
-  final case class ItemRemoved(itemId: String) extends Event
+  final case class ItemRemoved(itemId: String) extends ShoppingCartEvent
 
-  final case class ItemQuantityAdjusted(itemId: String, newQuantity: Int) extends Event
+  final case class ItemQuantityAdjusted(itemId: String, newQuantity: Int) extends ShoppingCartEvent
 
-  final case class CartCheckedOut(eventTime: Instant) extends Event
+  final case class CartCheckedOut(eventTime: Instant) extends ShoppingCartEvent
 
   // Events get stored and loaded from the database, hence a JSON format
   //  needs to be declared so that they can be serialized and deserialized.
@@ -101,13 +101,13 @@ object ShoppingCart {
 
   val empty: ShoppingCart = ShoppingCart(items = Map.empty)
 
-  val typeKey: EntityTypeKey[Command] = EntityTypeKey[Command]("ShoppingCart")
+  val typeKey: EntityTypeKey[ShoppingCartCommand] = EntityTypeKey[ShoppingCartCommand]("ShoppingCart")
 
   // We can then access the entity behavior in our test tests, without the need to tag
   // or retain events.
-  def apply(persistenceId: PersistenceId): EventSourcedBehavior[Command, Event, ShoppingCart] = {
+  def apply(persistenceId: PersistenceId): EventSourcedBehavior[ShoppingCartCommand, ShoppingCartEvent, ShoppingCart] = {
     EventSourcedBehavior
-      .withEnforcedReplies[Command, Event, ShoppingCart](
+      .withEnforcedReplies[ShoppingCartCommand, ShoppingCartEvent, ShoppingCart](
         persistenceId = persistenceId,
         emptyState = ShoppingCart.empty,
         commandHandler = (cart, cmd) => cart.applyCommand(cmd),
@@ -115,9 +115,9 @@ object ShoppingCart {
       )
   }
 
-  def apply(entityContext: EntityContext[Command]): Behavior[Command] =
+  def apply(entityContext: EntityContext[ShoppingCartCommand]): Behavior[ShoppingCartCommand] =
     apply(PersistenceId(entityContext.entityTypeKey.name, entityContext.entityId))
-      .withTagger(AkkaTaggerAdapter.fromLagom(entityContext, Event.Tag))
+      .withTagger(AkkaTaggerAdapter.fromLagom(entityContext, ShoppingCartEvent.Tag))
       .withRetention(RetentionCriteria.snapshotEvery(numberOfEvents = 100, keepNSnapshots = 2))
 
   /**
@@ -138,7 +138,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
   def checkedOut: Boolean = !isOpen
 
   //The shopping cart behavior changes if it's checked out or not. The command handles are different for each case.
-  def applyCommand(cmd: Command): ReplyEffect[Event, ShoppingCart] =
+  def applyCommand(cmd: ShoppingCartCommand): ReplyEffect[ShoppingCartEvent, ShoppingCart] =
     if (isOpen) {
       cmd match {
         case AddItem(itemId, quantity, replyTo)            => onAddItem(itemId, quantity, replyTo)
@@ -157,7 +157,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
       }
     }
 
-  private def onCheckout(replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def onCheckout(replyTo: ActorRef[Confirmation]): ReplyEffect[ShoppingCartEvent, ShoppingCart] = {
     if (items.isEmpty)
       Effect.reply(replyTo)(Rejected("Cannot checkout an empty shopping cart"))
     else
@@ -170,7 +170,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
       itemId: String,
       quantity: Int,
       replyTo: ActorRef[Confirmation]
-  ): ReplyEffect[Event, ShoppingCart] = {
+  ): ReplyEffect[ShoppingCartEvent, ShoppingCart] = {
     if (items.contains(itemId))
       Effect.reply(replyTo)(Rejected(s"Item '$itemId' was already added to this shopping cart"))
     else if (quantity <= 0)
@@ -181,7 +181,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
         .thenReply(replyTo)(updatedCart => Accepted(toSummary(updatedCart)))
   }
 
-  private def onRemoveItem(itemId: String, replyTo: ActorRef[Confirmation]): ReplyEffect[Event, ShoppingCart] = {
+  private def onRemoveItem(itemId: String, replyTo: ActorRef[Confirmation]): ReplyEffect[ShoppingCartEvent, ShoppingCart] = {
     if (items.contains(itemId))
       Effect
         .persist(ItemRemoved(itemId))
@@ -194,7 +194,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
       itemId: String,
       quantity: Int,
       replyTo: ActorRef[Confirmation]
-  ): ReplyEffect[Event, ShoppingCart] = {
+  ): ReplyEffect[ShoppingCartEvent, ShoppingCart] = {
     if (quantity <= 0)
       Effect.reply(replyTo)(Rejected("Quantity must be greater than zero"))
     else if (items.contains(itemId))
@@ -205,7 +205,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
       Effect.reply(replyTo)(Rejected(s"Cannot adjust quantity for item '$itemId'. Item not present on cart"))
   }
 
-  private def onGet(replyTo: ActorRef[Summary]): ReplyEffect[Event, ShoppingCart] = {
+  private def onGet(replyTo: ActorRef[Summary]): ReplyEffect[ShoppingCartEvent, ShoppingCart] = {
     reply(replyTo)(toSummary(this))
   }
 
@@ -214,7 +214,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
 
   // we don't make a distinction of checked or open for the event handler
   // because a checked-out cart will never persist any new event
-  def applyEvent(evt: Event): ShoppingCart =
+  def applyEvent(evt: ShoppingCartEvent): ShoppingCart =
     evt match {
       case ItemAdded(itemId, quantity)            => onItemAddedOrUpdated(itemId, quantity)
       case ItemRemoved(itemId)                    => onItemRemoved(itemId)
@@ -246,7 +246,7 @@ object ShoppingCartSerializerRegistry extends JsonSerializerRegistry {
   import ShoppingCart._
 
   override def serializers: Seq[JsonSerializer[_]] = Seq(
-    // state and events can use play-json, but commands should use jackson because of ActorRef[T] (see application.conf)
+    // state and events can use play-json, but ShoppingCartCommands should use jackson because of ActorRef[T] (see application.conf)
     JsonSerializer[ShoppingCart],
     JsonSerializer[ItemAdded],
     JsonSerializer[ItemRemoved],

@@ -8,11 +8,11 @@ import akka.Done
 import com.example.shoppingcart.impl.ShoppingCart._
 
 class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingCartReportRepository)
-    extends ReadSideProcessor[Event] {
+    extends ReadSideProcessor[ShoppingCartEvent] {
 
-  override def buildHandler(): ReadSideProcessor.ReadSideHandler[Event] =
+  override def buildHandler(): ReadSideProcessor.ReadSideHandler[ShoppingCartEvent] =
     readSide
-      .builder[Event]("shopping-cart-report")
+      .builder[ShoppingCartEvent]("shopping-cart-report")
       .setGlobalPrepare(repository.createTable())
       .setEventHandler[ItemAdded] { envelope =>
         repository.createReport(envelope.entityId)
@@ -28,5 +28,5 @@ class ShoppingCartReportProcessor(readSide: SlickReadSide, repository: ShoppingC
       }
       .build()
 
-  override def aggregateTags: Set[AggregateEventTag[Event]] = Event.Tag.allTags
+  override def aggregateTags: Set[AggregateEventTag[ShoppingCartEvent]] = ShoppingCartEvent.Tag.allTags
 }
