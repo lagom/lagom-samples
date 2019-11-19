@@ -1,4 +1,4 @@
-package com.lightbend.lagom.sampleshello.api;
+package com.lightbend.lagom.samples.hello.api;
 
 import lombok.Value;
 
@@ -10,11 +10,10 @@ import com.google.common.base.Preconditions;
 @Value
 @JsonDeserialize
 public final class GreetingMessage {
-
-  String message;
+  public final String message;
 
   @JsonCreator
   public GreetingMessage(String message) {
-    this.message = Preconditions.checkNotNull(message, "message field MUST not be null");
+    this.message = Preconditions.checkNotNull(message, "message");
   }
 }

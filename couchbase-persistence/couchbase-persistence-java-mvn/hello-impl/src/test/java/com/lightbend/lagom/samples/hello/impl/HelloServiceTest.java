@@ -1,10 +1,10 @@
-package com.lightbend.lagom.sampleshello.impl;
+package com.lightbend.lagom.samples.hello.impl;
 
 import com.lightbend.lagom.javadsl.persistence.PersistenceModule;
 import com.lightbend.lagom.javadsl.persistence.couchbase.CouchbasePersistenceModule;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
-import com.lightbend.lagom.sampleshello.api.GreetingMessage;
-import com.lightbend.lagom.sampleshello.api.HelloService;
+import com.lightbend.lagom.samples.hello.api.GreetingMessage;
+import com.lightbend.lagom.samples.hello.api.HelloService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

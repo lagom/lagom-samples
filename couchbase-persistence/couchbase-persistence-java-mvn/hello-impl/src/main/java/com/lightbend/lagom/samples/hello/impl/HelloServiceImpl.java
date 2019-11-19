@@ -1,56 +1,78 @@
-package com.lightbend.lagom.sampleshello.impl;
+package com.lightbend.lagom.samples.hello.impl;
 
 import akka.Done;
 import akka.NotUsed;
-import akka.stream.alpakka.couchbase.javadsl.CouchbaseSession;
-import com.couchbase.client.java.document.json.JsonObject;
+import akka.cluster.sharding.typed.javadsl.ClusterSharding;
+import akka.cluster.sharding.typed.javadsl.Entity;
+import akka.cluster.sharding.typed.javadsl.EntityRef;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
-import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
-import com.lightbend.lagom.javadsl.persistence.ReadSide;
-import com.lightbend.lagom.sampleshello.api.GreetingMessage;
-import com.lightbend.lagom.sampleshello.api.HelloService;
-import com.lightbend.lagom.sampleshello.api.UserGreeting;
-import com.lightbend.lagom.sampleshello.impl.HelloCommand.Hello;
-import com.lightbend.lagom.sampleshello.impl.HelloCommand.UseGreetingMessage;
+import com.lightbend.lagom.javadsl.api.transport.BadRequest;
+import com.lightbend.lagom.samples.hello.api.GreetingMessage;
+import com.lightbend.lagom.samples.hello.api.HelloService;
+import com.lightbend.lagom.samples.hello.api.UserGreeting;
+import com.lightbend.lagom.samples.hello.impl.HelloCommand.Hello;
+import com.lightbend.lagom.samples.hello.impl.HelloCommand.UseGreetingMessage;
 
 import javax.inject.Inject;
-import java.util.Collections;
+import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HelloServiceImpl implements HelloService {
 
-  private final PersistentEntityRegistry persistentEntityRegistry;
-  private GreetingsRepository greetingsRepository;
+    private final Duration askTimeout = Duration.ofSeconds(5);
+    private ClusterSharding clusterSharding;
+    private GreetingsRepository greetingsRepository;
 
-  @Inject
-  public HelloServiceImpl(PersistentEntityRegistry persistentEntityRegistry, GreetingsRepository greetingsRepository) {
-    this.persistentEntityRegistry = persistentEntityRegistry;
-    persistentEntityRegistry.register(HelloEntity.class);
-    this.greetingsRepository = greetingsRepository;
-  }
+    @Inject
+    public HelloServiceImpl(GreetingsRepository greetingsRepository,
+                            ClusterSharding clusterSharding) {
+        this.clusterSharding = clusterSharding;
+        this.greetingsRepository = greetingsRepository;
 
-  @Override
-  public ServiceCall<NotUsed, String> hello(String id) {
-    return request -> {
-      PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
-      return ref.ask(new Hello(id));
-    };
-  }
+        // register the Aggregate as a sharded entity
+        this.clusterSharding.init(
+            Entity.of(
+                HelloAggregate.ENTITY_TYPE_KEY,
+                HelloAggregate::create
+            )
+        );
+    }
 
-  @Override
-  public ServiceCall<GreetingMessage, Done> useGreeting(String id) {
-    return request -> {
-      PersistentEntityRef<HelloCommand> ref = persistentEntityRegistry.refFor(HelloEntity.class, id);
-      return ref.ask(new UseGreetingMessage(request.getMessage()));
-    };
-  }
+    @Override
+    public ServiceCall<NotUsed, String> hello(String id) {
+        return request -> {
+            // Look up the aggregete instance for the given ID.
+            EntityRef<HelloCommand> ref = clusterSharding.entityRefFor(HelloAggregate.ENTITY_TYPE_KEY, id);
+            // Ask the entity the Hello command.
+            return ref.
+                <HelloCommand.Greeting>ask(replyTo -> new Hello(id, replyTo), askTimeout)
+                .thenApply(greeting -> greeting.message);
+        };
+    }
 
-  @Override
-  public ServiceCall<NotUsed, List<UserGreeting>> userGreetings() {
-    return request ->
-        greetingsRepository.listUserGreetings();
-  }
+    @Override
+    public ServiceCall<GreetingMessage, Done> useGreeting(String id) {
+        return request -> {
+            // Look up the aggregete instance for the given ID.
+            EntityRef<HelloCommand> ref = clusterSharding.entityRefFor(HelloAggregate.ENTITY_TYPE_KEY, id);
+            // Tell the entity to use the greeting message specified.
+            return ref.
+                <HelloCommand.Confirmation>ask(replyTo -> new UseGreetingMessage(request.getMessage(), replyTo), askTimeout)
+                .thenApply(confirmation -> {
+                        if (confirmation instanceof HelloCommand.Accepted) {
+                            return Done.getInstance();
+                        } else {
+                            throw new BadRequest(((HelloCommand.Rejected) confirmation).reason);
+                        }
+                    }
+                );
+        };
+    }
+
+    @Override
+    public ServiceCall<NotUsed, List<UserGreeting>> userGreetings() {
+        return request ->
+            greetingsRepository.listUserGreetings();
+    }
 
 }
