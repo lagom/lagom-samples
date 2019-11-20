@@ -1,4 +1,4 @@
-package com.lightbend.lagom.sampleshello.impl
+package com.lightbend.lagom.samples.hello.impl
 
 import akka.Done
 import akka.actor.ActorSystem
@@ -6,10 +6,13 @@ import akka.stream.alpakka.couchbase.scaladsl.CouchbaseSession
 import com.couchbase.client.java.document.JsonDocument
 import com.couchbase.client.java.document.json.JsonObject
 import com.lightbend.lagom.scaladsl.persistence.couchbase.CouchbaseReadSide
-import com.lightbend.lagom.scaladsl.persistence.{ AggregateEventTag, EventStreamElement, ReadSideProcessor }
-import com.lightbend.lagom.sampleshello.api.UserGreeting
+import com.lightbend.lagom.scaladsl.persistence.AggregateEventTag
+import com.lightbend.lagom.scaladsl.persistence.EventStreamElement
+import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor
+import com.lightbend.lagom.samples.hello.api.UserGreeting
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 //#couchbase-begin
 class GreetingsRepository(couchbaseSession: CouchbaseSession)(implicit executionContext: ExecutionContext) {

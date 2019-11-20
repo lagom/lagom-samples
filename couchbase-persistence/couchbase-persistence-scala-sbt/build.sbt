@@ -19,17 +19,6 @@ val akkaVersion = "2.6.0-RC2"
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(libraryDependencies ++= Seq(
     lagomScaladslApi,
-    "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion,
-    "com.typesafe.akka" %% "akka-coordination" % akkaVersion,
-    "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
-    "com.typesafe.akka" %% "akka-distributed-data" % akkaVersion,
-    "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-    "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
-    "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
-    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   ))
 
 lazy val `hello-impl` = (project in file("hello-impl"))
@@ -39,12 +28,17 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       //#couchbase-begin
       "com.lightbend.akka" %% "lagom-scaladsl-persistence-couchbase" % "1.0",
       //#couchbase-end
+
+      // lagom-scaladsl-persistence-couchbase doesn't depend on the latest versions for Lagom and Akka
+      // so explicit dependencies must be added to ensure versions align.
+      // Also, akka-persistence-typed is not a transitive dependency in lagom-scaladsl-persistence-couchbase
+      // so it must be added explicitly.
+      lagomScaladslPersistence, // align versions
+      "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion, // align versions and add it in scope
+
       lagomScaladslTestKit,
       macwire,
       scalaTest,
-      "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
-      "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion,
-      "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
     )
   )
   .settings(lagomForkedTestSettings: _*)

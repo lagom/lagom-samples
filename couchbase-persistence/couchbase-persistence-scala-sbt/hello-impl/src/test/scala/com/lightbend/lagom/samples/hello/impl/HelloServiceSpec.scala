@@ -1,9 +1,11 @@
-package com.lightbend.lagom.sampleshello.impl
+package com.lightbend.lagom.samples.hello.impl
 
 import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
-import org.scalatest.{AsyncWordSpec, BeforeAndAfterAll, Matchers}
-import com.lightbend.lagom.sampleshello.api._
+import org.scalatest.AsyncWordSpec
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.Matchers
+import com.lightbend.lagom.samples.hello.api._
 
 class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
