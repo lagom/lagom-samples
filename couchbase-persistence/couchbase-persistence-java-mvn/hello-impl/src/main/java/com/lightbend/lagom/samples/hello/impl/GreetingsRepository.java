@@ -1,4 +1,4 @@
-package com.lightbend.lagom.sampleshello.impl;
+package com.lightbend.lagom.samples.hello.impl;
 
 import akka.Done;
 import akka.stream.alpakka.couchbase.javadsl.CouchbaseSession;
@@ -8,7 +8,7 @@ import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.persistence.ReadSideProcessor;
 import com.lightbend.lagom.javadsl.persistence.couchbase.CouchbaseReadSide;
-import com.lightbend.lagom.sampleshello.api.UserGreeting;
+import com.lightbend.lagom.samples.hello.api.UserGreeting;
 import org.pcollections.PSequence;
 
 import javax.inject.Inject;

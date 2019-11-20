@@ -1,4 +1,4 @@
-package com.lightbend.lagom.sampleshello.api;
+package com.lightbend.lagom.samples.hello.api;
 
 import akka.Done;
 import akka.NotUsed;

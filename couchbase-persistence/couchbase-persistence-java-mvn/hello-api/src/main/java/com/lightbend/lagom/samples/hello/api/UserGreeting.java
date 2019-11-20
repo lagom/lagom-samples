@@ -1,4 +1,4 @@
-package com.lightbend.lagom.sampleshello.api;
+package com.lightbend.lagom.samples.hello.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Value;
