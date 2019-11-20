@@ -43,7 +43,7 @@ public class ShoppingCartServiceTest {
         String cartId = randomId();
         String itemId = randomId();
 
-        Pair<ResponseHeader, Done> result = Await.result(shoppingCartService.addItem(cartId).withResponseHeader().invoke(new ShoppingCartItem(itemId, 2)));
+        Pair<ResponseHeader, ShoppingCartView> result = Await.result(shoppingCartService.addItem(cartId).withResponseHeader().invoke(new ShoppingCartItem(itemId, 2)));
         ResponseHeader responseHeader = result.first();
 
         Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());
@@ -96,7 +96,7 @@ public class ShoppingCartServiceTest {
         // Add a shopping cart item
         Await.result(shoppingCartService.addItem(cartId).withResponseHeader().invoke(new ShoppingCartItem(itemId, 2)));
 
-        Pair<ResponseHeader, Done> result = Await.result(shoppingCartService.checkout(cartId).withResponseHeader().invoke());
+        Pair<ResponseHeader, ShoppingCartView> result = Await.result(shoppingCartService.checkout(cartId).withResponseHeader().invoke());
         ResponseHeader responseHeader = result.first();
 
         Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());

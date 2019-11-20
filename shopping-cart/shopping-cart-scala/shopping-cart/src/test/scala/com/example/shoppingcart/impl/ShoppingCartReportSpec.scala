@@ -143,7 +143,7 @@ class ShoppingCartReportSpec extends WordSpec with BeforeAndAfterAll with Matche
 
   }
 
-  private def feedEvent(cartId: String, event: ShoppingCart.Event): Future[Done] = {
+  private def feedEvent(cartId: String, event: ShoppingCart.ShoppingCartEvent): Future[Done] = {
     testDriver.feed(cartId, event, Sequence(offset.getAndIncrement))
   }
 }
