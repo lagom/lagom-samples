@@ -47,6 +47,9 @@ public class ShoppingCartServiceTest {
         ResponseHeader responseHeader = result.first();
 
         Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());
+
+        ShoppingCartView cartView = result.second();
+        Assert.assertTrue(cartView.hasItem(itemId));
     }
 
     @Test
@@ -93,13 +96,28 @@ public class ShoppingCartServiceTest {
         String cartId = randomId();
         String itemId = randomId();
 
-        // Add a shopping cart item
-        Await.result(shoppingCartService.addItem(cartId).withResponseHeader().invoke(new ShoppingCartItem(itemId, 2)));
+        { // scope: Add a shopping cart item
+            Pair<ResponseHeader, ShoppingCartView> result =
+                    Await.result(shoppingCartService.addItem(cartId).withResponseHeader().invoke(new ShoppingCartItem(itemId, 2)));
 
-        Pair<ResponseHeader, ShoppingCartView> result = Await.result(shoppingCartService.checkout(cartId).withResponseHeader().invoke());
-        ResponseHeader responseHeader = result.first();
+            ResponseHeader responseHeader = result.first();
+            ShoppingCartView cartView = result.second();
 
-        Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());
+            Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());
+            Assert.assertTrue(cartView.hasItem(itemId));
+
+            Assert.assertFalse("not expected to be checkedout", cartView.isCheckedOut());
+        }
+
+        { // scope: checking out a shopping cart
+            Pair<ResponseHeader, ShoppingCartView> result = Await.result(shoppingCartService.checkout(cartId).withResponseHeader().invoke());
+            ResponseHeader responseHeader = result.first();
+            ShoppingCartView cartView = result.second();
+
+            Assert.assertEquals(responseHeader.status(), ResponseHeader.OK.status());
+            Assert.assertTrue(cartView.hasItem(itemId));
+            Assert.assertTrue("expected to be checkedout", cartView.isCheckedOut());
+        }
     }
 
     @Test
