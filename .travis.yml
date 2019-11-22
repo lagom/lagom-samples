@@ -107,40 +107,44 @@ jobs:
     name: "Run tests Couchbase Persistence (scala)"     
 
 
-  - stage: deploy
+  - stage: deploy-java8-1of3
     script:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
-  - script:
+  - stage: deploy-java8-2of3
+    script:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
-  - script:
+  - stage: deploy-java8-3of3
+    script:
     - useAdoptOpenJdk8 
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
     - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
     name: "Deploy Shopping Cart example (java/maven)"
 
-  - stage: deploy-java11
+  - stage: deploy-java11-1of3
     script:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
     - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
     name: "Deploy Shopping Cart example (scala/sbt)"
-  - script:
+  - stage: deploy-java11-2of3
+    script:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
     - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
     name: "Deploy Shopping Cart example (java/sbt)"
-  - script:
+  - stage: deploy-java11-3of3
+    script:
     - useAdoptOpenJdk11
     - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
     - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
@@ -150,9 +154,17 @@ jobs:
 stages:
   - test
   - test-java11
-  - name: deploy
+  - name: deploy-java8-1of3
     if: NOT fork # only run the "deploy" stage if the password is present
-  - name: deploy-java11
+  - name: deploy-java8-2of3
+    if: NOT fork # only run the "deploy" stage if the password is present
+  - name: deploy-java8-3of3
+    if: NOT fork # only run the "deploy" stage if the password is present
+  - name: deploy-java11-1of3
+    if: NOT fork # only run the "deploy" stage if the password is present
+  - name: deploy-java11-2of3
+    if: NOT fork # only run the "deploy" stage if the password is present
+  - name: deploy-java11-3of3
     if: NOT fork # only run the "deploy" stage if the password is present
 
 env:
