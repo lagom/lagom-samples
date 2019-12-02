@@ -19,7 +19,8 @@ val `hello-impl-HTTPS-port` = 11000
 def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
   // Lagom still can't register a service under the gRPC name so we hard-code 
   // the port and use the value to add the entry on the Service Registry
-  lagomServiceHttpsPort := `hello-impl-HTTPS-port`
+  lagomServiceHttpsPort := `hello-impl-HTTPS-port`,
+  lagomServiceAddress := "localhost"
 )
 
 lazy val `lagom-scala-grpc-example` = (project in file("."))
@@ -82,13 +83,6 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
 // to make the devMode startup faster.
 lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
-
-
-// This adds an entry on the LagomDevMode Service Registry. With this information on
-// the Service Registry a client using Service Discovery to Lookup("helloworld.GreeterService")
-// will get "https://localhost:11000" and then be able to send a request.
-// See declaration and usages of `hello-impl-HTTPS-port`.
-lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"https://localhost:${`hello-impl-HTTPS-port`}")
 
 //----------------------------------
 
