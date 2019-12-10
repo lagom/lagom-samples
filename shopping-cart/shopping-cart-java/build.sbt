@@ -17,8 +17,6 @@ val hibernateEntityManager = "org.hibernate"                   % "hibernate-enti
 val jpaApi                 = "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api"   % "1.0.0.Final"
 val validationApi          = "javax.validation"                % "validation-api"          % "1.1.0.Final"
 
-val akkaDiscovery        = "com.typesafe.akka" %% "akka-discovery"         % akkaVersion
-val akkaProtobuf         = "com.typesafe.akka" %% "akka-protobuf"          % akkaVersion
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
 val akkaStreamTestkit    = "com.typesafe.akka" %% "akka-stream-testkit"    % akkaVersion
 
@@ -56,8 +54,6 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       hamcrestLibrary,
       lagomJavadslAkkaDiscovery,
       akkaDiscoveryKubernetesApi,
-      akkaDiscovery,
-      akkaProtobuf,
       akkaPersistenceQuery,
       hibernateEntityManager,
       jpaApi,

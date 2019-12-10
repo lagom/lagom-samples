@@ -187,29 +187,9 @@
                 <version>${hamcrest.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-discovery_${scala.binary.version}</artifactId>
-                <version>${akka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-protobuf_${scala.binary.version}</artifactId>
-                <version>${akka.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.lightbend.akka.discovery</groupId>
                 <artifactId>akka-discovery-kubernetes-api_${scala.binary.version}</artifactId>
                 <version>${akka.management.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http-core_${scala.binary.version}</artifactId>
-                <version>${akka.http.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-parsing_${scala.binary.version}</artifactId>
-                <version>${akka.http.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.lightbend.lagom</groupId>
@@ -221,11 +201,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.6.0-RC2</lagom.version>
-        <akka.version>2.6.0-RC2</akka.version>
+        <lagom.version>1.6.0-RC3</lagom.version>
         <scala.binary.version>2.13</scala.binary.version>
         <akka.management.version>1.0.3</akka.management.version>
-        <akka.http.version>10.1.10</akka.http.version>
         <hamcrest.version>2.1</hamcrest.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
 

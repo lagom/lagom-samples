@@ -14,7 +14,7 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 lazy val `couchbase-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
 
-val akkaVersion = "2.6.0-RC2"
+val akkaVersion = "2.6.1"
 
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(libraryDependencies ++= Seq(
