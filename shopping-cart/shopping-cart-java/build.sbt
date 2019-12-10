@@ -18,7 +18,6 @@ val jpaApi                 = "org.hibernate.javax.persistence" % "hibernate-jpa-
 val validationApi          = "javax.validation"                % "validation-api"          % "1.1.0.Final"
 
 val akkaDiscovery        = "com.typesafe.akka" %% "akka-discovery"         % akkaVersion
-val akkaProtobuf         = "com.typesafe.akka" %% "akka-protobuf"          % akkaVersion
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion
 val akkaStreamTestkit    = "com.typesafe.akka" %% "akka-stream-testkit"    % akkaVersion
 
@@ -57,7 +56,6 @@ lazy val `shopping-cart` = (project in file("shopping-cart"))
       lagomJavadslAkkaDiscovery,
       akkaDiscoveryKubernetesApi,
       akkaDiscovery,
-      akkaProtobuf,
       akkaPersistenceQuery,
       hibernateEntityManager,
       jpaApi,
