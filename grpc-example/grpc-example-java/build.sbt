@@ -1,4 +1,5 @@
-import akka.grpc.gen.javadsl.play.{ PlayJavaClientCodeGenerator, PlayJavaServerCodeGenerator }
+import play.grpc.gen.javadsl.{ PlayJavaClientCodeGenerator, PlayJavaServerCodeGenerator }
+import lagom.java.grpc.sample.BuildInfo
 import sbt.Def
 import sbt.Keys.dependencyOverrides
 
@@ -12,6 +13,7 @@ scalaVersion in ThisBuild := "2.12.8"
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
+val playGrpcRuntime = "com.lightbend.play"      %% "play-grpc-runtime"   % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % "0.7.0" % Test
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
@@ -46,6 +48,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   libraryDependencies ++= Seq(
     lagomJavadslTestKit,
     lagomLogback,
+    playGrpcRuntime,
     lagomGrpcTestkit
   )
 ).settings(lagomForkedTestSettings: _*)
@@ -91,5 +94,5 @@ lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http
 
 
 def common = Seq(
-  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
+  javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters")
 )
