@@ -1,5 +1,5 @@
-import akka.grpc.gen.scaladsl.play.{ PlayScalaClientCodeGenerator, PlayScalaServerCodeGenerator }
-
+import play.grpc.gen.scaladsl.{ PlayScalaClientCodeGenerator, PlayScalaServerCodeGenerator }
+import lagom.scala.grpc.sample.BuildInfo
 organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
@@ -9,7 +9,8 @@ scalaVersion in ThisBuild := "2.12.8"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
-val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % "0.7.0" % Test
+val playGrpcRuntime = "com.lightbend.play"      %% "play-grpc-runtime"   % BuildInfo.playGrpcVersion
+val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
 
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
@@ -48,6 +49,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
+      playGrpcRuntime,
       scalaTest,
       lagomGrpcTestkit
     )
