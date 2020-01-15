@@ -27,29 +27,32 @@ lazy val `lagom-scala-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
 
 lazy val `hello-api` = (project in file("hello-api"))
-  .settings(
-    libraryDependencies += lagomScaladslApi
-  )
+    .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
+    .enablePlugins(PlayAkkaHttp2Support) // enables serving HTTP/2 and gRPC
+    .settings(
+        akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
+        akkaGrpcExtraGenerators := Seq(PlayScalaClientCodeGenerator, PlayScalaServerCodeGenerator),
+        akkaGrpcGeneratedSources :=
+            Seq(
+                AkkaGrpc.Server,
+                AkkaGrpc.Client // the client is only used in tests. See https://github.com/akka/akka-grpc/issues/410
+            ),
+    )
+    .settings(
+        libraryDependencies ++= Seq(
+            lagomScaladslApi,
+            playGrpcRuntime,
+        )
+    )
 
 lazy val `hello-impl` = (project in file("hello-impl"))
   .enablePlugins(LagomScala)
-  .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
-  .enablePlugins(PlayAkkaHttp2Support) // enables serving HTTP/2 and gRPC
   .settings(
-    akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
-    akkaGrpcGeneratedSources :=
-      Seq(
-        AkkaGrpc.Server,
-        AkkaGrpc.Client // the client is only used in tests. See https://github.com/akka/akka-grpc/issues/410
-      ),
-    akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
-  ).settings(
     workaroundSettings:_*
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
-      playGrpcRuntime,
       scalaTest,
       lagomGrpcTestkit
     )
@@ -63,11 +66,7 @@ lazy val `hello-proxy-api` = (project in file("hello-proxy-api"))
 
 lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .enablePlugins(LagomScala)
-  .enablePlugins(AkkaGrpcPlugin) // enables source generation for gRPC
   .settings(
-  akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
-    akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
-  ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
