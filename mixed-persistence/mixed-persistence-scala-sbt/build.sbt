@@ -6,7 +6,7 @@ scalaVersion in ThisBuild := "2.12.8"
 
 val h2 = "com.h2database" % "h2" % "1.4.199"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.2" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8-RC5" % Test
+val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 lazy val `mixed-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)

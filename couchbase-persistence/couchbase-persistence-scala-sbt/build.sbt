@@ -9,7 +9,7 @@ lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
+val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 lazy val `couchbase-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
