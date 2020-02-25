@@ -7,7 +7,7 @@ version in ThisBuild := "1.0-SNAPSHOT"
 scalaVersion in ThisBuild := "2.12.8"
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.4" % Test
+val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 val playGrpcRuntime = "com.lightbend.play"      %% "play-grpc-runtime"   % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
