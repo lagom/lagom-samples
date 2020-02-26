@@ -104,4 +104,9 @@ def getDockerBaseImage(): String = sys.props.get("java.version") match {
   case _ => "adoptopenjdk/openjdk8"
 }
 
+// The project uses PostgreSQL
 lagomCassandraEnabled in ThisBuild := false
+
+// Use Kafka server running in a docker container
+lagomKafkaEnabled in ThisBuild := false
+lagomKafkaPort in ThisBuild := 9092

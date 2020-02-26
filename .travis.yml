@@ -22,10 +22,6 @@ before_install:
 
 install: jabba install $(jabba ls-remote "adopt@~1.$TRAVIS_JDK.0-0" --latest=patch) && jabba use "$_" && java -Xmx32m -version
 
-services:
-  # shopping cart is using postgres for testing
-  - postgresql
-
 cache:
   directories:
     - "$HOME/.cache/coursier"
@@ -56,15 +52,18 @@ jobs:
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-java && sbt test
     - name: "Run tests Shopping Cart example (java/mvn)"
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-java && mvn test
     - name: "Run tests Shopping Cart example (scala/sbt)"
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-scala/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-scala && sbt test
 
     # Couchbase Persistence Samples
@@ -103,17 +102,20 @@ jobs:
     - name: "Run tests Shopping Cart example (java/sbt)"
       env: TRAVIS_JDK=8
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-java && sbt test
     - name: "Run tests Shopping Cart example (java/mvn)"
       env: TRAVIS_JDK=8
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-java && mvn test
     - name: "Run tests Shopping Cart example (scala/sbt)"
       env: TRAVIS_JDK=8
       script:
-        - shopping-cart/travis-scripts/create-database.sh
+        - docker-compose -f shopping-cart/shopping-cart-scala/docker-compose.yml up -d
+        - sleep 30s
         - cd shopping-cart/shopping-cart-scala && sbt test
 
     # Couchbase Persistence Samples
