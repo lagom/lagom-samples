@@ -94,5 +94,8 @@ lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http
 
 
 def common = Seq(
+  // We don't care about doc artifacts here.
+  sources in (Compile, doc) := Seq.empty,
+  publishArtifact in (Compile, packageDoc) := false,
   javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters")
 )
