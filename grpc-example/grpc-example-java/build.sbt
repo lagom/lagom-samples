@@ -7,13 +7,12 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Java version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.8"
-
+scalaVersion in ThisBuild := "2.12.10"
 
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
-val playGrpcRuntime = "com.lightbend.play"      %% "play-grpc-runtime"   % BuildInfo.playGrpcVersion
+val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % "0.7.0" % Test
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
