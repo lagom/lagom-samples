@@ -2,7 +2,7 @@ organization in ThisBuild := "com.lightbend.lagom.samples"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.8"
+scalaVersion in ThisBuild := "2.12.10"
 
 lazy val `hello` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
@@ -38,6 +38,9 @@ lazy val `hello-impl` = (project in file("hello-impl"))
 
 
 def common = Seq(
+  // We don't care about doc artifacts here.
+  sources in (Compile, doc) := Seq.empty,
+  publishArtifact in (Compile, packageDoc) := false,
   javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-parameters", "-Xlint:unchecked", "-Xlint:deprecation")
 )
 

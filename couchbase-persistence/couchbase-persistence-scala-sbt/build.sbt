@@ -1,9 +1,10 @@
+import com.lightbend.lagom.core.LagomVersion.{ akka => akkaVersion }
 organization in ThisBuild := "com.lightbend.lagom.sample.couchbase"
 name in ThisBuild := "couchbase-persistence-scala-sbt"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.8"
+scalaVersion in ThisBuild := "2.12.10"
 
 lagomCassandraEnabled in ThisBuild := false
 lagomKafkaEnabled in ThisBuild := false
@@ -13,8 +14,6 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 lazy val `couchbase-persistence-scala-sbt` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`)
-
-val akkaVersion = "2.6.1"
 
 lazy val `hello-api` = (project in file("hello-api"))
   .settings(libraryDependencies ++= Seq(

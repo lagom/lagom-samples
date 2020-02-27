@@ -86,6 +86,9 @@ lazy val inventory = (project in file("inventory"))
   .dependsOn(`shopping-cart-api`, `inventory-api`)
 
 def common = Seq(
+  // We don't care about doc artifacts here.
+  sources in (Compile, doc) := Seq.empty,
+  publishArtifact in (Compile, packageDoc) := false,
   javacOptions in Compile := Seq("-g", "-encoding", "UTF-8", "-Xlint:unchecked", "-Xlint:deprecation", "-parameters", "-Werror")
 )
 

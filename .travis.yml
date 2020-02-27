@@ -43,15 +43,15 @@ jobs:
     # Mixed Persistence Samples
     - stage: test-java-11
       name: "Run tests Mixed Persistence (java)"
-      script: "cd mixed-persistence/mixed-persistence-java-sbt && sbt test"
+      script: "cd mixed-persistence/mixed-persistence-java-sbt && sbt test stage"
     - name: "Run tests Mixed Persistence (scala)"
-      script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test"
+      script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test stage"
 
     # gRPC Samples
     - name: "Run tests gRPC example (java)"
-      script: "cd grpc-example/grpc-example-java && sbt test"
+      script: "cd grpc-example/grpc-example-java && sbt test stage"
     - name: "Run tests gRPC example (scala)"
-      script: "cd grpc-example/grpc-example-scala && sbt test"
+      script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"
@@ -77,7 +77,7 @@ jobs:
       script:
         - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase
         - sleep 30s
-        - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test"
+        - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test stage"
 
     #
     # Java 8 Jobs
@@ -86,18 +86,18 @@ jobs:
     - stage: test-java-8
       name: "Run tests Mixed Persistence (java)"
       env: TRAVIS_JDK=8
-      script: "cd mixed-persistence/mixed-persistence-java-sbt && sbt test"
+      script: "cd mixed-persistence/mixed-persistence-java-sbt && sbt test stage"
     - name: "Run tests Mixed Persistence (scala)"
       env: TRAVIS_JDK=8
-      script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test"
+      script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test stage"
 
     # gRPC Samples
     - name: "Run tests gRPC example (java)"
       env: TRAVIS_JDK=8
-      script: "cd grpc-example/grpc-example-java && sbt test"
+      script: "cd grpc-example/grpc-example-java && sbt test stage"
     - name: "Run tests gRPC example (scala)"
       env: TRAVIS_JDK=8
-      script: "cd grpc-example/grpc-example-scala && sbt test"
+      script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"
@@ -128,7 +128,7 @@ jobs:
       script:
         - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase
         - sleep 30s
-        - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test"
+        - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test stage"
 
     #
     # Deployment Jobs
