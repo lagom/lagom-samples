@@ -73,4 +73,9 @@ lazy val inventory = (project in file("inventory"))
   .settings(dockerSettings)
   .dependsOn(`inventory-api`, `shopping-cart-api`)
 
+// The project uses PostgreSQL
 lagomCassandraEnabled in ThisBuild := false
+
+// Use Kafka server running in a docker container
+lagomKafkaEnabled in ThisBuild := false
+lagomKafkaPort in ThisBuild := 9092
