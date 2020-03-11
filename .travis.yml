@@ -184,17 +184,17 @@ stages:
   - test-java-11
   - test-java-8
   - name: deploy-java8-1of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java8-2of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java8-3of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java11-1of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java11-2of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
   - name: deploy-java11-3of3
-    if: NOT fork # only run the "deploy" stage if the password is present
+    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
 
 notifications:
   webhooks:
