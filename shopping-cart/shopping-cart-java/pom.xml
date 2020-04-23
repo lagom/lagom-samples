@@ -202,7 +202,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lagom.version>1.6.1</lagom.version>
+        <lagom.version>1.6.2</lagom.version>
         <scala.binary.version>2.13</scala.binary.version>
         <akka.management.version>1.0.3</akka.management.version>
         <hamcrest.version>2.1</hamcrest.version>
