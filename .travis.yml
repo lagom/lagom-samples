@@ -8,12 +8,6 @@ if: type != push OR repo != lagom/lagom-samples OR branch IN (1.5.x, 1.6.x)
 env:
   global:
     - TRAVIS_JDK=11
-    # Following secret is for CP2_PLAY_PASSWORD (password of the 'play-team' user in centralpark2 cluster)
-    # The secret was created for the repo 'lagom/lagom-ssamples' using
-    #  $ travis encrypt --com CP2_PLAY_PASSWORD="asdf-qwer-1234-..."
-    # !!NOTE: the use of `--com` is required because the lagom org in travis uses travis-ci.com (not travis-ci.org)
-    # See https://docs.travis-ci.com/user/encryption-keys/
-    - secure: "Z7UAwHr8aVoFbhpE7wJHrP2yy/q33aNdKEiJdS7vO2xTPVedG/NWPFXfvpCliaKGwl6L9zDGEh0EaX7KgYuQ5C2uXjoEluv40Iyc+6qyA/yyMHT/ofBIuWl3Oo5jf4NZFXLUYSu5m9TWguuB0+xm6bJVa0USFK0frmazrWUjaAcXrvQ2tKyHi74ZpNCoVIKrrs/CdsBhAMApDjMPAxVQogcq6uT2Fe/oBKP8PuU1U8tNEJ/TXaWBKWRqjhLOq7pzuU19+oJD7R3T3Rs/NiHZq8WqR8ZvhrWsHWD5BUOIQ4Y+5Yp+K0PYkpYWPK5kYWxbtDPMNz/Af5fMG5oEiaPPvH6nPnNODpEW9T8BDjGHvTGPc1/upuDg3DHqbXaxF1u1/Zyfn6UW8K/iQvu5c3NznXvgLqGAz2HEjdmFr4DALBoxmNA3jheXg7GME5Dtus7qgBAKl+qu/N0AfPozl9TSvsjX5uJkzUOL2FYyqMB1Wv8QQOfGC7wfteX5K/pxL8obf9lKarZufdIr/DjPrR5Hj6ZgypmKnPEDur8peAprZvw9IFSXCcTtYXHGAdkuqOTFXKyrNlDv8r5f63JMYutJ382345M9Yhe/1wilFfEXrqMOyR8lj3QT0uIg42W2bCzYKNY+ZTsLeqIowTfJyIZoyZvfl3yk4rbs+58EGYzVw2c="
 
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
@@ -132,69 +126,9 @@ jobs:
         - sleep 30s
         - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test stage"
 
-    #
-    # Deployment Jobs
-    #
-    - stage: deploy-java11-1of3
-      name: "Deploy Shopping Cart example (scala/sbt)"
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
-
-    - stage: deploy-java11-2of3
-      name: "Deploy Shopping Cart example (java/sbt)"
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
-
-    - stage: deploy-java11-3of3
-      name: "Deploy Shopping Cart example (java/maven)"
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
-
-    - stage: deploy-java8-1of3
-      name: "Deploy Shopping Cart example (scala/sbt)"
-      env: TRAVIS_JDK=8
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-scala  sbt
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-scala  sbt
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-scala  sbt
-    
-    - stage: deploy-java8-2of3
-      name: "Deploy Shopping Cart example (java/sbt)"
-      env: TRAVIS_JDK=8
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   sbt
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   sbt
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   sbt
-
-    - stage: deploy-java8-3of3
-      name: "Deploy Shopping Cart example (java/maven)"
-      env: TRAVIS_JDK=8
-      script:
-        - shopping-cart/deploy/scripts/deploy-shopping-cart.sh shopping-cart-java   maven
-        - shopping-cart/deploy/scripts/test-shopping-cart.sh   shopping-cart-java   maven
-        - shopping-cart/deploy/scripts/delete-shopping-cart.sh shopping-cart-java   maven
-
 stages:
   - test-java-11
   - test-java-8
-  - name: deploy-java8-1of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
-  - name: deploy-java8-2of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
-  - name: deploy-java8-3of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
-  - name: deploy-java11-1of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
-  - name: deploy-java11-2of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
-  - name: deploy-java11-3of3
-    if: env(CP2_PLAY_PASSWORD) IS present # only run the "deploy" stage if the password is present
 
 notifications:
   webhooks:
