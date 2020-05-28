@@ -14,12 +14,12 @@ spec:
   template:
     metadata:
       labels:
-        appName: hello-impl
+        appName: helloworld.GreeterService
         appNameVersion: "hello-impl-v1-0-snapshot"
     spec:
       restartPolicy: Always
       containers:
-        - name: helloworld.GreeterService
+        - name: hello-impl
           image: "hello-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           env:
