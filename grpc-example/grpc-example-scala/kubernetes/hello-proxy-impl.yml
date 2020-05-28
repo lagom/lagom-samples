@@ -1,0 +1,44 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "hello-proxy-impl-v1-0-snapshot"
+  labels:
+    appName: hello-proxy-impl
+    appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+  template:
+    metadata:
+      labels:
+        appName: hello-proxy-impl
+        appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hello-proxy-impl
+          image: "hello-proxy-impl:1.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts: []
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: hello-proxy-impl
+  name: hello-proxy-impl
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    appName: hello-proxy-impl

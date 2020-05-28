@@ -2,10 +2,11 @@
 
 set -exu
 
-sbt docker:publishLocal
+sbt hello-impl/docker:publishLocal
+sbt hello-proxy-impl/docker:publishLocal
 
-kubectl apply -f kubernetes/grpcservice.yml
-kubectl apply -f kubernetes/httptogrpc.yml
+kubectl apply -f kubernetes/hello-impl.yml
+kubectl apply -f kubernetes/hello-proxy-impl.yml
 
 for i in {1..10}
 do
