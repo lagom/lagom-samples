@@ -14,6 +14,8 @@ val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % B
 // TODO remove after upgrade Akka gRPC
 val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
 
+val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "1.0.7"
+
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
@@ -79,6 +81,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
   ).settings(
     libraryDependencies ++= Seq(
+      akkaDiscoveryKubernetesApi,
       lagomScaladslTestKit,
       akkaHttp,
       macwire,
