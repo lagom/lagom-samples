@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: "hello-impl-v1-0-snapshot"
   labels:
-    appName: hello-impl
+    appName: helloworld.GreeterService
     appNameVersion: "hello-impl-v1-0-snapshot"
 spec:
   replicas: 1
@@ -39,7 +39,7 @@ kind: Service
 metadata:
   labels:
     appName: helloworld.GreeterService
-  name: helloworld.GreeterService
+  name: hello-impl
 spec:
   ports:
     - name: http
