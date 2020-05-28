@@ -23,7 +23,7 @@ spec:
           image: "hello-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 11000
               name: http
           volumeMounts: []
       volumes: []
@@ -37,8 +37,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      # should be found by service discovery
+      port: 0
       protocol: TCP
-      targetPort: 8080
+      targetPort: 11000
   selector:
     appName: hello-impl

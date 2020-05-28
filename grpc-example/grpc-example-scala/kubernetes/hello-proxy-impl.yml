@@ -23,7 +23,7 @@ spec:
           image: "hello-proxy-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 9000
               name: http
           volumeMounts: []
       volumes: []
@@ -37,8 +37,8 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      port: 9000
       protocol: TCP
-      targetPort: 8080
+      targetPort: 9000
   selector:
     appName: hello-proxy-impl
