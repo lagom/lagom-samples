@@ -1,0 +1,44 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "hello-impl-v1-0-snapshot"
+  labels:
+    appName: hello-impl
+    appNameVersion: "hello-impl-v1-0-snapshot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appNameVersion: "hello-impl-v1-0-snapshot"
+  template:
+    metadata:
+      labels:
+        appName: hello-impl
+        appNameVersion: "hello-impl-v1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hello-impl
+          image: "hello-impl:1.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts: []
+      volumes: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: hello-impl
+  name: hello-impl
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    appName: hello-impl
