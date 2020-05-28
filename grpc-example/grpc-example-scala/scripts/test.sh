@@ -6,7 +6,8 @@ sbt hello-impl/docker:publishLocal
 sbt hello-proxy-impl/docker:publishLocal
 
 kubectl apply -f kubernetes/hello-impl.yml
-kubectl apply -f kubernetes/hello-proxy-impl.yml
+# let's see if we can make hello-impl.yml start successfully to begin with ;)
+#kubectl apply -f kubernetes/hello-proxy-impl.yml
 
 for i in {1..10}
 do
