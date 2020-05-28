@@ -22,6 +22,12 @@ spec:
         - name: hello-proxy-impl
           image: "hello-proxy-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
+          env:
+            # normally APPLICATION_SECRET would be set from the k8s secret store
+            - name: APPLICATION_SECRET
+              value: "asdf1234"
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=prod-application.conf"
           ports:
             - containerPort: 9000
               name: http

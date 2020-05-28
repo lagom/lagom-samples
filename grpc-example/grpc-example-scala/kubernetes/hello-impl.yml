@@ -22,6 +22,12 @@ spec:
         - name: hello-impl
           image: "hello-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
+          env:
+            # normally APPLICATION_SECRET would be set from the k8s secret store
+            - name: APPLICATION_SECRET
+              value: "asdf1234"
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=prod-application.conf"
           ports:
             - containerPort: 11000
               name: http
@@ -40,6 +46,6 @@ spec:
       # should be found by service discovery - do we need this at all?
       port: 11000
       protocol: TCP
-      targetPort: 11000
+      targetPort: 9000
   selector:
     appName: hello-impl
