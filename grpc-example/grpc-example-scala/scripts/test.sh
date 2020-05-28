@@ -25,12 +25,20 @@ fi
 
 for i in {1..10}
 do
-  REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip):9000/hello/donkey || true`
-  [ "$REPLY" = 'Hello, donkey' ] && break
+  REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip):9000/proxy/rest-hello/donkey || true`
+  [ "$REPLY" = 'Hi, donkey!' ] && break
   sleep 4
 done  
 
 if [ $i -eq 10 ]
+then
+  echo "Got reply '$REPLY' instead of 'Hello, donkey'"
+  kubectl get pods | tail -2 | cut -d " " -f 1 | while read line ; do echo "=== $line ==="; kubectl logs $line ; done
+  exit -1
+fi
+
+REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip):9000/proxy/grpc-hello/donkey`
+if [ ! "$REPLY" = 'Hi, donkey! (gRPC)' ]
 then
   echo "Got reply '$REPLY' instead of 'Hello, donkey'"
   kubectl get pods | tail -2 | cut -d " " -f 1 | while read line ; do echo "=== $line ==="; kubectl logs $line ; done
