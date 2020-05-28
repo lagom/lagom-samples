@@ -19,7 +19,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - name: hello-impl
+        - name: helloworld.GreeterService
           image: "hello-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           env:
@@ -38,8 +38,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    appName: hello-impl
-  name: hello-impl
+    appName: helloworld.GreeterService
+  name: helloworld.GreeterService
 spec:
   ports:
     - name: http
@@ -48,4 +48,4 @@ spec:
       protocol: TCP
       targetPort: 9000
   selector:
-    appName: hello-impl
+    appName: helloworld.GreeterService
