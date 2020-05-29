@@ -71,3 +71,16 @@ spec:
       targetPort: 9000
   selector:
     appName: hello-proxy-impl
+---
+apiVersion: "extensions/v1beta1"
+kind: Ingress
+metadata:
+  name: hello-proxy-impl
+spec:
+  rules:
+    - host: "superservice.com"
+      http:
+        paths:
+          - backend:
+              serviceName: hello-proxy-impl
+              servicePort: 9000

@@ -25,7 +25,7 @@ fi
 
 for i in {1..10}
 do
-  REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip):9000/proxy/rest-hello/donkey || true`
+  REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip)/proxy/rest-hello/donkey || true`
   [ "$REPLY" = 'Hi, donkey!' ] && break
   sleep 4
 done  
@@ -37,7 +37,7 @@ then
   exit -1
 fi
 
-REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip):9000/proxy/grpc-hello/donkey`
+REPLY=`curl --header 'Host: superservice.com' $(sudo -E minikube ip)/proxy/grpc-hello/donkey`
 if [ ! "$REPLY" = 'Hi, donkey! (gRPC)' ]
 then
   echo "Got reply '$REPLY' instead of 'Hello, donkey'"
