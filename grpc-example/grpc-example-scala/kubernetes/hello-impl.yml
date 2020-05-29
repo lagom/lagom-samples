@@ -31,7 +31,7 @@ spec:
             - name: JAVA_OPTS
               value: "-Dconfig.resource=prod-application.conf"
           ports:
-            - containerPort: 11000
+            - containerPort: 9000
               name: http
           volumeMounts: []
       volumes: []
