@@ -85,12 +85,14 @@ jobs:
       script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test stage"
 
     # gRPC Samples
-    - name: "Run tests gRPC example (java)"
-      env: TRAVIS_JDK=8
-      script: "cd grpc-example/grpc-example-java && sbt test stage"
-    - name: "Run tests gRPC example (scala)"
-      env: TRAVIS_JDK=8
-      script: "cd grpc-example/grpc-example-scala && sbt test stage"
+    # Disabled until https://github.com/playframework/play-grpc/issues/253
+    # is resolved
+    #- name: "Run tests gRPC example (java)"
+    #  env: TRAVIS_JDK=8
+    #  script: "cd grpc-example/grpc-example-java && sbt test stage"
+    #- name: "Run tests gRPC example (scala)"
+    #  env: TRAVIS_JDK=8
+    #  script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"
