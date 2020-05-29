@@ -7,6 +7,7 @@ import akka.grpc.GrpcClientSettings
 import akka.grpc.scaladsl.AkkaGrpcClient
 import com.example.hello.api.HelloService
 import com.example.helloproxy.api.HelloProxyService
+import com.lightbend.lagom.scaladsl.akka.discovery.AkkaDiscoveryComponents
 import com.lightbend.lagom.scaladsl.api.ServiceLocator.NoServiceLocator
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.server._
@@ -20,9 +21,7 @@ import scala.concurrent.duration.Duration
 class HelloProxyLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
-    new HelloProxyApplication(context) {
-      override def serviceLocator = NoServiceLocator
-    }
+    new HelloProxyApplication(context) with AkkaDiscoveryComponents
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
     new HelloProxyApplication(context) with LagomDevModeComponents
