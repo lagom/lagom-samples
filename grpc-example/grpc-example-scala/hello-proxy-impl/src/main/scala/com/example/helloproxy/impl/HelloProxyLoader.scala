@@ -39,7 +39,7 @@ abstract class HelloProxyApplication(context: LagomApplicationContext)
 
   private lazy val settings = GrpcClientSettings
     .usingServiceDiscovery(GreeterService.name)
-    .withServicePortName("https")
+    .withServicePortName("http")
     .withDeadline(Duration.create(5, TimeUnit.SECONDS)) // response timeout
     .withConnectionAttempts(5) // use a small reconnectionAttempts value to cause a client reload in case of failure
 
