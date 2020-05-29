@@ -2,24 +2,24 @@
 apiVersion: "apps/v1"
 kind: Deployment
 metadata:
-  name: "hello-proxy-impl-v1-0-snapshot"
+  name: "hello-proxy-v1-0-snapshot"
   labels:
-    appName: hello-proxy-impl
-    appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+    appName: hello-proxy
+    appNameVersion: "hello-proxy-v1-0-snapshot"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+      appNameVersion: "hello-proxy-v1-0-snapshot"
   template:
     metadata:
       labels:
-        appName: hello-proxy-impl
-        appNameVersion: "hello-proxy-impl-v1-0-snapshot"
+        appName: hello-proxy
+        appNameVersion: "hello-proxy-v1-0-snapshot"
     spec:
       restartPolicy: Always
       containers:
-        - name: hello-proxy-impl
+        - name: hello-proxy
           image: "hello-proxy-impl:1.0-SNAPSHOT"
           imagePullPolicy: IfNotPresent
           env:
@@ -61,8 +61,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    appName: hello-proxy-impl
-  name: hello-proxy-impl
+    appName: hello-proxy
+  name: hello-proxy
 spec:
   ports:
     - name: http
@@ -70,17 +70,17 @@ spec:
       protocol: TCP
       targetPort: 9000
   selector:
-    appName: hello-proxy-impl
+    appName: hello-proxy
 ---
 apiVersion: "extensions/v1beta1"
 kind: Ingress
 metadata:
-  name: hello-proxy-impl
+  name: hello-proxy
 spec:
   rules:
     - host: "superservice.com"
       http:
         paths:
           - backend:
-              serviceName: hello-proxy-impl
+              serviceName: hello-proxy
               servicePort: 9000

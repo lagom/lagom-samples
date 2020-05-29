@@ -4,8 +4,8 @@ kind: Deployment
 metadata:
   name: "hello-impl-v1-0-snapshot"
   labels:
-    app: helloworld.GreeterService
-    appName: helloworld.GreeterService
+    app: hello-srvc
+    appName: hello-srvc
     appNameVersion: "hello-impl-v1-0-snapshot"
 spec:
   replicas: 1
@@ -15,8 +15,8 @@ spec:
   template:
     metadata:
       labels:
-        app: helloworld.GreeterService
-        appName: helloworld.GreeterService
+        app: hello-srvc
+        appName: hello-srvc
         appNameVersion: "hello-impl-v1-0-snapshot"
     spec:
       restartPolicy: Always
@@ -40,9 +40,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: helloworld.GreeterService
-    appName: helloworld.GreeterService
-  name: hello-impl
+    app: hello-srvc
+    appName: hello-srvc
+  name: hello-srvc
 spec:
   ports:
     - name: http
@@ -51,4 +51,4 @@ spec:
       protocol: TCP
       targetPort: 9000
   selector:
-    appName: helloworld.GreeterService
+    appName: hello-srvc
