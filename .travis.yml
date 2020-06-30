@@ -8,13 +8,21 @@ if: type != push OR repo != lagom/lagom-samples OR branch IN (1.5.x, 1.6.x)
 env:
   global:
     - TRAVIS_JDK=11
+    - JABBA_HOME=$HOME/.jabba    
 
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
   - rm ~/.m2/settings.xml
-  - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+  - if [ ! -f ~/.jabba/jabba.sh ]; then curl -L -v --retry 5 -o jabba-install.sh https://raw.githubusercontent.com/shyiko/jabba/0.11.2/install.sh && bash jabba-install.sh; fi
+  - . ~/.jabba/jabba.sh
 
-install: jabba install $(jabba ls-remote "adopt@~1.$TRAVIS_JDK.0-0" --latest=patch) && jabba use "$_" && java -Xmx32m -version
+install:
+  # Using ~ makes jabba installs the latest version for that major JDK release
+  - jabba install $(jabba ls-remote "adopt@~1.$TRAVIS_JDK.0-0" --latest=patch)
+  - unset _JAVA_OPTIONS
+  # Using ~ with ls works in a similar way to jabba install described above
+  - export JAVA_HOME="$JABBA_HOME/jdk/$(jabba ls "adopt@~1.${TRAVIS_JDK}.0-0" | head -1)" && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
+
 
 cache:
   directories:
