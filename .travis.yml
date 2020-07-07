@@ -7,7 +7,7 @@ if: type != push OR repo != lagom/lagom-samples OR branch IN (1.5.x, 1.6.x)
 
 env:
   global:
-    - TRAVIS_JDK=11
+    - TRAVIS_JDK=~1.11.0-0
     - JABBA_HOME=$HOME/.jabba    
 
 before_install:
@@ -18,10 +18,10 @@ before_install:
 
 install:
   # Using ~ makes jabba installs the latest version for that major JDK release
-  - jabba install $(jabba ls-remote "adopt@~1.$TRAVIS_JDK.0-0" --latest=patch)
+  - jabba install $(jabba ls-remote "adopt@${TRAVIS_JDK}" --latest=patch)
   - unset _JAVA_OPTIONS
   # Using ~ with ls works in a similar way to jabba install described above
-  - export JAVA_HOME="$JABBA_HOME/jdk/$(jabba ls "adopt@~1.${TRAVIS_JDK}.0-0" | head -1)" && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
+  - export JAVA_HOME="$JABBA_HOME/jdk/$(jabba ls "adopt@${TRAVIS_JDK}" | head -1)" && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
 
 
 cache:
@@ -86,35 +86,35 @@ jobs:
     # Mixed Persistence Samples
     - stage: test-java-8
       name: "Run tests Mixed Persistence (java)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script: "cd mixed-persistence/mixed-persistence-java-sbt && sbt test stage"
     - name: "Run tests Mixed Persistence (scala)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test stage"
 
     # gRPC Samples
     - name: "Run tests gRPC example (java)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=adopt@1.8.0-242
       script: "cd grpc-example/grpc-example-java && sbt test stage"
     - name: "Run tests gRPC example (scala)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=adopt@1.8.0-242
       script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script:
         - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
         - sleep 30s
         - cd shopping-cart/shopping-cart-java && sbt test
     - name: "Run tests Shopping Cart example (java/mvn)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script:
         - docker-compose -f shopping-cart/shopping-cart-java/docker-compose.yml up -d
         - sleep 30s
         - cd shopping-cart/shopping-cart-java && mvn test
     - name: "Run tests Shopping Cart example (scala/sbt)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script:
         - docker-compose -f shopping-cart/shopping-cart-scala/docker-compose.yml up -d
         - sleep 30s
@@ -122,13 +122,13 @@ jobs:
 
     # Couchbase Persistence Samples
     - name: "Run tests Couchbase Persistence (java)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script:
         - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase
         - sleep 30s
         - cd couchbase-persistence/couchbase-persistence-java-mvn && mvn test
     - name: "Run tests Couchbase Persistence (scala)"
-      env: TRAVIS_JDK=8
+      env: TRAVIS_JDK=~1.8.0-0
       script:
         - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase
         - sleep 30s
