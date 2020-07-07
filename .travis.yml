@@ -94,10 +94,10 @@ jobs:
 
     # gRPC Samples
     - name: "Run tests gRPC example (java)"
-      env: TRAVIS_JDK=adopt@1.8.0-242
+      env: TRAVIS_JDK=1.8.0-242
       script: "cd grpc-example/grpc-example-java && sbt test stage"
     - name: "Run tests gRPC example (scala)"
-      env: TRAVIS_JDK=adopt@1.8.0-242
+      env: TRAVIS_JDK=1.8.0-242
       script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
     # Shopping-Cart Samples
