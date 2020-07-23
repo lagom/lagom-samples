@@ -11,6 +11,8 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 val playGrpcRuntime = "com.lightbend.play"      %% "play-grpc-runtime"   % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
+// TODO remove after upgrade Akka gRPC
+val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
 
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
@@ -49,6 +51,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
+      akkaHttp,
       playGrpcRuntime,
       scalaTest,
       lagomGrpcTestkit
@@ -70,6 +73,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   ).settings(
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
+      akkaHttp,
       macwire,
       scalaTest
   ),

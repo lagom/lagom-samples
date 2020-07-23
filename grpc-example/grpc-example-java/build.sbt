@@ -13,7 +13,9 @@ lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
 val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
-val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % "0.7.0" % Test
+val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
+// TODO remove after upgrade Akka gRPC
+val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
@@ -47,6 +49,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   libraryDependencies ++= Seq(
     lagomJavadslTestKit,
     lagomLogback,
+    akkaHttp,
     playGrpcRuntime,
     lagomGrpcTestkit
   )
@@ -68,12 +71,13 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   .settings(
   akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Java),
   akkaGrpcExtraGenerators += PlayJavaClientCodeGenerator,
-).settings(
-  libraryDependencies ++= Seq(
-    lagomJavadslTestKit,
-    lagomLogback
+  ).settings(
+    libraryDependencies ++= Seq(
+      lagomJavadslTestKit,
+      lagomLogback,
+      akkaHttp
+    )
   )
-)
   .dependsOn(`hello-proxy-api`, `hello-api`)
 
 // Documentation for this project:
