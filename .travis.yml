@@ -46,8 +46,10 @@ jobs:
       script: "cd mixed-persistence/mixed-persistence-scala-sbt && sbt test stage"
 
     # gRPC Samples
-    - name: "Run tests gRPC example (java)"
+    - name: "Run tests gRPC example (java/sbt)"
       script: "cd grpc-example/grpc-example-java && sbt test stage"
+    - name: "Run tests gRPC example (java/Maven)"
+      script: "cd grpc-example/grpc-example-java && mvn test"
     - name: "Run tests gRPC example (scala)"
       script: "cd grpc-example/grpc-example-scala && sbt test stage"
 
