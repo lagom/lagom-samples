@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stream-api</artifactId>
+    <artifactId>hello-proxy-api</artifactId>
 
     <packaging>jar</packaging>
 

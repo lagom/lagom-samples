@@ -9,14 +9,14 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stream-impl</artifactId>
+    <artifactId>hello-proxy-impl</artifactId>
 
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>stream-api</artifactId>
+            <artifactId>hello-proxy-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -68,7 +68,6 @@
             <version>${akka.http.version}</version>
         </dependency>
 
-
     </dependencies>
 
     <build>
@@ -90,6 +89,7 @@
                     <generateClient>true</generateClient>
                     <generateServer>true</generateServer>
                     <extraGenerators>
+                        <extraGenerator>play.grpc.gen.javadsl.PlayJavaServerCodeGenerator</extraGenerator>
                         <extraGenerator>play.grpc.gen.javadsl.PlayJavaClientCodeGenerator</extraGenerator>
                     </extraGenerators>
                 </configuration>
