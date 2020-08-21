@@ -30,14 +30,6 @@
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-persistence-cassandra_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-kafka-client_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-logback_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>

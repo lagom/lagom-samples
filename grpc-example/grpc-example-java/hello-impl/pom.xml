@@ -25,10 +25,6 @@
         </dependency>
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-persistence-cassandra_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-logback_${scala.binary.version}</artifactId>
         </dependency>
         <dependency>
@@ -41,10 +37,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.lightbend.lagom</groupId>
-            <artifactId>lagom-javadsl-kafka-broker_${scala.binary.version}</artifactId>
-        </dependency>
-       <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>

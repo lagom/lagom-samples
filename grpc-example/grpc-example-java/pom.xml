@@ -32,6 +32,10 @@
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-maven-plugin</artifactId>
                 <version>${lagom.version}</version>
+                <configuration>
+                    <kafkaEnabled>false</kafkaEnabled>
+                    <cassandraEnabled>false</cassandraEnabled>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
