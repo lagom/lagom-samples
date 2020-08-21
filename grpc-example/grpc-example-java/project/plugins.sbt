@@ -1,5 +1,5 @@
 enablePlugins(BuildInfoPlugin)
-val playGrpcV = "0.8.1"
+val playGrpcV = "0.8.2"
 buildInfoKeys := Seq[BuildInfoKey]("playGrpcVersion" -> playGrpcV)
 buildInfoPackage := "lagom.java.grpc.sample"
 
@@ -7,5 +7,5 @@ buildInfoPackage := "lagom.java.grpc.sample"
 addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.6.3")
 
 // Akka GRPC
-addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.7.3")
+addSbtPlugin("com.lightbend.akka.grpc" %% "sbt-akka-grpc" % "0.8.4")
 libraryDependencies += "com.lightbend.play" %% "play-grpc-generators" % playGrpcV
