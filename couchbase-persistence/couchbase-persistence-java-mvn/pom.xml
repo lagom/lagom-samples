@@ -93,7 +93,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.12</scala.binary.version>
-        <lagom.version>1.6.3</lagom.version>
+        <lagom.version>1.6.4</lagom.version>
         <!--#couchbase-begin-->
         <couchbase.persistence.version>1.0</couchbase.persistence.version>
         <!--#couchbase-end-->
