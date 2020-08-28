@@ -11,7 +11,6 @@ import static com.lightbend.lagom.javadsl.api.Service.*;
 public interface HelloProxyService extends Service {
 
     ServiceCall<NotUsed, String> proxyViaHttp(String id);
-
     ServiceCall<NotUsed, String> proxyViaGrpc(String id);
 
     default Descriptor descriptor() {

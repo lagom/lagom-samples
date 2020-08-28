@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.lightbend.play</groupId>
             <artifactId>play-grpc-runtime_${scala.binary.version}</artifactId>
-            <version>0.8.2</version>
+            <version>${play.grpc.version}</version>
         </dependency>
 
         <dependency>
@@ -69,6 +69,7 @@
                 <artifactId>lagom-maven-plugin</artifactId>
                 <configuration>
                     <lagomService>true</lagomService>
+                    <serviceEnableSsl>true</serviceEnableSsl>
                 </configuration>
             </plugin>
 
