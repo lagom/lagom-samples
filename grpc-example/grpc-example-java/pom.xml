@@ -76,8 +76,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.12</scala.binary.version>
-        <lagom.version>1.6.3</lagom.version>
-        <play.version>2.8.2</play.version>
+        <lagom.version>1.6.4</lagom.version>
+        <play.version>2.8.1</play.version>
         <akka.http.version>10.1.12</akka.http.version>
         <akka.grpc.version>0.8.4</akka.grpc.version>
         <play.grpc.version>0.8.2</play.grpc.version>
