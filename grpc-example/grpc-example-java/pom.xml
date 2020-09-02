@@ -82,6 +82,6 @@
         <akka.grpc.version>0.8.4</akka.grpc.version>
         <play.grpc.version>0.8.2</play.grpc.version>
 
-        <hello-impl.https.port>11011</hello-impl.https.port>
+        <hello-impl.https.port>11000</hello-impl.https.port>
     </properties>
 </project>

@@ -44,13 +44,13 @@
         <dependency>
             <groupId>com.lightbend.play</groupId>
             <artifactId>play-grpc-runtime_${scala.binary.version}</artifactId>
-            <version>0.8.2</version>
+            <version>${play.grpc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.lightbend.play</groupId>
             <artifactId>lagom-javadsl-grpc-testkit_${scala.binary.version}</artifactId>
-            <version>0.8.2</version>
+            <version>${play.grpc.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -105,6 +105,7 @@
                 <configuration>
                     <lagomService>true</lagomService>
                     <serviceHttpsPort>${hello-impl.https.port}</serviceHttpsPort>
+                    <serviceAddress>127.0.0.1</serviceAddress>
                     <serviceEnableSsl>true</serviceEnableSsl>
                 </configuration>
             </plugin>
