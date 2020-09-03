@@ -2,6 +2,8 @@
 
 set -exu
 
+eval $(minikube -p minikube docker-env)
+
 sbt hello-impl/docker:publishLocal
 sbt hello-proxy-impl/docker:publishLocal
 
