@@ -17,6 +17,12 @@ val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
 
+def dockerSettings = Seq(
+  dockerUpdateLatest := true,
+  dockerBaseImage := "adoptopenjdk/openjdk8",
+  dockerUsername := sys.props.get("docker.username"),
+  dockerRepository := sys.props.get("docker.registry")
+)
 
 // ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
 def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
@@ -57,6 +63,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
       lagomGrpcTestkit
     )
   ).settings(lagomForkedTestSettings: _*)
+  .settings(dockerSettings)
   .dependsOn(`hello-api`)
 
 lazy val `hello-proxy-api` = (project in file("hello-proxy-api"))
@@ -72,6 +79,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
   ).settings(
     libraryDependencies ++= Seq(
+      lagomScaladslAkkaDiscovery,
       lagomScaladslTestKit,
       akkaHttp,
       macwire,
@@ -81,6 +89,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   // workaround for akka discovery method lookup in dev-mode
   lagomDevSettings := Seq("akka.discovery.method" -> "lagom-dev-mode")
 )
+  .settings(dockerSettings)
   .dependsOn(`hello-proxy-api`, `hello-api`)
 
 

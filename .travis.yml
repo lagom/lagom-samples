@@ -1,5 +1,9 @@
 version: ~> 1.0
 language: scala
+addons:
+  apt:
+    packages:
+    - conntrack
 
 # Only build non-pushes (so PRs, API requests & cron jobs) OR forks OR main branch builds
 # https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
@@ -52,6 +56,8 @@ jobs:
       script: "cd grpc-example/grpc-example-java && mvn test"
     - name: "Run tests gRPC example (scala)"
       script: "cd grpc-example/grpc-example-scala && sbt test stage"
+    - name: "Run integration tests gRPC example (scala)"
+      script: "cd grpc-example/grpc-example-scala && ./scripts/setup-minikube-for-linux.sh && ./scripts/test.sh "
 
     # Shopping-Cart Samples
     - name: "Run tests Shopping Cart example (java/sbt)"

@@ -1,0 +1,86 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: "hello-proxy-v1-0-snapshot"
+  labels:
+    appName: hello-proxy
+    appNameVersion: "hello-proxy-v1-0-snapshot"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appNameVersion: "hello-proxy-v1-0-snapshot"
+  template:
+    metadata:
+      labels:
+        appName: hello-proxy
+        appNameVersion: "hello-proxy-v1-0-snapshot"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: hello-proxy
+          image: "hello-proxy-impl:1.0-SNAPSHOT"
+          imagePullPolicy: IfNotPresent
+          env:
+            # normally APPLICATION_SECRET would be set from the k8s secret store
+            - name: APPLICATION_SECRET
+              value: "asdf1234"
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=prod-application.conf"
+          ports:
+            - containerPort: 9000
+              name: http
+          volumeMounts: []
+      volumes: []
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+subjects:
+# Note the `name` line below. The first default refers to the namespace. The second refers to the service account name.
+# For instance, `name: system:serviceaccount:myns:default` would refer to the default service account in namespace `myns`
+- kind: User
+  name: system:serviceaccount:default:default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    appName: hello-proxy
+  name: hello-proxy
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    appName: hello-proxy
+---
+apiVersion: "extensions/v1beta1"
+kind: Ingress
+metadata:
+  name: hello-proxy
+spec:
+  rules:
+    - host: "superservice.com"
+      http:
+        paths:
+          - backend:
+              serviceName: hello-proxy
+              servicePort: 9000
