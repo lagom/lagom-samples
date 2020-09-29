@@ -1,12 +1,14 @@
 package com.example.hello.impl
 
-import akka.stream.Materializer
+import akka.actor.ActorSystem
 import com.example.hello.api._
 import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
 import com.lightbend.lagom.scaladsl.testkit.grpc.AkkaGrpcClientHelpers
 import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloRequest }
-import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
@@ -16,7 +18,7 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
     new HelloApplication(ctx) with LocalServiceLocator
   }
   
-  implicit val mat: Materializer = server.materializer
+  implicit val sys: ActorSystem = server.actorSystem
 
   val client: HelloService = server.serviceClient.implement[HelloService]
   val grpcClient: GreeterServiceClient = AkkaGrpcClientHelpers.grpcClient(

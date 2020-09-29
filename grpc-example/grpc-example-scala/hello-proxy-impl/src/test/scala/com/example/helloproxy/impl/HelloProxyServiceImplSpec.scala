@@ -13,7 +13,9 @@ import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloReply, HelloRequest }
-import org.scalatest.{ AsyncWordSpec, BeforeAndAfterAll, Matchers }
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
 import scala.collection.immutable
 import scala.concurrent.duration.FiniteDuration

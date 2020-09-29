@@ -7,7 +7,7 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Java version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.10"
+scalaVersion in ThisBuild := "2.12.12"
 
 lagomServiceEnableSsl in ThisBuild := true
 val `hello-impl-HTTPS-port` = 11000
