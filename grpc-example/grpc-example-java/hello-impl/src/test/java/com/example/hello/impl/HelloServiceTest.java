@@ -1,5 +1,6 @@
 package com.example.hello.impl;
 
+import akka.grpc.GrpcClientSettings;
 import com.example.hello.api.HelloService;
 import com.lightbend.lagom.javadsl.testkit.grpc.AkkaGrpcClientHelpers;
 import example.myapp.helloworld.grpc.GreeterServiceClient;
@@ -43,4 +44,26 @@ public class HelloServiceTest {
                     });
         });
     }
+
+    /**
+     * Illustrate deliberate use of the gRPC client without TLS.
+     */
+    @Test
+    public void shouldSayHelloUsingGrpcNoSsl() throws Exception {
+        withServer(defaultSetup(), server -> {
+            GrpcClientSettings settings = GrpcClientSettings
+                    .connectToServiceAt("127.0.0.1", server.port(), server.system())
+                    .withTls(false);
+            GreeterServiceClient serviceClient = GreeterServiceClient.create(settings, server.system());
+
+            HelloRequest request =
+                    HelloRequest.newBuilder().setName("Steve").build();
+            HelloReply reply = serviceClient
+                    .sayHello(request)
+                    .toCompletableFuture()
+                    .get(5, SECONDS);
+            assertEquals("Hi Steve (gRPC)", reply.getMessage());
+        });
+    }
+
 }
