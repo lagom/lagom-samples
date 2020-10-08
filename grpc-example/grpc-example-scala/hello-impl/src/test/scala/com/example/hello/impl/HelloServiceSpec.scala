@@ -48,5 +48,13 @@ class HelloServiceSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
         }
     }
 
+    "say hello over gRPC with an extra header" in {
+      grpcClient
+        .sayHello().addHeader("sender", "spec").invoke(HelloRequest("Alice"))
+        .map{
+          _.message should be ("Hi Alice! (gRPC)")
+        }
+    }
+
   }
 }
