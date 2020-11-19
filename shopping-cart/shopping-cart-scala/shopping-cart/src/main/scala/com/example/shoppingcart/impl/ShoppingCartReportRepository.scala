@@ -25,7 +25,7 @@ class ShoppingCartReportRepository(database: Database) {
 
     def checkoutDate = column[Option[Instant]]("checkout_date")
 
-    def * = (cartId, creationDate, checkoutDate) <> ((ShoppingCartReport.apply _).tupled, ShoppingCartReport.unapply)
+    def * = (cartId, creationDate, checkoutDate).mapTo[ShoppingCartReport]
   }
 
   val reportTable = TableQuery[ShoppingCartReportTable]

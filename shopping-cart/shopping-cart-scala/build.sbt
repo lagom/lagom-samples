@@ -3,7 +3,7 @@ import com.lightbend.lagom.core.LagomVersion
 organization in ThisBuild := "com.example"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.13.1"
+scalaVersion in ThisBuild := "2.13.3"
 
 val postgresDriver             = "org.postgresql"               % "postgresql"                                     % "42.2.8"
 val macwire                    = "com.softwaremill.macwire"     %% "macros"                                        % "2.3.3" % "provided"
