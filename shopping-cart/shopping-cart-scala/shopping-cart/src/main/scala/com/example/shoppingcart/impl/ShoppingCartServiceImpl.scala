@@ -91,11 +91,10 @@ class ShoppingCartServiceImpl(
       persistentEntityRegistry
         .eventStream(tag, fromOffset)
         .filter(_.event.isInstanceOf[CartCheckedOut])
-        .mapAsync(4) {
-          case EventStreamElement(id, _, offset) =>
-            entityRef(id)
-              .ask(reply => Get(reply))
-              .map(cart => convertShoppingCart(id, cart) -> offset)
+        .mapAsync(4) { case EventStreamElement(id, _, offset) =>
+          entityRef(id)
+            .ask(reply => Get(reply))
+            .map(cart => convertShoppingCart(id, cart) -> offset)
         }
   }
 

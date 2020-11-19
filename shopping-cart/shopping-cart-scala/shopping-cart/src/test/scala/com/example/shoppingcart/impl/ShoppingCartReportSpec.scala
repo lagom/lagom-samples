@@ -21,7 +21,12 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class ShoppingCartReportSpec extends AnyWordSpec with BeforeAndAfterAll with Matchers with ScalaFutures with OptionValues {
+class ShoppingCartReportSpec
+    extends AnyWordSpec
+    with BeforeAndAfterAll
+    with Matchers
+    with ScalaFutures
+    with OptionValues {
 
   import ShoppingCart._
 
