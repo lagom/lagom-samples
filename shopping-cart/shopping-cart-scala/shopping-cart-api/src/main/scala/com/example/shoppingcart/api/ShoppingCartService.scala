@@ -146,4 +146,8 @@ final case class ShoppingCartReport(cartId: String, creationDate: Instant, check
 
 object ShoppingCartReport {
   implicit val format: Format[ShoppingCartReport] = Json.format
+
+  // For case classes with hand-written companion objects, .tupled only works if
+  // you manually extend the correct Scala function type. See SI-3664 and SI-4808.
+  def tupled(t: (String, Instant, Option[Instant])) = ShoppingCartReport(t._1, t._2, t._3)
 }

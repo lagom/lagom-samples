@@ -149,7 +149,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.8</version>
+                <version>42.2.18</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -204,7 +204,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lagom.version>1.6.4</lagom.version>
         <scala.binary.version>2.13</scala.binary.version>
-        <akka.management.version>1.0.3</akka.management.version>
+        <akka.management.version>1.0.9</akka.management.version>
         <hamcrest.version>2.1</hamcrest.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
 

@@ -134,7 +134,7 @@ final case class ShoppingCart(items: Map[String, Int], checkedOutTime: Option[In
 
   import ShoppingCart._
 
-  def isOpen: Boolean = checkedOutTime.isEmpty
+  def isOpen: Boolean     = checkedOutTime.isEmpty
   def checkedOut: Boolean = !isOpen
 
   //The shopping cart behavior changes if it's checked out or not. The command handles are different for each case.
