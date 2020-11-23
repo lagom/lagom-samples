@@ -79,6 +79,8 @@
         <lagom.version>1.6.4</lagom.version>
         <play.version>2.8.1</play.version>
         <akka.http.version>10.1.13</akka.http.version>
+        <play.version>2.8.5</play.version>
+        <akka.http.version>10.2.1</akka.http.version>
         <akka.grpc.version>1.0.2</akka.grpc.version>
         <play.grpc.version>0.9.1</play.grpc.version>
 
