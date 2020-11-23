@@ -32,10 +32,48 @@
             <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-logback_${scala.binary.version}</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>build-link</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-exceptions</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-guice_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-java_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-akka-http-server_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-server_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-streams_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>com.lightbend.lagom</groupId>
             <artifactId>lagom-javadsl-testkit_${scala.binary.version}</artifactId>
