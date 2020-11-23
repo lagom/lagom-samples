@@ -14,8 +14,31 @@ val `hello-impl-HTTPS-port` = 11000
 
 val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
-// TODO remove after upgrade Akka gRPC
-val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
+
+
+val akkaHttpVersion = "10.2.1"
+val playVersion = "2.8.5"
+
+val akkaHttpOverrides = Seq(
+  "akka-http2-support",
+  "akka-http-core",
+  "akka-http",
+  "akka-parsing",
+  "akka-http-spray-json"
+).map(
+artifactId => "com.typesafe.akka" %% artifactId % akkaHttpVersion
+)
+
+val playOverrides = Seq(
+ "play",
+ "play-akka-http-server",
+ "play-server",
+ "play-ws",
+ "play-ahc-ws",
+)
+  .map(
+    artifactId => "com.typesafe.play" %% artifactId % playVersion
+  )
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
@@ -49,10 +72,9 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   libraryDependencies ++= Seq(
     lagomJavadslTestKit,
     lagomLogback,
-    akkaHttp,
     playGrpcRuntime,
     lagomGrpcTestkit
-  )
+  ) ++ akkaHttpOverrides ++ playOverrides
 ).settings(lagomForkedTestSettings: _*)
   .dependsOn(`hello-api`)
 
@@ -74,9 +96,8 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   ).settings(
     libraryDependencies ++= Seq(
       lagomJavadslTestKit,
-      lagomLogback,
-      akkaHttp
-    )
+      lagomLogback
+    )++ akkaHttpOverrides ++ playOverrides
   )
   .dependsOn(`hello-proxy-api`, `hello-api`)
 
