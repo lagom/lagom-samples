@@ -15,6 +15,9 @@
   <!-- Set logging for all Lagom library classes to INFO -->
   <logger name="com.lightbend.lagom" level="INFO" />
 
+  <logger name="io.grpc" level="INFO"/>
+  <logger name="io.perfmark.PerfMark" level="INFO"/>
+  
   <root level="debug">
     <appender-ref ref="STDOUT" />
   </root>
