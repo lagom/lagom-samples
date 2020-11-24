@@ -75,6 +75,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
     libraryDependencies ++= Seq(
       lagomJavadslTestKit,
       lagomLogback,
+      playGrpcRuntime,
       akkaHttp
     )
   )
