@@ -1,13 +1,13 @@
 # Lagom gRPC Example (Scala)
 
 [Lagom](https://www.lagomframework.com/) is an open source framework (built on [Akka](https://akka.io/) and [Play](https://www.playframework.com/)) for developing reactive microservice systems in Java or Scala.
-[Akka gRPC](https://developer.lightbend.com/docs/akka-grpc/current/overview.html) is a toolkit for building streaming gRPC servers and clients on top of Akka Streams.
+[Akka gRPC](https://developer.lightbend.com/docs/akka-grpc/current/overview.html) and [Play gRPC](https://developer.lightbend.com/docs/play-grpc/current/) are toolkits for building streaming gRPC servers and clients on top of Akka Streams and Play.
 
 This Guide will show you how to use Akka gRPC as an alternate RPC library to communicate two microservices developed using Lagom.
 
-## Downloading the example.
+## Downloading the example
 
-The Lagom gRPC Example is the [Lagom Samples GitHub repository](https://github.com/lagom/lagom-samples) that you can clone locally:
+The Lagom gRPC Example is in the [Lagom Samples GitHub repository](https://github.com/lagom/lagom-samples) that you can clone locally:
 
 ```bash
 git clone https://github.com/lagom/lagom-samples.git
@@ -16,29 +16,18 @@ cd grpc-example/grpc-example-scala
 
 ## Running the example
 
-Using gRPC in Lagom requires adding a Java Agent to the runtime. In order to handle this setting we provide a script that will
-download the ALPN Java Agent and start an interactive `sbt` console properly set up. Use the `ssl-lagom`
-script:
+You can run it like any Lagom application.
 
-```
-./ssl-lagom
-```
-
-The first time you run the script it will take some time to resolve and download some dependencies. Once
-ready you'll be at the `sbt` console. Use the `runAll` command to start the Lagom gRPC Example:
-
-```
-sbt:lagom-scala-grpc-example> runAll
+```bash
+sbt runAll
 ```
 
 The `runAll` command starts Lagom in development mode. Once all the services are started you will see Lagom's start message:
 
-```
+```bash
 ...
-[info] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-[info] Service hello-proxy-impl listening for HTTPS on 127.0.0.1:65108
-[info] Service hello-impl listening for HTTP on 127.0.0.1:65499
-[info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
+[INFO] Service hello-impl listening for HTTP on 127.0.0.1:11000
+[INFO] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
 [info] (Services started, press enter to stop and go back to the console...)
 ```
 
@@ -52,12 +41,11 @@ $ curl http://localhost:9000/proxy/grpc-hello/Steve
 Hi Steve! (gRPC)
 ```
 
-
 ## Application Structure
 
 This application is built with two Lagom services (`hello` and `hello-proxy`) exposing the following endpoints:
 
-```
+```bash
 GET /proxy/rest-hello/:id    # served by hello-proxy-service (HTTP-JSON)
 GET /proxy/grpc-hello/:id    # served by hello-proxy-service (HTTP-JSON)
 GET /api/hello/:id           # served by hello-service (HTTP-JSON)
@@ -65,7 +53,7 @@ GET /api/hello/:id           # served by hello-service (HTTP-JSON)
 
 And also
 
-```
+```bash
   /helloworld.GreetingsService/sayHello   # served by hello-service (gRPC)
 ```
 
@@ -78,64 +66,61 @@ values the `hello-proxy` always forwards the request downstream to `hello-servic
 
 So when you invoke:
 
-```
+```bash
 $ curl http://localhost:9000/proxy/rest-hello/Alice
 ```
 
 The following happens:
 
-```
+```bash
  curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(http)-->  hello-service
 ```
 
 Alternatively:
 
-```
+```bash
 $ curl http://localhost:9000/proxy/grpc-hello/Alice
 ```
 
 The following happens
 
-```
+```bash
  curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(gRPC/https)-->  hello-service
 ```
 
 ## Testing the gRPC endpoints
 
 The gRPC endpoints are not accessible via the Lagom Service Gateway so it's only possible to consume them from
-another Lagom service or pointing a client directly to the `https - HTTP/2` port of the Lagom Service. Earlier we
+another Lagom service or pointing a client directly to the `HTTP/2` port of the Lagom Service. Earlier we
 saw that Lagom informs of the following bindings:
 
-```
+```bash
 ...
-[info] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-[info] Service hello-proxy-impl listening for HTTPS on 127.0.0.1:65108
-[info] Service hello-impl listening for HTTP on 127.0.0.1:65499
-[info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
+[INFO] Service hello-impl listening for HTTP on 127.0.0.1:11000
+[INFO] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
 [info] (Services started, press enter to stop and go back to the console...)
 ```
 
-You can test the gRPC endpoint using [grpcc](https://github.com/njpatel/grpcc). Because Lagom uses self-signed
-certificates, you will have to export and trust the CA certificate:
+You can test the gRPC endpoint using [gRPCurl](https://github.com/fullstorydev/grpcurl).
+Note that for simplicity, this sample is disabling TLS, therefore it's possbile to call the `HTTP/2` endpoint without using https.
 
 ```bash
-keytool -export -alias sslconfig-selfsigned  -keystore target/dev-mode/selfsigned.keystore  -storepass "" -file trustedCA.crt
-openssl x509 -in  trustedCA.crt -out trustedCA.pem -inform DER -outform PEM
-```
-
-Once the CA certificate is extracted we can use `grpcc` to test the application:
-
-```bash
-$   grpcc --proto hello-impl/src/main/protobuf/helloworld.proto \
-          --address localhost:11000 \
-          --eval 'client.sayHello({name:"Katherine"}, printReply)' \
-          --root_cert ./trustedCA.pem
+$   grpcurl --proto hello-impl/src/main/protobuf/helloworld.proto \
+          -d '{"name": "Katherine" }' \
+          -plaintext 127.0.0.1:11000   \
+          helloworld.GreeterService.SayHello
  {
    "message": "Hi Katherine! (gRPC)"
  }
 ```
 
 The command above:
- 1. uses the gRPC description on `hello-impl/src/main/protobuf/helloworld.proto`,
- 1. connects to the `hello-impl` service using `https` at `localhost:11000` (trusting the CA used to build the `localhost:11000` certificate), and
- 1. sends a gRPC call `client.sayHello({name:"Katherine"},...)` (`grpcc` requires registering a callback, in this case `printReply` to send the response to the `stdout`).
+
+1. Uses the gRPC description on `hello-impl/src/main/protobuf/helloworld.proto`
+1. Connects to the `hello-impl` service at `127.0.0.1:11000` using plaintext over `http`.
+1. Sends a gRPC call `helloworld.GreeterService.SayHello` with `{"name": "Katherine" }` payload.
+
+## References
+
+- [Akka gRPC](https://developer.lightbend.com/docs/akka-grpc/current/)
+- [Play gRPC](https://developer.lightbend.com/docs/play-grpc/current/)
