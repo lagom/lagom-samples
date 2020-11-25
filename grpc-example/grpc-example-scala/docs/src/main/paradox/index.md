@@ -85,7 +85,7 @@ $ curl http://localhost:9000/proxy/grpc-hello/Alice
 The following happens
 
 ```bash
- curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(gRPC/https)-->  hello-service
+ curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(gRPC/http)-->  hello-service
 ```
 
 ## Testing the gRPC endpoints
