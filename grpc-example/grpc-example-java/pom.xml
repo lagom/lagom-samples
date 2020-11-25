@@ -36,7 +36,7 @@
                     <kafkaEnabled>false</kafkaEnabled>
                     <cassandraEnabled>false</cassandraEnabled>
                     <unmanagedServices>
-                        <helloworld.GreeterService>https://127.0.0.1:${hello-impl.https.port}</helloworld.GreeterService>
+                        <helloworld.GreeterService>http://127.0.0.1:${hello-impl.http.port}</helloworld.GreeterService>
                     </unmanagedServices>
                 </configuration>
             </plugin>
@@ -82,6 +82,6 @@
         <akka.grpc.version>1.0.2</akka.grpc.version>
         <play.grpc.version>0.9.1</play.grpc.version>
 
-        <hello-impl.https.port>11000</hello-impl.https.port>
+        <hello-impl.http.port>11000</hello-impl.http.port>
     </properties>
 </project>

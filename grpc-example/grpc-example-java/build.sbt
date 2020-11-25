@@ -9,9 +9,7 @@ version in ThisBuild := "1.0-SNAPSHOT"
 // the Java version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.12.12"
 
-lagomServiceEnableSsl in ThisBuild := true
-val `hello-impl-HTTPS-port` = 11000
-
+val `hello-impl-HTTP-port` = 11000
 val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
 // TODO remove after upgrade Akka gRPC
@@ -44,7 +42,7 @@ lazy val `hello-impl` = (project in file("hello-impl"))
 
   // WORKAROUND: Lagom still can't register a service under the gRPC name so we hard-code
   // the port and the use the value to add the entry on the Service Registry
-  lagomServiceHttpsPort := `hello-impl-HTTPS-port`,
+  lagomServiceHttpPort := `hello-impl-HTTP-port`,
 
   libraryDependencies ++= Seq(
     lagomJavadslTestKit,
@@ -92,9 +90,8 @@ lagomKafkaEnabled in ThisBuild := false
 
 // This adds an entry on the LagomDevMode Service Registry. With this information on
 // the Service Registry a client using Service Discovery to Lookup("helloworld.GreeterService")
-// will get "https://localhost:11000" and then be able to send a request.
-// See declaration and usages of `hello-impl-HTTPS-port`.
-lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"https://localhost:${`hello-impl-HTTPS-port`}")
+// will get "http://localhost:11000" and then be able to send a request.
+lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http://127.0.0.1:${`hello-impl-HTTP-port`}")
 
 
 def common = Seq(

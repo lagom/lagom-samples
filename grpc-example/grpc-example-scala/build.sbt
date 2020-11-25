@@ -14,21 +14,13 @@ val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-scaladsl-grpc-testkit" % B
 // TODO remove after upgrade Akka gRPC
 val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
 
-lagomServiceEnableSsl in ThisBuild := true
-val `hello-impl-HTTPS-port` = 11000
+val `hello-impl-HTTP-port` = 11000
 
 def dockerSettings = Seq(
   dockerUpdateLatest := true,
   dockerBaseImage := "adoptopenjdk/openjdk8",
   dockerUsername := sys.props.get("docker.username"),
   dockerRepository := sys.props.get("docker.registry")
-)
-
-// ALL SETTINGS HERE ARE TEMPORARY WORKAROUNDS FOR KNOWN ISSUES OR WIP
-def workaroundSettings: Seq[sbt.Setting[_]] = Seq(
-  // Lagom still can't register a service under the gRPC name so we hard-code 
-  // the port and use the value to add the entry on the Service Registry
-  lagomServiceHttpsPort := `hello-impl-HTTPS-port`
 )
 
 lazy val `lagom-scala-grpc-example` = (project in file("."))
@@ -51,9 +43,11 @@ lazy val `hello-impl` = (project in file("hello-impl"))
         AkkaGrpc.Client // the client is only used in tests. See https://github.com/akka/akka-grpc/issues/410
       ),
     akkaGrpcExtraGenerators in Compile += PlayScalaServerCodeGenerator,
-  ).settings(
-    workaroundSettings:_*
-  ).settings(
+    
+    // WORKAROUND: Lagom still can't register a service under the gRPC name so we hard-code
+    // the port and the use the value to add the entry on the Service Registry
+    lagomServiceHttpPort := `hello-impl-HTTP-port`,
+
     libraryDependencies ++= Seq(
       lagomScaladslTestKit,
       macwire,
@@ -81,6 +75,7 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
     libraryDependencies ++= Seq(
       lagomScaladslAkkaDiscovery,
       lagomScaladslTestKit,
+      playGrpcRuntime,
       akkaHttp,
       macwire,
       scalaTest
@@ -101,12 +96,10 @@ lagomKafkaEnabled in ThisBuild := false
 
 // This adds an entry on the LagomDevMode Service Registry. With this information on
 // the Service Registry a client using Service Discovery to Lookup("helloworld.GreeterService")
-// will get "https://localhost:11000" and then be able to send a request.
-// See declaration and usages of `hello-impl-HTTPS-port`.
-lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"https://localhost:${`hello-impl-HTTPS-port`}")
+// will get "http://127.0.0.1:11000" and then be able to send a request.
+lagomUnmanagedServices in ThisBuild := Map("helloworld.GreeterService" -> s"http://127.0.0.1:${`hello-impl-HTTP-port`}")
 
 //----------------------------------
-
 
 // Documentation for this project:
 //    sbt "project docs" "~ paradox"
