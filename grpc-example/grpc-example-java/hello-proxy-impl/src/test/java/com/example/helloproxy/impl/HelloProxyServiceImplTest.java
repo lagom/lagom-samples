@@ -32,8 +32,6 @@ public class HelloProxyServiceImplTest {
     @BeforeClass
     public static void setUp() {
         ServiceTest.Setup setup = defaultSetup()
-            .withCluster(false)
-            .withSsl(false)
             .configureBuilder(builder ->
                 builder
                     .disable(AkkaGrpcClientModule.class)
