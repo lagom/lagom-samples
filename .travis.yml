@@ -13,6 +13,7 @@ env:
   global:
     - TRAVIS_JDK=11
     - JABBA_HOME=$HOME/.jabba    
+    - RUN_DROP_TRAVIS_CACHES_STAGE=true
 
 before_install:
   # See https://github.com/travis-ci/travis-ci/issues/4629#issuecomment-239493916
@@ -42,6 +43,17 @@ before_cache:
 
 jobs:
   include:
+
+    - stage: drop-travis-caches
+      # Introduced 2020-10-19 as we noticed serious problems with Travis' caching
+      script:
+        - rm -rf $HOME/.cache/coursier
+        - rm -rf $HOME/.ivy2/cache
+        - rm -rf $HOME/.jabba
+        - rm -rf $HOME/.sbt
+        - rm -rf $HOME/.m2/repository
+      name: "drop-travis-caches"
+
     # Mixed Persistence Samples
     - stage: test-java-11
       name: "Run tests Mixed Persistence (java)"
@@ -141,10 +153,18 @@ jobs:
         - docker-compose -f couchbase-persistence/docker/docker-compose.yml up -d couchbase
         - sleep 30s
         - "cd couchbase-persistence/couchbase-persistence-scala-sbt && sbt test stage"
+    
 
 stages:
-  - test-java-11
-  - test-java-8
+  - name: drop-travis-caches
+    # to drop caches trigger a custom build with
+    # env:
+    #   global:
+    #     - RUN_DROP_TRAVIS_CACHES_STAGE=true
+    if: env(RUN_DROP_TRAVIS_CACHES_STAGE) = true
+  - name: test-java-11
+  - name: test-java-8
+  
 
 notifications:
   webhooks:
