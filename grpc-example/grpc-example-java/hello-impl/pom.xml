@@ -40,86 +40,70 @@
         <dependency>
             <groupId>com.lightbend.play</groupId>
             <artifactId>play-grpc-runtime_${scala.binary.version}</artifactId>
-            <version>${play.grpc.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.lightbend.play</groupId>
             <artifactId>lagom-javadsl-grpc-testkit_${scala.binary.version}</artifactId>
-            <version>${play.grpc.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>build-link</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-exceptions</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-guice_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-java_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-akka-http-server_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-server_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-streams_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-akka-http2-support_${scala.binary.version}</artifactId>
-            <version>${play.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-http2-support_${scala.binary.version}</artifactId>
-            <version>${akka.http.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-http-core_${scala.binary.version}</artifactId>
-            <version>${akka.http.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-http_${scala.binary.version}</artifactId>
-            <version>${akka.http.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-parsing_${scala.binary.version}</artifactId>
-            <version>${akka.http.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-http-spray-json_${scala.binary.version}</artifactId>
-            <version>${akka.http.version}</version>
         </dependency>
 
     </dependencies>
