@@ -69,7 +69,6 @@
                 <artifactId>lagom-maven-plugin</artifactId>
                 <configuration>
                     <lagomService>true</lagomService>
-                    <serviceEnableSsl>true</serviceEnableSsl>
                 </configuration>
             </plugin>
 

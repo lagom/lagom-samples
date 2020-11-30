@@ -17,7 +17,7 @@
 
   <logger name="io.grpc" level="INFO"/>
   <logger name="io.perfmark.PerfMark" level="INFO"/>
-  
+
   <root level="debug">
     <appender-ref ref="STDOUT" />
   </root>
