@@ -16,32 +16,45 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import org.scalatest.wordspec.AnyWordSpecLike
 
-object  ShoppingCartEntitySpec {
-  val testConfig =   ConfigFactory.parseString(
-    """
-      |
-      |akka.actor {
-      |  serialization-bindings {
-      |    # Commands won't use play-json but Akka's jackson support.
-      |    # See https://doc.akka.io/docs/akka/2.6/serialization-jackson.html
-      |    "com.example.shoppingcart.impl.ShoppingCart$CommandSerializable" = jackson-json
-      |  }
-      |}
-      |
-      |akka.actor {
-      |  serialization-identifiers {
-      |    "com.lightbend.lagom.scaladsl.playjson.PlayJsonSerializer" = 1000004
-      |  }
-      |}
-      |
-      |""".stripMargin)
 
-  private def typedActorSystem(name: String, config: Config): typed.ActorSystem[Nothing] = {
+/**
+ * ConfigFactory.load will read the serialization settings from application.conf
+ */
+class ShoppingCartEntitySpec
+  extends AbstractShoppingCartEntitySpec(
+    EventSourcedBehaviorTestKit.config.withFallback(ConfigFactory.load)
+  )
 
+/**
+ * CustomConfigShoppingCartEntitySpec demonstrates an alternative to ShoppingCartEntitySpec that
+ * uses custom configuration instead of relying on `ConfigFactory.load`
+ */
+object CustomConfigShoppingCartEntitySpec {
+  val testConfig =
+    ConfigFactory.parseString("""
+                                |akka.actor {
+                                |  serialization-bindings {
+                                |    "com.example.shoppingcart.impl.ShoppingCart$CommandSerializable" = jackson-json
+                                |  }
+                                |}
+                                |""".stripMargin)
+}
+
+class CustomConfigShoppingCartEntitySpec
+  extends AbstractShoppingCartEntitySpec(
+    EventSourcedBehaviorTestKit.config.withFallback(CustomConfigShoppingCartEntitySpec.testConfig)
+  )
+
+object AbstractShoppingCartEntitySpec {
+  private val userSerializationRegistry = ShoppingCartSerializerRegistry
+  // This method is unexpected complexity in order to build a typed ActorSystem with
+  // the user's `ShoppingCartSerializerRegistry` registered so that user messages can
+  // still use Lagom's play-json serializers with Akka Persistence Typed.
+  def typedActorSystem(name: String, config: Config): typed.ActorSystem[Nothing] = {
     val setup: ActorSystemSetup =
       ActorSystemSetup(
-        BootstrapSetup(classLoader = Some(classOf[ShoppingCartEntitySpec].getClassLoader), config = Some(config), None),
-        JsonSerializerRegistry.serializationSetupFor(ShoppingCartSerializerRegistry)
+        BootstrapSetup(classLoader = Some(classOf[AbstractShoppingCartEntitySpec].getClassLoader), config = Some(config), None),
+        JsonSerializerRegistry.serializationSetupFor(userSerializationRegistry)
       )
     import akka.actor.typed.scaladsl.adapter._
     ActorSystem(name, setup).toTyped
@@ -49,12 +62,8 @@ object  ShoppingCartEntitySpec {
 
 }
 
-class ShoppingCartEntitySpec
-  extends ScalaTestWithActorTestKit(
-    ShoppingCartEntitySpec.typedActorSystem("ShoppingCartEntitySpec",
-      EventSourcedBehaviorTestKit.config.withFallback(ShoppingCartEntitySpec.testConfig)
-    )
-  )
+abstract class AbstractShoppingCartEntitySpec(config: Config)
+    extends ScalaTestWithActorTestKit(AbstractShoppingCartEntitySpec.typedActorSystem("ShoppingCartEntitySpec", config))
     with AnyWordSpecLike {
 
   private def randomId(): String = UUID.randomUUID().toString
