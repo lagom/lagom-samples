@@ -8,13 +8,13 @@ import akka.persistence.typed.PersistenceId
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class ShoppingCartEntitySpec
-    extends ScalaTestWithActorTestKit(s"""
-                                         |akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
-                                         |akka.persistence.snapshot-store.plugin = "akka.persistence.snapshot-store.local"
-                                         |akka.persistence.snapshot-store.local.dir = "target/snapshot-${UUID
-      .randomUUID()
-      .toString}"
-                                         |""".stripMargin)
+  extends ScalaTestWithActorTestKit(s"""
+                                       |akka.persistence.journal.plugin = "akka.persistence.journal.inmem"
+                                       |akka.persistence.snapshot-store.plugin = "akka.persistence.snapshot-store.local"
+                                       |akka.persistence.snapshot-store.local.dir = "target/snapshot-${UUID
+    .randomUUID()
+    .toString}"
+                                       |""".stripMargin)
     with AnyWordSpecLike
     with LogCapturing {
 
