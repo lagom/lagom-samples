@@ -4,7 +4,7 @@ val playGrpcVersion = "0.9.1"
 val lagomVersion = "1.6.4"
 
 buildInfoKeys := Seq[BuildInfoKey]("playGrpcVersion" -> playGrpcVersion)
-buildInfoPackage := "lagom.java.grpc.sample"
+buildInfoPackage := "lagom.scala.grpc.sample"
 
 // The Lagom plugin
 addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % lagomVersion)
