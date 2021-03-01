@@ -14,8 +14,8 @@ val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % Bu
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
 
 
-val akkaHttpVersion = "10.2.1"
-val playVersion = "2.8.5"
+val akkaHttpVersion = "10.2.3"
+val playVersion = "2.8.7"
 
 val akkaHttpOverrides = Seq(
   "akka-http2-support",

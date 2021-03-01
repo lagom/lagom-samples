@@ -58,21 +58,6 @@
             <artifactId>akka-http2-support_${scala.binary.version}</artifactId>
         </dependency>
 
-
-<!--        <dependency>-->
-<!--            <groupId>com.typesafe.akka</groupId>-->
-<!--            <artifactId>akka-parsing_${scala.binary.version}</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.typesafe.akka</groupId>-->
-<!--            <artifactId>akka-http_${scala.binary.version}</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.typesafe.akka</groupId>-->
-<!--            <artifactId>akka-http-core_${scala.binary.version}</artifactId>-->
-<!--        </dependency>-->
-
-
     </dependencies>
 
     <build>
