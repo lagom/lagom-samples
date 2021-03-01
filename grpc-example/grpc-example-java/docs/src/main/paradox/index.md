@@ -16,29 +16,26 @@ cd grpc-example/grpc-example-java
 
 ## Running the example
 
-Using gRPC in Lagom requires adding a Java Agent to the runtime. In order to handle this setting we provide a script that will
-download the ALPN Java Agent and start an interactive `sbt` console properly set up. Use the `ssl-lagom`
-script:
+You can run it like any Lagom application.
+
+In Maven,
 
 ```bash
-./ssl-lagom
+mvn lagom:runAll
 ```
 
-The first time you run the script it will take some time to resolve and download some dependencies. Once
-ready you'll be at the `sbt` console. Use the `runAll` command to start the Lagom gRPC Example:
+In sbt,
 
 ```bash
-sbt:lagom-java-grpc-example> runAll
+sbt runAll
 ```
 
 The `runAll` command starts Lagom in development mode. Once all the services are started you will see Lagom's start message:
 
-```
+```bash
 ...
-[info] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-[info] Service hello-proxy-impl listening for HTTPS on 127.0.0.1:65108
-[info] Service hello-impl listening for HTTP on 127.0.0.1:65499
-[info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
+[INFO] Service hello-impl listening for HTTP on 127.0.0.1:11000
+[INFO] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
 [info] (Services started, press enter to stop and go back to the console...)
 ```
 
@@ -56,7 +53,7 @@ Hi Steve! (gRPC)
 
 This application is built with two Lagom services (`hello` and `hello-proxy`) exposing the following endpoints:
 
-```
+```bash
 GET /proxy/rest-hello/:id    # served by hello-proxy-service (HTTP-JSON)
 GET /proxy/grpc-hello/:id    # served by hello-proxy-service (HTTP-JSON)
 GET /api/hello/:id           # served by hello-service (HTTP-JSON)
@@ -64,7 +61,7 @@ GET /api/hello/:id           # served by hello-service (HTTP-JSON)
 
 And also:
 
-```
+```bash
 /helloworld.GreetingsService/sayHello   # served by hello-service (gRPC)
 ```
 
@@ -82,7 +79,7 @@ curl http://localhost:9000/proxy/rest-hello/Alice
 
 The following happens:
 
-```
+```bash
 curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(http)-->  hello-service
 ```
 
@@ -94,40 +91,31 @@ curl http://localhost:9000/proxy/grpc-hello/Alice
 
 The following happens
 
-```
-curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(gRPC/https)-->  hello-service
+```bash
+curl  --(http)-->  service gateway  --(http)-->  hello-proxy-service  --(gRPC/http)-->  hello-service
 ```
 
 ## Testing the gRPC endpoints
 
 The gRPC endpoints are not accessible via the Lagom Service Gateway so it's only possible to consume them from
-another Lagom service or pointing a client directly to the `https - HTTP/2` port of the Lagom Service. Earlier we
+another Lagom service or pointing a client directly to the `HTTP/2` port of the Lagom Service. Earlier we
 saw that Lagom informs of the following bindings:
 
-```
+```bash
 ...
-[info] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
-[info] Service hello-proxy-impl listening for HTTPS on 127.0.0.1:65108
-[info] Service hello-impl listening for HTTP on 127.0.0.1:65499
-[info] Service hello-impl listening for HTTPS on 127.0.0.1:11000
+[INFO] Service hello-impl listening for HTTP on 127.0.0.1:11000
+[INFO] Service hello-proxy-impl listening for HTTP on 127.0.0.1:54328
 [info] (Services started, press enter to stop and go back to the console...)
 ```
 
-You can test the gRPC endpoint using [grpcc](https://github.com/njpatel/grpcc). Because Lagom uses self-signed
-certificates, you will have to export and trust the CA certificate:
+You can test the gRPC endpoint using [gRPCurl](https://github.com/fullstorydev/grpcurl).
+Note that for simplicity, this sample is disabling TLS, therefore it's possbile to call the `HTTP/2` endpoint without using https.
 
 ```bash
-keytool -export -alias sslconfig-selfsigned  -keystore target/dev-mode/selfsigned.keystore  -storepass "" -file trustedCA.crt
-openssl x509 -in  trustedCA.crt -out trustedCA.pem -inform DER -outform PEM
-```
-
-Once the CA certificate is extracted we can use `grpcc` to test the application:
-
-```bash
-$   grpcc --proto hello-impl/src/main/protobuf/helloworld.proto \
-          --address localhost:11000 \
-          --eval 'client.sayHello({name:"Katherine"}, printReply)' \
-          --root_cert ./trustedCA.pem
+$   grpcurl --proto hello-impl/src/main/protobuf/helloworld.proto \
+          -d '{"name": "Katherine" }' \
+          -plaintext 127.0.0.1:11000   \
+          helloworld.GreeterService.SayHello
  {
    "message": "Hi Katherine! (gRPC)"
  }
@@ -136,8 +124,8 @@ $   grpcc --proto hello-impl/src/main/protobuf/helloworld.proto \
 The command above:
 
 1. Uses the gRPC description on `hello-impl/src/main/protobuf/helloworld.proto`
-2. Connects to the `hello-impl` service using `https` at `localhost:11000` (trusting the CA used to build the `localhost:11000` certificate)
-3. Sends a gRPC call `client.sayHello({name:"Katherine"},...)` (`grpcc` requires registering a callback, in this case `printReply` to send the response to the `stdout`).
+1. Connects to the `hello-impl` service at `127.0.0.1:11000` using plaintext over `http`.
+1. Sends a gRPC call `helloworld.GreeterService.SayHello` with `{"name": "Katherine" }` payload.
 
 ## References
 

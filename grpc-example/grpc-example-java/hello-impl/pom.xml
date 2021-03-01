@@ -119,9 +119,8 @@
                 <artifactId>lagom-maven-plugin</artifactId>
                 <configuration>
                     <lagomService>true</lagomService>
-                    <serviceHttpsPort>${hello-impl.https.port}</serviceHttpsPort>
+                    <serviceHttpPort>${hello-impl.http.port}</serviceHttpPort>
                     <serviceAddress>127.0.0.1</serviceAddress>
-                    <serviceEnableSsl>true</serviceEnableSsl>
                 </configuration>
             </plugin>
 
