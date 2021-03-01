@@ -57,12 +57,8 @@
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-akka-http2-support_${scala.binary.version}</artifactId>
+            <version>${play.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-http2-support_${scala.binary.version}</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>

@@ -61,7 +61,7 @@
 
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
-                <artifactId>akka-http-maven-dependencies</artifactId>
+                <artifactId>akka-http-bom_${scala.binary.version}</artifactId>
                 <version>${akka.http.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -69,7 +69,7 @@
 
             <dependency>
                 <groupId>com.typesafe.play</groupId>
-                <artifactId>play-maven-dependencies</artifactId>
+                <artifactId>play-bom_${scala.binary.version}</artifactId>
                 <version>${play.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -81,8 +81,6 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
-
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
