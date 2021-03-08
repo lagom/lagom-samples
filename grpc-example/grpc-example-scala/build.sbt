@@ -4,7 +4,7 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.12"
+scalaVersion in ThisBuild := "2.12.13"
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.1.4" % Test

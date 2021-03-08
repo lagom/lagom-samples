@@ -58,6 +58,22 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.typesafe.akka</groupId>
+                <artifactId>akka-http-bom_${scala.binary.version}</artifactId>
+                <version>${akka.http.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.typesafe.play</groupId>
+                <artifactId>play-bom_${scala.binary.version}</artifactId>
+                <version>${play.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>com.lightbend.lagom</groupId>
                 <artifactId>lagom-maven-dependencies</artifactId>
@@ -68,19 +84,20 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.8</version>
+                <version>1.18.18</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.12</scala.binary.version>
-        <lagom.version>1.6.4</lagom.version>
-        <play.version>2.8.1</play.version>
-        <akka.http.version>10.1.12</akka.http.version>
-        <akka.grpc.version>1.0.2</akka.grpc.version>
+        <akka.http.version>10.2.3</akka.http.version>
+        <play.version>2.8.7</play.version>
+        <akka.grpc.version>1.0.3</akka.grpc.version>
         <play.grpc.version>0.9.1</play.grpc.version>
+        <lagom.version>1.6.4</lagom.version>
 
         <hello-impl.http.port>11000</hello-impl.http.port>
     </properties>

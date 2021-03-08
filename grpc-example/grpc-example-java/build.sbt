@@ -12,8 +12,56 @@ scalaVersion in ThisBuild := "2.12.12"
 val `hello-impl-HTTP-port` = 11000
 val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
-// TODO remove after upgrade Akka gRPC
-val akkaHttp = "com.typesafe.akka" %% "akka-http2-support" % "10.1.12"
+
+val akkaVersion = "2.6.10"
+val akkaHttpVersion = "10.2.3"
+val playVersion = "2.8.7"
+
+val akkaOverrides = Seq(
+  "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-discovery" % akkaVersion,
+  "com.typesafe.akka" %% "akka-protobuf-v3" % akkaVersion,
+  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-cluster" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-coordination" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-distributed-data" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-persistence" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-pki" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-remote" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+)
+
+val akkaHttpOverrides = Seq(
+  "akka-http2-support",
+  "akka-http-core",
+  "akka-http",
+  "akka-parsing",
+  "akka-http-spray-json"
+).map(
+artifactId => "com.typesafe.akka" %% artifactId % akkaHttpVersion
+)
+
+val playOverrides = Seq(
+ "play",
+ "play-akka-http-server",
+ "play-server",
+ "play-ws",
+ "play-ahc-ws",
+)
+  .map(
+    artifactId => "com.typesafe.play" %% artifactId % playVersion
+  )
 
 lazy val `lagom-java-grpc-example` = (project in file("."))
   .aggregate(`hello-api`, `hello-impl`, `hello-proxy-api`, `hello-proxy-impl`)
@@ -47,10 +95,9 @@ lazy val `hello-impl` = (project in file("hello-impl"))
   libraryDependencies ++= Seq(
     lagomJavadslTestKit,
     lagomLogback,
-    akkaHttp,
     playGrpcRuntime,
     lagomGrpcTestkit
-  )
+  ) ++ akkaOverrides ++ akkaHttpOverrides ++ playOverrides
 ).settings(lagomForkedTestSettings: _*)
   .dependsOn(`hello-api`)
 
@@ -73,9 +120,8 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
     libraryDependencies ++= Seq(
       lagomJavadslTestKit,
       lagomLogback,
-      playGrpcRuntime,
-      akkaHttp
-    )
+      playGrpcRuntime
+    )++ akkaOverrides ++ akkaHttpOverrides ++ playOverrides
   )
   .dependsOn(`hello-proxy-api`, `hello-api`)
 

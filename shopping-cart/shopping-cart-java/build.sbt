@@ -5,7 +5,7 @@ organization in ThisBuild := "com.example"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.13.3"
 
-val lombok                 = "org.projectlombok"               % "lombok"                  % "1.18.8"
+val lombok                 = "org.projectlombok"               % "lombok"                  % "1.18.18"
 val postgresDriver         = "org.postgresql"                  % "postgresql"              % "42.2.18"
 val hamcrestLibrary        = "org.hamcrest"                    % "hamcrest-library"        % "2.1" % Test
 val hibernateEntityManager = "org.hibernate"                   % "hibernate-entitymanager" % "5.4.2.Final"
