@@ -72,6 +72,11 @@ lazy val `hello-proxy-impl` = (project in file("hello-proxy-impl"))
   akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
   ).settings(
+
+libraryDependencies += "io.grpc" % "grpc-core" % "1.36.0",
+libraryDependencies += "io.grpc" % "grpc-stub" % "1.36.0",
+libraryDependencies += "io.grpc" % "grpc-netty-shaded" % "1.36.0",
+
     libraryDependencies ++= Seq(
       lagomScaladslAkkaDiscovery,
       lagomScaladslTestKit,
