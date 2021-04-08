@@ -97,7 +97,7 @@
         <play.version>2.8.7</play.version>
         <akka.grpc.version>1.0.3</akka.grpc.version>
         <play.grpc.version>0.9.1</play.grpc.version>
-        <lagom.version>1.6.4</lagom.version>
+        <lagom.version>1.6.5-RC1+46-d44f311e</lagom.version>
 
         <hello-impl.http.port>11000</hello-impl.http.port>
     </properties>
