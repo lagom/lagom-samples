@@ -7,15 +7,15 @@ organization in ThisBuild := "com.example"
 version in ThisBuild := "1.0-SNAPSHOT"
 
 // the Java version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.12.12"
+scalaVersion in ThisBuild := "2.12.13"
 
 val `hello-impl-HTTP-port` = 11000
 val playGrpcRuntime = "com.lightbend.play"  %% "play-grpc-runtime"          % BuildInfo.playGrpcVersion
 val lagomGrpcTestkit = "com.lightbend.play" %% "lagom-javadsl-grpc-testkit" % BuildInfo.playGrpcVersion % Test
 
-val akkaVersion = "2.6.10"
-val akkaHttpVersion = "10.2.3"
-val playVersion = "2.8.7"
+val akkaVersion = "2.6.14"
+val akkaHttpVersion = "10.2.4"
+val playVersion = "2.8.8"
 
 val akkaOverrides = Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
