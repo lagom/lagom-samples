@@ -3,7 +3,7 @@ import com.lightbend.lagom.core.LagomVersion
 organization in ThisBuild := "com.example"
 
 // the Scala version that will be used for cross-compiled libraries
-scalaVersion in ThisBuild := "2.13.3"
+scalaVersion in ThisBuild := "2.13.5"
 
 val lombok                 = "org.projectlombok"               % "lombok"                  % "1.18.18"
 val postgresDriver         = "org.postgresql"                  % "postgresql"              % "42.2.18"
@@ -15,7 +15,7 @@ val validationApi          = "javax.validation"                % "validation-api
 val akkaPersistenceQuery = "com.typesafe.akka" %% "akka-persistence-query" % LagomVersion.akka
 val akkaStreamTestkit    = "com.typesafe.akka" %% "akka-stream-testkit"    % LagomVersion.akka
 
-val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api"                % "1.0.9"
+val akkaDiscoveryKubernetesApi = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api"                % "1.0.10"
 val lagomJavadslAkkaDiscovery  = "com.lightbend.lagom"          %% "lagom-javadsl-akka-discovery-service-locator" % LagomVersion.current
 
 val playJavaClusterSharding = "com.typesafe.play" %% "play-java-cluster-sharding" % LagomVersion.play

@@ -129,7 +129,7 @@
         <scala.binary.version>2.12</scala.binary.version>
 
         <lagom.version>1.6.5-RC2</lagom.version>
-        <cinnamon.version>2.11.1</cinnamon.version>
+        <cinnamon.version>2.15.1</cinnamon.version>
     </properties>
 
     <repositories>

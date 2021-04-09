@@ -93,8 +93,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.12</scala.binary.version>
-        <akka.http.version>10.2.3</akka.http.version>
-        <play.version>2.8.7</play.version>
+        <akka.http.version>10.2.4</akka.http.version>
+        <play.version>2.8.8</play.version>
         <akka.grpc.version>1.0.3</akka.grpc.version>
         <play.grpc.version>0.9.1</play.grpc.version>
         <lagom.version>1.6.5-RC2</lagom.version>

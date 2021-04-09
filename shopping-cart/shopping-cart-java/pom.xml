@@ -204,7 +204,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lagom.version>1.6.5-RC2</lagom.version>
         <scala.binary.version>2.13</scala.binary.version>
-        <akka.management.version>1.0.9</akka.management.version>
+        <akka.management.version>1.0.10</akka.management.version>
         <hamcrest.version>2.1</hamcrest.version>
         <version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
 
