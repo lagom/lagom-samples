@@ -64,7 +64,6 @@
                 <version>${lagom.version}</version>
                 <configuration>
                     <cassandraEnabled>false</cassandraEnabled>
-                    <kafkaPort>10000</kafkaPort>
                     <kafkaEnabled>false</kafkaEnabled>
                 </configuration>
             </plugin>
