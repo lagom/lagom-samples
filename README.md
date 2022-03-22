@@ -29,7 +29,7 @@ This repository contains code examples to help you understand how to achieve com
 
 This project follows the [Lagom contributor guidelines](https://github.com/lagom/lagom/blob/master/CONTRIBUTING.md). Please read and follow those when contributing Lagom Samples.
 
-## Pre-requisites
+## Pre-requisites #############
 
 To download and run these examples you will need:
 
