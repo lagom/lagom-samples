@@ -1,4 +1,4 @@
-# Lagom Samples####################
+# Lagom Samples####################..................###########################
 
 [![Build Status](https://travis-ci.com/lagom/lagom-samples.svg?branch=1.6.x)](https://travis-ci.com/lagom/lagom-samples)
 
@@ -17,13 +17,13 @@ This repository contains code examples to help you understand how to achieve com
 * How do I configure Log correlation (Cinnamon)? ([Java/Maven example](lightbend-telemetry/log-correlation-java-mvn/README.md))
 * How do I use Lagom with Couchbase both write-side and read-side? [Java Maven and Scala Sbt](couchbase-persistence/README.md)) (Couchbase Persistence is **NOT** production ready yet)
 
-## Community-driven examples ..#####
+## Community-driven examples ..#####.................
 
 * How do I authenticate/authorize by JWT? ([Java/Maven example](https://github.com/pac4j/lagom-pac4j-java-demo), [Scala/Sbt example](https://github.com/pac4j/lagom-pac4j-scala-demo))?
 * How do I generate _OpenAPI/Swagger Specification_ for Lagom service? ([Java/Maven example](https://github.com/taymyr/lagom-samples/blob/master/openapi/java/README.md), [Scala/Sbt example](https://github.com/taymyr/lagom-samples/blob/master/openapi/scala/README.md))
 * How do I using Play's JPA API to do CRUD-oriented persistence in a Lagom service? ([Java/SBT example](https://github.com/taymyr/lagom-samples/blob/master/jpa-crud/java-sbt/README.md))
 * How do I use MongoDB as read-side in a Lagom service? ([Scala/SBT example](https://github.com/abknanda/mongo-readside-lagom))
-* How do I use a Lagom service in JavaScript? ([Scala/SBT example](https://github.com/mliarakos/lagom-scalajs-example))
+* How do I use a Lagom service in JavaScript????>>>>>>>>>?? ([Scala/SBT example](https://github.com/mliarakos/lagom-scalajs-example))
 
 ## Contributing examples
 
