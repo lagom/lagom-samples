@@ -47,7 +47,7 @@ If you want to run a specific example you will have to clone the whole repositor
 
 Each example includes specific instructions in it's `README.md` file on how to run and exercise the application.
 
-## License
+## License ###########
 
 To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 
